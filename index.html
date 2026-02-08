@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HMD - BAC 2026 المحسّن</title>
+    <title>HMD - BAC 2026 النهائي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- Appwrite SDK -->
@@ -48,7 +48,7 @@
             min-height: 100vh;
             color: var(--gray-900);
             position: relative;
-            transition: all 0.3s ease;
+            transition: background 0.3s ease;
         }
         
         body.dark-mode {
@@ -427,11 +427,16 @@
             transition: all 0.3s ease;
             font-size: 1.3rem;
             backdrop-filter: blur(10px);
+            color: white;
         }
 
         .theme-toggle:hover {
             transform: scale(1.1) rotate(15deg);
             background: rgba(255, 255, 255, 0.3);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
         }
 
         /* Tabs */
@@ -481,7 +486,7 @@
 
         /* Content */
         .content {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 40px auto;
             padding: 0 24px;
         }
@@ -689,6 +694,7 @@
 
         .btn-secondary:hover {
             background: var(--gray-300);
+            transform: translateY(-2px);
         }
 
         body.dark-mode .btn-secondary:hover {
@@ -702,6 +708,17 @@
 
         .btn-danger:hover {
             background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
         }
 
         /* Result Box */
@@ -801,10 +818,10 @@
             background-clip: text;
         }
 
-        /* Success Message */
+        /* Success Message - IMPROVED */
         .success-message {
             position: fixed;
-            top: 100px;
+            top: 20px;
             right: 50%;
             transform: translateX(50%) translateY(-200%);
             background: linear-gradient(135deg, var(--success), #16a34a);
@@ -815,6 +832,9 @@
             font-weight: 700;
             z-index: 10000;
             transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .success-message.show {
@@ -938,6 +958,21 @@
                 text-align: right;
             }
         }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -982,7 +1017,7 @@
 
                     <div class="remember-me">
                         <input type="checkbox" id="rememberMe">
-                        <label for="rememberMe">تذكرني (سيتم حفظ بياناتك محلياً بشكل آمن)</label>
+                        <label for="rememberMe">تذكرني (حفظ آمن محلياً)</label>
                     </div>
 
                     <button type="submit" class="login-btn" id="loginBtn">
@@ -1032,7 +1067,7 @@
             <h1 class="title">HMD - BAC 2026</h1>
             <p class="subtitle">نظام حساب المعدلات المتقدم</p>
         </div>
-        <button class="theme-toggle" onclick="toggleTheme()">
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
             <i class="fas fa-moon"></i>
         </button>
     </header>
@@ -1083,6 +1118,11 @@
                 <label for="tam-chk">أدرس الأمازيغية</label>
             </div>
 
+            <div class="checkbox-group" id="art-checkbox-container" style="display: none;">
+                <input type="checkbox" id="art-chk" onchange="loadGPATable()">
+                <label for="art-chk">أدرس التربية الفنية (اختيارية)</label>
+            </div>
+
             <table>
                 <thead>
                     <tr>
@@ -1103,8 +1143,11 @@
                 <button class="btn btn-primary" onclick="calcGPA()">
                     <i class="fas fa-calculator"></i> احسب المعدل
                 </button>
-                <button class="btn btn-secondary" onclick="saveData()">
-                    <i class="fas fa-save"></i> حفظ البيانات
+                <button class="btn btn-success" onclick="saveDataToCloud()">
+                    <i class="fas fa-cloud-upload-alt"></i> حفظ في السحابة
+                </button>
+                <button class="btn btn-secondary" onclick="loadDataFromCloud()">
+                    <i class="fas fa-cloud-download-alt"></i> استرجاع من السحابة
                 </button>
                 <button class="btn btn-secondary" onclick="captureResult()">
                     <i class="fas fa-camera"></i> حفظ كصورة
@@ -1280,13 +1323,13 @@
 
         let currentUser = null;
 
-        // ========== Enhanced Database with ALL Branches ==========
+        // ========== Enhanced Database with ALL Branches + Practical Works for ALL ==========
         const db = {
             "1": {
                 "جذع مشترك علوم": [
                     ["رياضيات", 3], 
-                    ["علوم طبيعية", 2], 
-                    ["فيزياء", 2], 
+                    ["علوم طبيعية", 2, true], 
+                    ["فيزياء", 2, true], 
                     ["عربية", 3], 
                     ["فرنسية", 3], 
                     ["إنجليزية", 2], 
@@ -1303,15 +1346,15 @@
                     ["تربية إسلامية", 2], 
                     ["فلسفة", 2], 
                     ["رياضيات", 2], 
-                    ["علوم طبيعية", 1], 
+                    ["علوم طبيعية", 1, true], 
                     ["تربية بدنية", 1]
                 ]
             },
             "2": {
                 "علوم تجريبية": [
                     ["رياضيات", 4], 
-                    ["علوم طبيعية", 3], 
-                    ["فيزياء", 3], 
+                    ["علوم طبيعية", 3, true], 
+                    ["فيزياء", 3, true], 
                     ["عربية", 2], 
                     ["فرنسية", 2], 
                     ["إنجليزية", 2], 
@@ -1322,8 +1365,8 @@
                 ],
                 "رياضيات": [
                     ["رياضيات", 5], 
-                    ["فيزياء", 4], 
-                    ["علوم طبيعية", 2], 
+                    ["فيزياء", 4, true], 
+                    ["علوم طبيعية", 2, true], 
                     ["عربية", 2], 
                     ["فرنسية", 2], 
                     ["إنجليزية", 2], 
@@ -1334,11 +1377,11 @@
                 ],
                 "تقني رياضي": [
                     ["رياضيات", 4], 
-                    ["فيزياء", 4], 
-                    ["هندسة ميكانيكية", 2], 
-                    ["هندسة مدنية", 2], 
-                    ["هندسة كهربائية", 2], 
-                    ["هندسة الطرائق", 2], 
+                    ["فيزياء", 4, true], 
+                    ["هندسة ميكانيكية", 2, true], 
+                    ["هندسة مدنية", 2, true], 
+                    ["هندسة كهربائية", 2, true], 
+                    ["هندسة الطرائق", 2, true], 
                     ["عربية", 2], 
                     ["فرنسية", 2], 
                     ["إنجليزية", 2], 
@@ -1367,7 +1410,7 @@
                     ["إنجليزية", 2], 
                     ["تربية إسلامية", 2], 
                     ["رياضيات", 2], 
-                    ["علوم طبيعية", 1], 
+                    ["علوم طبيعية", 1, true], 
                     ["تربية بدنية", 1]
                 ],
                 "لغات أجنبية": [
@@ -1385,8 +1428,8 @@
             "3": {
                 "علوم تجريبية": [
                     ["رياضيات", 4], 
-                    ["علوم طبيعية", 5], 
-                    ["فيزياء", 4], 
+                    ["علوم طبيعية", 5, true], 
+                    ["فيزياء", 4, true], 
                     ["عربية", 2], 
                     ["فرنسية", 2], 
                     ["إنجليزية", 2], 
@@ -1397,8 +1440,8 @@
                 ],
                 "رياضيات": [
                     ["رياضيات", 7], 
-                    ["فيزياء", 6], 
-                    ["علوم طبيعية", 2], 
+                    ["فيزياء", 6, true], 
+                    ["علوم طبيعية", 2, true], 
                     ["عربية", 2], 
                     ["فرنسية", 2], 
                     ["إنجليزية", 2], 
@@ -1409,11 +1452,11 @@
                 ],
                 "تقني رياضي": [
                     ["رياضيات", 5], 
-                    ["فيزياء", 5], 
-                    ["هندسة ميكانيكية", 3], 
-                    ["هندسة مدنية", 3], 
-                    ["هندسة كهربائية", 3], 
-                    ["هندسة الطرائق", 3], 
+                    ["فيزياء", 5, true], 
+                    ["هندسة ميكانيكية", 3, true], 
+                    ["هندسة مدنية", 3, true], 
+                    ["هندسة كهربائية", 3, true], 
+                    ["هندسة الطرائق", 3, true], 
                     ["عربية", 2], 
                     ["فرنسية", 2], 
                     ["إنجليزية", 2], 
@@ -1442,7 +1485,7 @@
                     ["إنجليزية", 2], 
                     ["تربية إسلامية", 2], 
                     ["رياضيات", 2], 
-                    ["علوم طبيعية", 1], 
+                    ["علوم طبيعية", 1, true], 
                     ["تربية بدنية", 1]
                 ],
                 "لغات أجنبية": [
@@ -1657,9 +1700,6 @@
                     document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
                 }
                 
-                // Load saved grades if any
-                await loadSavedGrades();
-                
             } catch (error) {
                 console.error('Error loading user data:', error);
                 // Still show basic info even if database fails
@@ -1668,29 +1708,13 @@
             }
         }
 
-        async function loadSavedGrades() {
-            try {
-                const response = await databases.listDocuments(
-                    DATABASE_ID,
-                    GRADES_COLLECTION_ID,
-                    [
-                        Query.equal('userId', currentUser.$id)
-                    ]
-                );
-                
-                // You can implement auto-loading of saved grades here
-                console.log('Saved grades:', response.documents);
-                
-            } catch (error) {
-                console.error('Error loading saved grades:', error);
-            }
-        }
-
-        // ========== Enhanced Theme Toggle ==========
+        // ========== FIXED Theme Toggle ==========
         function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const icon = document.querySelector('.theme-toggle i');
-            const isDark = document.body.classList.contains('dark-mode');
+            const body = document.body;
+            const icon = document.querySelector('#themeToggle i');
+            
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
             
             icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
             localStorage.setItem('hmd_theme', isDark ? 'dark' : 'light');
@@ -1704,6 +1728,13 @@
             const s = document.getElementById('stream-sel');
             s.innerHTML = "";
             for (let x in db[y]) s.innerHTML += `<option value="${x}">${x}</option>`;
+            
+            // Show art checkbox only for first year
+            const artCheckbox = document.getElementById('art-checkbox-container');
+            if (artCheckbox) {
+                artCheckbox.style.display = (y === "1") ? "flex" : "none";
+            }
+            
             loadGPATable();
         }
 
@@ -1713,12 +1744,16 @@
             let h = "";
             let subs = [...db[y][st]];
             
-            // إضافة أمازيغية إذا كانت مفعلة
-            if(document.getElementById('tam-chk').checked) subs.push(["أمازيغية", 2]);
+            // Add Amazigh if enabled
+            if(document.getElementById('tam-chk').checked) subs.push(["أمازيغية", 2, false]);
+            
+            // Add optional art education for first year only
+            if(y === "1" && document.getElementById('art-chk') && document.getElementById('art-chk').checked) {
+                subs.push(["تربية فنية", 1, false]);
+            }
             
             subs.forEach(s => {
-                // تحقق إذا كانت المادة تحتاج أعمال تطبيقية
-                const needsPractical = ["علوم طبيعية", "فيزياء", "هندسة ميكانيكية", "هندسة مدنية", "هندسة كهربائية", "هندسة الطرائق"].includes(s[0]);
+                const needsPractical = s[2] === true;
                 
                 h += `<tr data-c="${s[1]}" data-needs-practical="${needsPractical}">
                     <td><strong>${s[0]}</strong></td>
@@ -1733,7 +1768,7 @@
             });
             document.getElementById('gpa-body').innerHTML = h;
             document.getElementById('final-res').classList.remove('show');
-            restoreData();
+            restoreLocalData();
         }
 
         function resetForm() {
@@ -1741,7 +1776,7 @@
             document.querySelectorAll(".rt").forEach(r => r.innerHTML = '<strong>0.00</strong>');
             document.getElementById('final-res').classList.remove('show');
             localStorage.removeItem('hmd_bac_saved_data');
-            showSuccessMessage('تم إعادة تعيين النموذج بنجاح');
+            showSuccessMessage('تم إعادة تعيين النموذج بنجاح ✓');
         }
 
         function getMotivationalMessage(avg) {
@@ -1904,28 +1939,121 @@
             document.getElementById('bac-stats').classList.add('show');
         }
 
-        // Storage Functions
+        // ========== Storage Functions - LOCAL ==========
         function autoSave() {
-            saveData(true);
+            saveLocalData(true);
         }
         
-        function saveData(silent = false) {
+        function saveLocalData(silent = false) {
             const vals = [];
             document.querySelectorAll("#gpa-body input").forEach(i => vals.push(i.value));
             localStorage.setItem('hmd_bac_saved_data', JSON.stringify(vals));
             
             if(!silent) {
-                showSuccessMessage('تم حفظ البيانات بنجاح! ✓');
+                showSuccessMessage('تم حفظ البيانات محلياً ✓');
             }
         }
 
-        function restoreData() {
+        function restoreLocalData() {
             const savedData = localStorage.getItem('hmd_bac_saved_data');
             const vals = savedData ? JSON.parse(savedData) : null;
             if(vals) {
                 document.querySelectorAll("#gpa-body input").forEach((i, idx) => {
                     if(vals[idx] !== undefined) i.value = vals[idx];
                 });
+            }
+        }
+
+        // ========== Storage Functions - CLOUD ==========
+        async function saveDataToCloud() {
+            if (!currentUser) {
+                showSuccessMessage('⚠️ يجب تسجيل الدخول أولاً!');
+                return;
+            }
+
+            try {
+                const vals = [];
+                document.querySelectorAll("#gpa-body input").forEach(i => vals.push(i.value));
+                
+                const year = document.getElementById('year-sel').value;
+                const stream = document.getElementById('stream-sel').value;
+                
+                // Check if data already exists
+                const existing = await databases.listDocuments(
+                    DATABASE_ID,
+                    GRADES_COLLECTION_ID,
+                    [
+                        Query.equal('userId', currentUser.$id),
+                        Query.equal('year', year),
+                        Query.equal('stream', stream)
+                    ]
+                );
+
+                const data = {
+                    userId: currentUser.$id,
+                    year: year,
+                    stream: stream,
+                    grades: JSON.stringify(vals),
+                    updatedAt: new Date().toISOString()
+                };
+
+                if (existing.documents.length > 0) {
+                    // Update existing
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        GRADES_COLLECTION_ID,
+                        existing.documents[0].$id,
+                        data
+                    );
+                } else {
+                    // Create new
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        GRADES_COLLECTION_ID,
+                        ID.unique(),
+                        data
+                    );
+                }
+
+                showSuccessMessage('✓ تم حفظ البيانات في السحابة بنجاح!');
+            } catch (error) {
+                console.error('Save error:', error);
+                showSuccessMessage('⚠️ فشل حفظ البيانات!');
+            }
+        }
+
+        async function loadDataFromCloud() {
+            if (!currentUser) {
+                showSuccessMessage('⚠️ يجب تسجيل الدخول أولاً!');
+                return;
+            }
+
+            try {
+                const year = document.getElementById('year-sel').value;
+                const stream = document.getElementById('stream-sel').value;
+                
+                const response = await databases.listDocuments(
+                    DATABASE_ID,
+                    GRADES_COLLECTION_ID,
+                    [
+                        Query.equal('userId', currentUser.$id),
+                        Query.equal('year', year),
+                        Query.equal('stream', stream)
+                    ]
+                );
+
+                if (response.documents.length > 0) {
+                    const vals = JSON.parse(response.documents[0].grades);
+                    document.querySelectorAll("#gpa-body input").forEach((i, idx) => {
+                        if(vals[idx] !== undefined) i.value = vals[idx];
+                    });
+                    showSuccessMessage('✓ تم استرجاع البيانات من السحابة!');
+                } else {
+                    showSuccessMessage('⚠️ لا توجد بيانات محفوظة لهذه الشعبة!');
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+                showSuccessMessage('⚠️ فشل استرجاع البيانات!');
             }
         }
 
@@ -1945,7 +2073,7 @@
                 link.download = 'معدلي-HMD.png';
                 link.href = canvas.toDataURL();
                 link.click();
-                showSuccessMessage('تم حفظ الصورة بنجاح! 📸');
+                showSuccessMessage('✓ تم حفظ الصورة بنجاح! 📸');
             });
         }
 
@@ -1959,11 +2087,16 @@
             });
         }
 
+        // ========== IMPROVED Success Message (Auto-hide) ==========
         function showSuccessMessage(msg) {
             const el = document.getElementById('successMsg');
             el.textContent = msg;
             el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 3000);
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                el.classList.remove('show');
+            }, 3000);
         }
 
         // Initialize
@@ -1975,7 +2108,7 @@
             const savedTheme = localStorage.getItem('hmd_theme');
             if(savedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
-                document.querySelector('.theme-toggle i').className = 'fas fa-sun';
+                document.querySelector('#themeToggle i').className = 'fas fa-sun';
             }
             
             // Initialize authentication
