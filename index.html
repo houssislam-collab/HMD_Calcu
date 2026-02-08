@@ -1229,7 +1229,7 @@
 
     <script>
         // ========== Appwrite Configuration ==========
-        const { Client, Account, Databases, ID } = Appwrite;
+        const { Client, Account, Databases, ID, Query } = Appwrite;
 
         const client = new Client()
             .setEndpoint('https://fra.cloud.appwrite.io/v1')
@@ -1294,7 +1294,19 @@
                 
             } catch (error) {
                 console.error('Login error:', error);
-                errorEl.textContent = 'خطأ: ' + (error.message || 'فشل تسجيل الدخول');
+                let errorMessage = 'خطأ غير معروف';
+                
+                if (error.code === 401) {
+                    errorMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+                } else if (error.code === 429) {
+                    errorMessage = 'عدد كبير من المحاولات، حاول لاحقاً';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                } else if (error.type === 'network') {
+                    errorMessage = 'خطأ في الاتصال بالإنترنت';
+                }
+                
+                errorEl.textContent = '⚠️ ' + errorMessage;
                 errorEl.classList.add('show');
             } finally {
                 loginBtn.disabled = false;
@@ -1342,7 +1354,19 @@
                 
             } catch (error) {
                 console.error('Register error:', error);
-                errorEl.textContent = 'خطأ: ' + (error.message || 'فشل إنشاء الحساب');
+                let errorMessage = 'خطأ غير معروف';
+                
+                if (error.code === 409) {
+                    errorMessage = 'البريد الإلكتروني مُستخدم بالفعل';
+                } else if (error.type === 'user_invalid_credentials') {
+                    errorMessage = 'كلمة المرور ضعيفة جداً (8 أحرف على الأقل)';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                } else if (error.type === 'network') {
+                    errorMessage = 'خطأ في الاتصال بالإنترنت';
+                }
+                
+                errorEl.textContent = '⚠️ ' + errorMessage;
                 errorEl.classList.add('show');
             } finally {
                 registerBtn.disabled = false;
@@ -1378,7 +1402,7 @@
                     DATABASE_ID,
                     STUDENTS_COLLECTION_ID,
                     [
-                        `userId=${currentUser.$id}`
+                        Query.equal('userId', currentUser.$id)
                     ]
                 );
                 
@@ -1386,6 +1410,10 @@
                     const student = response.documents[0];
                     document.getElementById('userName').textContent = student.fullName;
                     document.getElementById('userAvatar').textContent = student.avatar || student.fullName.charAt(0).toUpperCase();
+                } else {
+                    // Use data from account if no student record
+                    document.getElementById('userName').textContent = currentUser.name || 'مستخدم';
+                    document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
                 }
                 
                 // Load saved grades if any
@@ -1393,6 +1421,9 @@
                 
             } catch (error) {
                 console.error('Error loading user data:', error);
+                // Still show basic info even if database fails
+                document.getElementById('userName').textContent = currentUser.name || 'مستخدم';
+                document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
             }
         }
 
@@ -1402,7 +1433,7 @@
                     DATABASE_ID,
                     GRADES_COLLECTION_ID,
                     [
-                        `userId=${currentUser.$id}`
+                        Query.equal('userId', currentUser.$id)
                     ]
                 );
                 
