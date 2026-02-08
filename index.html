@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HMD - BAC 2026 النهائي</title>
+    <title>HMD - BAC 2026 النسخة النهائية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- Appwrite SDK -->
@@ -31,28 +31,64 @@
             --gray-900: #0f172a;
         }
         
-        body.dark-mode {
-            --gray-50: #1e293b;
-            --gray-100: #334155;
-            --gray-200: #475569;
-            --gray-300: #64748b;
-            --gray-600: #cbd5e1;
-            --gray-700: #e2e8f0;
-            --gray-800: #f1f5f9;
-            --gray-900: #f8fafc;
-        }
-        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(to bottom, #0f172a, #1e293b);
             min-height: 100vh;
             color: var(--gray-900);
             position: relative;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         
+        /* Dark Mode Styles */
         body.dark-mode {
             background: linear-gradient(to bottom, #000000, #0f172a);
+            color: #f8fafc;
+        }
+        
+        body.dark-mode .panel,
+        body.dark-mode .login-container {
+            background: rgba(30, 41, 59, 0.98);
+            color: #f8fafc;
+        }
+        
+        body.dark-mode .tab,
+        body.dark-mode .btn-secondary,
+        body.dark-mode select,
+        body.dark-mode input[type="number"],
+        body.dark-mode input[type="text"],
+        body.dark-mode input[type="email"],
+        body.dark-mode input[type="password"],
+        body.dark-mode .form-input {
+            background: #334155;
+            border-color: #475569;
+            color: #f8fafc;
+        }
+        
+        body.dark-mode .tabs {
+            background: #0f172a;
+        }
+        
+        body.dark-mode tbody tr {
+            border-bottom-color: #475569;
+        }
+        
+        body.dark-mode tbody tr:hover {
+            background: #334155;
+        }
+        
+        body.dark-mode td,
+        body.dark-mode label,
+        body.dark-mode .panel-subtitle,
+        body.dark-mode .form-label,
+        body.dark-mode .login-subtitle,
+        body.dark-mode .remember-me {
+            color: #cbd5e1;
+        }
+        
+        body.dark-mode .user-info,
+        body.dark-mode .stat-card {
+            background: rgba(30, 41, 59, 0.95);
         }
 
         /* ===== LOGIN PANEL STYLES ===== */
@@ -86,10 +122,6 @@
             animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-        }
-
-        body.dark-mode .login-container {
-            background: rgba(30, 41, 59, 0.98);
         }
 
         @keyframes slideUp {
@@ -136,10 +168,6 @@
             font-size: 0.95rem;
         }
 
-        body.dark-mode .login-subtitle {
-            color: var(--gray-300);
-        }
-
         .login-tabs {
             display: flex;
             gap: 12px;
@@ -147,6 +175,10 @@
             background: var(--gray-100);
             padding: 6px;
             border-radius: 12px;
+        }
+
+        body.dark-mode .login-tabs {
+            background: #334155;
         }
 
         .tab-btn {
@@ -168,7 +200,8 @@
         }
 
         body.dark-mode .tab-btn.active {
-            background: var(--gray-700);
+            background: #475569;
+            color: #818cf8;
         }
 
         .login-form {
@@ -189,10 +222,6 @@
             font-size: 0.9rem;
         }
 
-        body.dark-mode .form-label {
-            color: var(--gray-300);
-        }
-
         .form-input {
             width: 100%;
             padding: 14px 16px;
@@ -204,28 +233,10 @@
             color: var(--gray-900);
         }
 
-        body.dark-mode .form-input {
-            background: var(--gray-800);
-            border-color: var(--gray-600);
-            color: var(--gray-100);
-        }
-
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
-
-        .password-toggle {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--gray-400);
-            cursor: pointer;
-            font-size: 1.2rem;
         }
 
         .remember-me {
@@ -234,10 +245,6 @@
             gap: 8px;
             font-size: 0.9rem;
             color: var(--gray-600);
-        }
-
-        body.dark-mode .remember-me {
-            color: var(--gray-300);
         }
 
         .remember-me input[type="checkbox"] {
@@ -270,6 +277,71 @@
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .google-btn {
+            background: white;
+            color: #333;
+            border: 2px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        body.dark-mode .google-btn {
+            background: #334155;
+            color: #f8fafc;
+            border-color: #475569;
+        }
+
+        .google-btn:hover {
+            background: var(--gray-50);
+        }
+
+        body.dark-mode .google-btn:hover {
+            background: #475569;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background: var(--gray-200);
+        }
+
+        body.dark-mode .divider::before,
+        body.dark-mode .divider::after {
+            background: #475569;
+        }
+
+        .divider::before {
+            right: 0;
+        }
+
+        .divider::after {
+            left: 0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 10px;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .divider span {
+            background: rgba(30, 41, 59, 0.98);
         }
 
         .error-message {
@@ -308,10 +380,6 @@
             z-index: 1000;
         }
 
-        body.dark-mode .user-info {
-            background: rgba(30, 41, 59, 0.95);
-        }
-
         .user-info.show {
             display: flex;
         }
@@ -335,7 +403,7 @@
         }
 
         body.dark-mode .user-name {
-            color: var(--gray-100);
+            color: #f8fafc;
         }
 
         .logout-btn {
@@ -411,6 +479,7 @@
             font-weight: 500;
         }
 
+        /* FIXED THEME TOGGLE */
         .theme-toggle {
             position: absolute;
             top: 24px;
@@ -428,6 +497,7 @@
             font-size: 1.3rem;
             backdrop-filter: blur(10px);
             color: white;
+            z-index: 10;
         }
 
         .theme-toggle:hover {
@@ -449,10 +519,6 @@
             flex-wrap: wrap;
         }
 
-        body.dark-mode .tabs {
-            background: var(--gray-900);
-        }
-
         .tab {
             padding: 14px 32px;
             background: white;
@@ -464,12 +530,6 @@
             transition: all 0.3s ease;
             color: var(--gray-700);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        body.dark-mode .tab {
-            background: var(--gray-800);
-            border-color: var(--gray-700);
-            color: var(--gray-200);
         }
 
         .tab:hover {
@@ -498,10 +558,6 @@
             border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
             animation: fadeIn 0.5s ease;
-        }
-
-        body.dark-mode .panel {
-            background: var(--gray-800);
         }
 
         .panel.active {
@@ -538,10 +594,6 @@
             font-size: 1rem;
         }
 
-        body.dark-mode .panel-subtitle {
-            color: var(--gray-400);
-        }
-
         /* Form Controls */
         .form-row {
             display: grid;
@@ -568,10 +620,6 @@
             color: var(--gray-700);
         }
 
-        body.dark-mode label {
-            color: var(--gray-300);
-        }
-
         select, input[type="number"], input[type="text"] {
             width: 100%;
             padding: 12px 16px;
@@ -581,14 +629,6 @@
             transition: all 0.3s ease;
             background: var(--gray-50);
             color: var(--gray-900);
-        }
-
-        body.dark-mode select,
-        body.dark-mode input[type="number"],
-        body.dark-mode input[type="text"] {
-            background: var(--gray-700);
-            border-color: var(--gray-600);
-            color: var(--gray-100);
         }
 
         select:focus, input:focus {
@@ -623,26 +663,14 @@
             transition: all 0.3s ease;
         }
 
-        body.dark-mode tbody tr {
-            border-bottom-color: var(--gray-700);
-        }
-
         tbody tr:hover {
             background: var(--gray-50);
-        }
-
-        body.dark-mode tbody tr:hover {
-            background: var(--gray-700);
         }
 
         td {
             padding: 16px;
             text-align: center;
             color: var(--gray-700);
-        }
-
-        body.dark-mode td {
-            color: var(--gray-300);
         }
 
         td input {
@@ -687,18 +715,9 @@
             color: var(--gray-700);
         }
 
-        body.dark-mode .btn-secondary {
-            background: var(--gray-700);
-            color: var(--gray-200);
-        }
-
         .btn-secondary:hover {
             background: var(--gray-300);
             transform: translateY(-2px);
-        }
-
-        body.dark-mode .btn-secondary:hover {
-            background: var(--gray-600);
         }
 
         .btn-danger {
@@ -794,10 +813,6 @@
             border: 2px solid rgba(99, 102, 241, 0.2);
         }
 
-        body.dark-mode .stat-card {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.2));
-        }
-
         .stat-label {
             font-size: 0.9rem;
             color: var(--gray-600);
@@ -806,7 +821,7 @@
         }
 
         body.dark-mode .stat-label {
-            color: var(--gray-400);
+            color: #cbd5e1;
         }
 
         .stat-value {
@@ -818,7 +833,7 @@
             background-clip: text;
         }
 
-        /* Success Message - IMPROVED */
+        /* Success Message */
         .success-message {
             position: fixed;
             top: 20px;
@@ -914,64 +929,6 @@
             .btn {
                 width: 100%;
             }
-
-            table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            thead {
-                display: none;
-            }
-
-            tbody, tr, td {
-                display: block;
-            }
-
-            tr {
-                margin-bottom: 16px;
-                border: 2px solid var(--gray-200);
-                border-radius: 12px;
-                padding: 16px;
-            }
-
-            td {
-                padding: 8px 0;
-                text-align: right;
-                position: relative;
-                padding-right: 50%;
-            }
-
-            td::before {
-                content: attr(data-label);
-                position: absolute;
-                right: 0;
-                font-weight: 700;
-                color: var(--gray-900);
-            }
-
-            body.dark-mode td::before {
-                color: var(--gray-100);
-            }
-
-            td input {
-                text-align: right;
-            }
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -1003,6 +960,21 @@
                 <form class="login-form" onsubmit="handleLogin(event)">
                     <div class="error-message" id="loginError"></div>
                     
+                    <!-- Google Login Button -->
+                    <button type="button" class="login-btn google-btn" onclick="handleGoogleLogin()">
+                        <svg width="20" height="20" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        تسجيل الدخول عبر Google
+                    </button>
+
+                    <div class="divider">
+                        <span>أو</span>
+                    </div>
+                    
                     <div class="form-group">
                         <label class="form-label">البريد الإلكتروني</label>
                         <input type="email" class="form-input" id="loginEmail" required 
@@ -1030,6 +1002,21 @@
             <div id="registerForm" class="tab-content">
                 <form class="login-form" onsubmit="handleRegister(event)">
                     <div class="error-message" id="registerError"></div>
+                    
+                    <!-- Google Register Button -->
+                    <button type="button" class="login-btn google-btn" onclick="handleGoogleLogin()">
+                        <svg width="20" height="20" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        التسجيل عبر Google
+                    </button>
+
+                    <div class="divider">
+                        <span>أو</span>
+                    </div>
                     
                     <div class="form-group">
                         <label class="form-label">الاسم الكامل</label>
@@ -1067,8 +1054,8 @@
             <h1 class="title">HMD - BAC 2026</h1>
             <p class="subtitle">نظام حساب المعدلات المتقدم</p>
         </div>
-        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
-            <i class="fas fa-moon"></i>
+        <button class="theme-toggle" id="themeToggleBtn" onclick="toggleDarkMode()">
+            <i class="fas fa-moon" id="themeIcon"></i>
         </button>
     </header>
 
@@ -1323,7 +1310,7 @@
 
         let currentUser = null;
 
-        // ========== Enhanced Database with ALL Branches + Practical Works for ALL ==========
+        // ========== Database with ALL Branches ==========
         const db = {
             "1": {
                 "جذع مشترك علوم": [
@@ -1502,10 +1489,50 @@
             }
         };
 
-        // ========== Enhanced Authentication Functions ==========
+        // ========== FIXED Dark Mode Toggle Function ==========
+        function toggleDarkMode() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            
+            // Toggle dark mode class
+            body.classList.toggle('dark-mode');
+            
+            // Check if dark mode is active
+            const isDark = body.classList.contains('dark-mode');
+            
+            // Update icon
+            if (isDark) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
+            }
+            
+            // Save preference
+            localStorage.setItem('hmd_theme', isDark ? 'dark' : 'light');
+            
+            // Show message
+            showSuccessMessage(isDark ? '🌙 تم تفعيل الوضع الليلي' : '☀️ تم تفعيل الوضع النهاري');
+        }
+
+        // ========== Google OAuth Login ==========
+        async function handleGoogleLogin() {
+            try {
+                // Redirect to Google OAuth
+                account.createOAuth2Session(
+                    'google',
+                    window.location.origin, // Success redirect
+                    window.location.origin  // Failure redirect
+                );
+            } catch (error) {
+                console.error('Google login error:', error);
+                showSuccessMessage('⚠️ فشل تسجيل الدخول عبر Google');
+            }
+        }
+
+        // ========== Authentication Functions ==========
         async function checkAuth() {
             try {
-                // Check if user has saved credentials with "Remember Me"
+                // Check saved credentials
                 const savedEmail = localStorage.getItem('hmd_remember_email');
                 const rememberMe = localStorage.getItem('hmd_remember_me') === 'true';
                 
@@ -1518,6 +1545,9 @@
                 currentUser = user;
                 hideLoginPanel();
                 await loadUserData();
+                
+                // Auto-load saved grades
+                await autoLoadSavedGrades();
             } catch (error) {
                 showLoginPanel();
             }
@@ -1556,7 +1586,6 @@
                 await account.createEmailPasswordSession(email, password);
                 currentUser = await account.get();
                 
-                // Handle "Remember Me" functionality
                 if (rememberMe) {
                     localStorage.setItem('hmd_remember_email', email);
                     localStorage.setItem('hmd_remember_me', 'true');
@@ -1567,6 +1596,7 @@
                 
                 hideLoginPanel();
                 await loadUserData();
+                await autoLoadSavedGrades();
                 showSuccessMessage('تم تسجيل الدخول بنجاح! 🎉');
                 
             } catch (error) {
@@ -1579,8 +1609,6 @@
                     errorMessage = 'عدد كبير من المحاولات، حاول لاحقاً';
                 } else if (error.message) {
                     errorMessage = error.message;
-                } else if (error.type === 'network') {
-                    errorMessage = 'خطأ في الاتصال بالإنترنت';
                 }
                 
                 errorEl.textContent = '⚠️ ' + errorMessage;
@@ -1605,14 +1633,10 @@
                 registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...';
                 errorEl.classList.remove('show');
                 
-                // Create account
-                const user = await account.create(ID.unique(), email, password, name);
-                
-                // Create session (login)
+                await account.create(ID.unique(), email, password, name);
                 await account.createEmailPasswordSession(email, password);
                 currentUser = await account.get();
                 
-                // Create student record
                 await databases.createDocument(
                     DATABASE_ID,
                     STUDENTS_COLLECTION_ID,
@@ -1639,8 +1663,6 @@
                     errorMessage = 'كلمة المرور ضعيفة جداً (8 أحرف على الأقل)';
                 } else if (error.message) {
                     errorMessage = error.message;
-                } else if (error.type === 'network') {
-                    errorMessage = 'خطأ في الاتصال بالإنترنت';
                 }
                 
                 errorEl.textContent = '⚠️ ' + errorMessage;
@@ -1656,7 +1678,6 @@
                 await account.deleteSession('current');
                 currentUser = null;
                 
-                // Clear "Remember Me" data if user logs out
                 if (!document.getElementById('rememberMe')?.checked) {
                     localStorage.removeItem('hmd_remember_email');
                     localStorage.removeItem('hmd_remember_me');
@@ -1681,13 +1702,10 @@
 
         async function loadUserData() {
             try {
-                // Get student data
                 const response = await databases.listDocuments(
                     DATABASE_ID,
                     STUDENTS_COLLECTION_ID,
-                    [
-                        Query.equal('userId', currentUser.$id)
-                    ]
+                    [Query.equal('userId', currentUser.$id)]
                 );
                 
                 if (response.documents.length > 0) {
@@ -1695,31 +1713,45 @@
                     document.getElementById('userName').textContent = student.fullName;
                     document.getElementById('userAvatar').textContent = student.avatar || student.fullName.charAt(0).toUpperCase();
                 } else {
-                    // Use data from account if no student record
                     document.getElementById('userName').textContent = currentUser.name || 'مستخدم';
                     document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
                 }
                 
             } catch (error) {
                 console.error('Error loading user data:', error);
-                // Still show basic info even if database fails
                 document.getElementById('userName').textContent = currentUser.name || 'مستخدم';
                 document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
             }
         }
 
-        // ========== FIXED Theme Toggle ==========
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.querySelector('#themeToggle i');
+        // ========== AUTO-LOAD SAVED GRADES FOR RETURNING USERS ==========
+        async function autoLoadSavedGrades() {
+            if (!currentUser) return;
             
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
-            
-            icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
-            localStorage.setItem('hmd_theme', isDark ? 'dark' : 'light');
-            
-            showSuccessMessage(isDark ? '🌙 تم تفعيل الوضع الليلي' : '☀️ تم تفعيل الوضع النهاري');
+            try {
+                const year = document.getElementById('year-sel').value;
+                const stream = document.getElementById('stream-sel').value;
+                
+                const response = await databases.listDocuments(
+                    DATABASE_ID,
+                    GRADES_COLLECTION_ID,
+                    [
+                        Query.equal('userId', currentUser.$id),
+                        Query.equal('year', year),
+                        Query.equal('stream', stream)
+                    ]
+                );
+
+                if (response.documents.length > 0) {
+                    const vals = JSON.parse(response.documents[0].grades);
+                    document.querySelectorAll("#gpa-body input").forEach((i, idx) => {
+                        if(vals[idx] !== undefined) i.value = vals[idx];
+                    });
+                    showSuccessMessage('✓ تم تحميل بياناتك تلقائياً!');
+                }
+            } catch (error) {
+                console.error('Auto-load error:', error);
+            }
         }
 
         // ========== Calculator Functions ==========
@@ -1729,7 +1761,6 @@
             s.innerHTML = "";
             for (let x in db[y]) s.innerHTML += `<option value="${x}">${x}</option>`;
             
-            // Show art checkbox only for first year
             const artCheckbox = document.getElementById('art-checkbox-container');
             if (artCheckbox) {
                 artCheckbox.style.display = (y === "1") ? "flex" : "none";
@@ -1744,10 +1775,8 @@
             let h = "";
             let subs = [...db[y][st]];
             
-            // Add Amazigh if enabled
             if(document.getElementById('tam-chk').checked) subs.push(["أمازيغية", 2, false]);
             
-            // Add optional art education for first year only
             if(y === "1" && document.getElementById('art-chk') && document.getElementById('art-chk').checked) {
                 subs.push(["تربية فنية", 1, false]);
             }
@@ -1769,6 +1798,11 @@
             document.getElementById('gpa-body').innerHTML = h;
             document.getElementById('final-res').classList.remove('show');
             restoreLocalData();
+            
+            // Auto-load from cloud if logged in
+            if (currentUser) {
+                autoLoadSavedGrades();
+            }
         }
 
         function resetForm() {
@@ -1829,7 +1863,6 @@
             resEl.querySelector('.result-message').textContent = msg.msg;
         }
 
-        // Yearly Average
         function calcYearly() {
             const t1 = parseFloat(document.getElementById('t1-avg').value) || 0;
             const t2 = parseFloat(document.getElementById('t2-avg').value) || 0;
@@ -1850,7 +1883,6 @@
             resEl.querySelector('.result-message').textContent = msg.msg;
         }
 
-        // Calculate Needed Mark
         function calcNeeded() {
             const targetAvg = parseFloat(document.getElementById('target-avg').value);
             const evalMark = parseFloat(document.getElementById('eval-mark').value) || 0;
@@ -1893,7 +1925,6 @@
             }
         }
 
-        // BAC Functions
         function loadBacStreams() {
             const s = document.getElementById('bac-strm');
             s.innerHTML = "";
@@ -1939,7 +1970,7 @@
             document.getElementById('bac-stats').classList.add('show');
         }
 
-        // ========== Storage Functions - LOCAL ==========
+        // ========== Storage Functions ==========
         function autoSave() {
             saveLocalData(true);
         }
@@ -1964,7 +1995,6 @@
             }
         }
 
-        // ========== Storage Functions - CLOUD ==========
         async function saveDataToCloud() {
             if (!currentUser) {
                 showSuccessMessage('⚠️ يجب تسجيل الدخول أولاً!');
@@ -1978,7 +2008,6 @@
                 const year = document.getElementById('year-sel').value;
                 const stream = document.getElementById('stream-sel').value;
                 
-                // Check if data already exists
                 const existing = await databases.listDocuments(
                     DATABASE_ID,
                     GRADES_COLLECTION_ID,
@@ -1998,7 +2027,6 @@
                 };
 
                 if (existing.documents.length > 0) {
-                    // Update existing
                     await databases.updateDocument(
                         DATABASE_ID,
                         GRADES_COLLECTION_ID,
@@ -2006,7 +2034,6 @@
                         data
                     );
                 } else {
-                    // Create new
                     await databases.createDocument(
                         DATABASE_ID,
                         GRADES_COLLECTION_ID,
@@ -2057,7 +2084,6 @@
             }
         }
 
-        // Capture Result as Image
         function captureResult() {
             const resultEl = document.getElementById('final-res');
             if(!resultEl.classList.contains('show')) {
@@ -2077,7 +2103,6 @@
             });
         }
 
-        // UI Functions
         function switchTab(index) {
             document.querySelectorAll('.tab').forEach((t, i) => {
                 t.classList.toggle('active', i === index);
@@ -2087,31 +2112,26 @@
             });
         }
 
-        // ========== IMPROVED Success Message (Auto-hide) ==========
         function showSuccessMessage(msg) {
             const el = document.getElementById('successMsg');
             el.textContent = msg;
             el.classList.add('show');
-            
-            // Auto-hide after 3 seconds
-            setTimeout(() => {
-                el.classList.remove('show');
-            }, 3000);
+            setTimeout(() => el.classList.remove('show'), 3000);
         }
 
-        // Initialize
+        // ========== Initialize ==========
         window.addEventListener('DOMContentLoaded', () => {
             loadStreams();
             loadBacStreams();
             
-            // Load theme preference
+            // Load theme
             const savedTheme = localStorage.getItem('hmd_theme');
             if(savedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
-                document.querySelector('#themeToggle i').className = 'fas fa-sun';
+                document.getElementById('themeIcon').className = 'fas fa-sun';
             }
             
-            // Initialize authentication
+            // Initialize auth
             checkAuth();
         });
     </script>
