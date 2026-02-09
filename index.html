@@ -61,7 +61,6 @@
             background: #334155;
         }
 
-        /* Login Overlay */
         .login-overlay {
             position: fixed;
             inset: 0;
@@ -220,28 +219,17 @@
             transform: none;
         }
 
-        .error-message,
-        .info-message {
+        .error-message {
             padding: 12px;
             border-radius: 8px;
             font-size: 0.9rem;
             display: none;
             margin-bottom: 16px;
-        }
-
-        .error-message {
             background: rgba(239, 68, 68, 0.1);
             color: var(--danger);
         }
 
-        .info-message {
-            background: rgba(6, 182, 212, 0.1);
-            color: var(--accent);
-            border: 2px solid var(--accent);
-        }
-
-        .error-message.show,
-        .info-message.show {
+        .error-message.show {
             display: block;
         }
 
@@ -253,7 +241,6 @@
             display: block;
         }
 
-        /* User Info */
         .user-info {
             position: fixed;
             top: 20px;
@@ -313,7 +300,6 @@
             background: #0891b2;
         }
 
-        /* Header */
         .header {
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(236, 72, 153, 0.9));
             padding: 24px;
@@ -378,7 +364,6 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
-        /* Tabs */
         .tabs {
             display: flex;
             justify-content: center;
@@ -398,30 +383,41 @@
             border: 2px solid var(--gray-200);
             border-radius: 16px;
             cursor: pointer;
-            font-weight: 700;
-            font-size: 1.05rem;
             transition: all 0.3s ease;
+            font-weight: 600;
             color: var(--gray-700);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .tab:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .tab.active {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border-color: transparent;
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
         }
 
-        /* Content */
+        body.dark-mode .tab {
+            background: #1e293b;
+            border-color: #334155;
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
         .content {
             max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 24px;
+            margin: 0 auto;
+            padding: 40px 24px;
         }
 
         .panel {
@@ -430,11 +426,11 @@
             padding: 40px;
             border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.5s ease;
         }
 
         .panel.active {
             display: block;
+            animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
@@ -444,11 +440,11 @@
 
         .panel-header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
         }
 
         .panel-icon {
-            font-size: 3.5rem;
+            font-size: 4rem;
             margin-bottom: 16px;
         }
 
@@ -458,36 +454,27 @@
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .panel-subtitle {
             color: var(--gray-600);
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
 
         body.dark-mode .panel-subtitle {
-            color: #cbd5e1;
+            color: #94a3b8;
         }
 
-        /* Form Controls */
         .form-row {
             display: grid;
-            gap: 24px;
+            gap: 20px;
             margin-bottom: 24px;
         }
 
-        .form-row.cols-2 {
-            grid-template-columns: 2fr 1fr;
-        }
-
-        .form-row.cols-3 {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .form-row.cols-4 {
-            grid-template-columns: repeat(4, 1fr);
-        }
+        .form-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .form-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .form-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
 
         label {
             display: block;
@@ -500,7 +487,11 @@
             color: #cbd5e1;
         }
 
-        select, input[type="number"], input[type="text"], input[type="email"], input[type="password"] {
+        select,
+        input[type="number"],
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
             padding: 12px 16px;
             border: 2px solid var(--gray-200);
@@ -510,61 +501,63 @@
             background: var(--gray-50);
         }
 
-        select:focus, input:focus {
+        select:focus,
+        input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
-        /* Table */
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 24px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         thead {
-            background: linear-gradient(135deg, #818cf8, var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: center;
         }
 
         th {
-            padding: 16px;
-            text-align: center;
-            color: white;
             font-weight: 700;
             font-size: 0.95rem;
-            text-transform: uppercase;
         }
 
         tbody tr {
-            border-bottom: 1px solid var(--gray-200);
-            transition: all 0.3s ease;
+            background: white;
+            transition: background 0.3s ease;
         }
 
-        body.dark-mode tbody tr {
-            border-bottom-color: #475569;
-        }
-
-        tbody tr:hover {
+        tbody tr:nth-child(even) {
             background: var(--gray-50);
         }
 
-        td {
-            padding: 16px;
-            text-align: center;
-            color: var(--gray-700);
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.05);
         }
 
-        body.dark-mode td {
-            color: #cbd5e1;
+        body.dark-mode tbody tr {
+            background: #1e293b;
         }
 
-        /* Buttons */
+        body.dark-mode tbody tr:nth-child(even) {
+            background: #0f172a;
+        }
+
         .btn-group {
             display: flex;
             gap: 16px;
             justify-content: center;
-            margin-top: 32px;
+            margin: 32px 0;
             flex-wrap: wrap;
         }
 
@@ -576,9 +569,9 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .btn-primary {
@@ -593,42 +586,47 @@
         }
 
         .btn-secondary {
-            background: var(--gray-200);
-            color: var(--gray-700);
+            background: linear-gradient(135deg, var(--accent), #0891b2);
+            color: white;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
         }
 
         .btn-secondary:hover {
-            background: var(--gray-300);
             transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
         }
 
         .btn-success {
-            background: var(--success);
+            background: linear-gradient(135deg, var(--success), #16a34a);
             color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
         }
 
-        /* Result Box */
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+
         .result-box {
-            margin-top: 32px;
-            padding: 32px;
-            border-radius: 20px;
-            text-align: center;
             display: none;
-            animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-align: center;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 32px 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         .result-box.show {
             display: block;
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         .result-box.excellent {
@@ -667,7 +665,6 @@
             font-weight: 600;
         }
 
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -706,7 +703,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Success Message */
         .success-message {
             position: fixed;
             top: 20px;
@@ -726,18 +722,17 @@
             transform: translateX(50%) translateY(0);
         }
 
-        /* Admin Panel */
         .admin-panel {
-            display: none;
+            display: none !important;
             background: white;
             padding: 40px;
             border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            margin-top: 40px;
+            margin-bottom: 40px;
         }
 
         .admin-panel.show {
-            display: block;
+            display: block !important;
         }
 
         .admin-header {
@@ -773,107 +768,46 @@
             accent-color: var(--primary);
         }
 
-        /* Responsive Design */
         @media (max-width: 1024px) {
-            .title {
-                font-size: 2rem;
-            }
-            
-            .panel {
-                padding: 32px 24px;
-            }
+            .title { font-size: 2rem; }
+            .panel { padding: 32px 24px; }
         }
 
         @media (max-width: 768px) {
-            .title {
-                font-size: 1.75rem;
-            }
-
+            .title { font-size: 1.75rem; }
             .form-row.cols-2,
             .form-row.cols-3,
-            .form-row.cols-4 {
-                grid-template-columns: 1fr;
-            }
-
-            table {
-                font-size: 0.85rem;
-            }
-
-            th, td {
-                padding: 10px 6px;
-            }
-
-            .panel {
-                padding: 24px 16px;
-            }
-
-            .user-info {
-                top: 10px;
-                left: 10px;
-                padding: 8px 12px;
-            }
-
-            .tabs {
-                padding: 20px 16px;
-            }
-
-            .tab {
-                padding: 12px 20px;
-                font-size: 0.95rem;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
+            .form-row.cols-4 { grid-template-columns: 1fr; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 10px 6px; }
+            .panel { padding: 24px 16px; }
+            .user-info { top: 10px; left: 10px; padding: 8px 12px; }
+            .tabs { padding: 20px 16px; }
+            .tab { padding: 12px 20px; font-size: 0.95rem; }
+            .btn-group { flex-direction: column; }
+            .btn { width: 100%; }
         }
 
         @media (max-width: 480px) {
-            .title {
-                font-size: 1.5rem;
-            }
-
-            .subtitle {
-                font-size: 0.9rem;
-            }
-
-            .logo {
-                width: 60px;
-                height: 60px;
-                font-size: 2rem;
-            }
-
-            .login-container {
-                padding: 32px 24px;
-            }
-
-            .panel-title {
-                font-size: 1.5rem;
-            }
-
-            .result-text {
-                font-size: 1.5rem;
-            }
+            .title { font-size: 1.5rem; }
+            .subtitle { font-size: 0.9rem; }
+            .logo { width: 60px; height: 60px; font-size: 2rem; }
+            .login-container { padding: 32px 24px; }
         }
     </style>
 </head>
 <body>
-    <!-- User Info Display -->
     <div class="user-info" id="userInfo">
-        <div class="user-avatar" id="userAvatar">H</div>
-        <span class="user-name" id="userName">مستخدم</span>
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span id="userName">مستخدم</span>
         <button class="admin-btn" id="adminPanelBtn" onclick="toggleAdminPanel()" style="display: none;">
-            <i class="fas fa-user-shield"></i> لوحة المدير
+            <i class="fas fa-user-shield"></i> لوحة التحكم
         </button>
         <button class="logout-btn" onclick="logout()">
             <i class="fas fa-sign-out-alt"></i> خروج
         </button>
     </div>
 
-    <!-- Login Overlay -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-container">
             <div class="login-header">
@@ -887,11 +821,9 @@
                 <button class="tab-btn" onclick="switchAuthTab('register')">إنشاء حساب</button>
             </div>
 
-            <!-- Login Form -->
             <div id="loginForm" class="tab-content active">
                 <form class="login-form" onsubmit="handleLogin(event)">
                     <div class="error-message" id="loginError"></div>
-                    <div class="info-message" id="loginInfo"></div>
                     
                     <div class="form-group">
                         <label class="form-label">البريد الإلكتروني</label>
@@ -909,13 +841,9 @@
                 </form>
             </div>
 
-            <!-- Register Form -->
             <div id="registerForm" class="tab-content">
                 <form class="login-form" onsubmit="handleRegister(event)">
                     <div class="error-message" id="registerError"></div>
-                    <div class="info-message" id="registerInfo">
-                        💡 <strong>للمدير:</strong> استخدم البريد <code>admin@hmd.com</code> لإنشاء حساب المدير
-                    </div>
                     
                     <div class="form-group">
                         <label class="form-label">الاسم الكامل</label>
@@ -940,22 +868,19 @@
         </div>
     </div>
 
-    <!-- Success Message -->
     <div class="success-message" id="successMsg"></div>
 
-    <!-- Header -->
     <header class="header">
         <div class="header-content">
             <div class="logo">🎓</div>
             <h1 class="title">HMD - BAC 2026</h1>
-            <p class="subtitle">نظام حساب المعدلات المتقدم - النسخة الكاملة</p>
+            <p class="subtitle">نظام حساب المعدلات المتقدم</p>
         </div>
         <button class="theme-toggle" id="themeToggleBtn" onclick="toggleDarkMode()">
             <i class="fas fa-moon" id="themeIcon"></i>
         </button>
     </header>
 
-    <!-- Navigation Tabs -->
     <div class="tabs">
         <div class="tab active" onclick="switchTab(0)">
             <i class="fas fa-calculator"></i> حساب المعدل
@@ -971,15 +896,13 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="content">
-        <!-- Admin Panel -->
         <div class="admin-panel" id="adminPanel">
             <div class="admin-header">
                 <h2 class="admin-title">
-                    <i class="fas fa-user-shield"></i> لوحة تحكم المدير
+                    <i class="fas fa-user-shield"></i> لوحة التحكم
                 </h2>
-                <p class="panel-subtitle">عرض جميع الطلاب المسجلين وكلمات المرور</p>
+                <p class="panel-subtitle">إدارة النظام</p>
             </div>
 
             <div class="students-table">
@@ -1011,7 +934,6 @@
             </div>
         </div>
 
-        <!-- Panel 1: GPA Calculator -->
         <div class="panel active" id="panel-0">
             <div class="panel-header">
                 <div class="panel-icon">📊</div>
@@ -1049,42 +971,39 @@
                         <th>اختبار</th>
                         <th>المعامل</th>
                         <th>المعدل</th>
+                        <th>المجموع</th>
                     </tr>
                 </thead>
                 <tbody id="gpa-body"></tbody>
             </table>
 
             <div class="btn-group">
-                <button class="btn btn-primary" onclick="calcGPA()">
+                <button class="btn btn-primary" onclick="calculateGPA()">
                     <i class="fas fa-calculator"></i> احسب المعدل
                 </button>
                 <button class="btn btn-success" onclick="saveDataToCloud()">
-                    <i class="fas fa-cloud-upload-alt"></i> حفظ في السحابة
+                    <i class="fas fa-cloud-upload-alt"></i> حفظ البيانات
                 </button>
                 <button class="btn btn-secondary" onclick="loadDataFromCloud()">
-                    <i class="fas fa-cloud-download-alt"></i> استرجاع
+                    <i class="fas fa-cloud-download-alt"></i> استرجاع البيانات
                 </button>
                 <button class="btn btn-secondary" onclick="captureResult()">
                     <i class="fas fa-camera"></i> حفظ كصورة
                 </button>
-                <button class="btn btn-danger" onclick="resetForm()">
-                    <i class="fas fa-redo"></i> إعادة تعيين
-                </button>
             </div>
 
             <div class="result-box" id="final-res">
-                <span class="result-icon">🎯</span>
-                <div class="result-text">معدلك هو: 0.00</div>
-                <div class="result-message">أدخل علاماتك واضغط على احسب المعدل</div>
+                <span class="result-icon">📊</span>
+                <div class="result-text">المعدل النهائي: 0.00</div>
+                <div class="result-message">أدخل العلامات وانقر على احسب المعدل</div>
             </div>
         </div>
 
-        <!-- Panel 2: Yearly Average -->
         <div class="panel" id="panel-1">
             <div class="panel-header">
                 <div class="panel-icon">📅</div>
                 <h2 class="panel-title">حساب المعدل السنوي</h2>
-                <p class="panel-subtitle">احسب معدلك السنوي بناءً على الفصول الثلاثة</p>
+                <p class="panel-subtitle">احسب معدلك السنوي من معدلات الفصول الثلاثة</p>
             </div>
 
             <div class="form-row cols-3">
@@ -1115,7 +1034,6 @@
             </div>
         </div>
 
-        <!-- Panel 3: Needed Mark -->
         <div class="panel" id="panel-2">
             <div class="panel-header">
                 <div class="panel-icon">🎯</div>
@@ -1155,7 +1073,6 @@
             </div>
         </div>
 
-        <!-- Panel 4: BAC Calculator -->
         <div class="panel" id="panel-3">
             <div class="panel-header">
                 <div class="panel-icon">🎓</div>
@@ -1193,7 +1110,7 @@
                 </button>
             </div>
 
-            <div class="stats-grid" id="bac-stats">
+            <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">مجموع النقاط</div>
                     <div class="stat-value" id="res-pts">0.00</div>
@@ -1211,279 +1128,52 @@
     </div>
 
     <script>
-        // ========== Appwrite Configuration ==========
         const { Client, Account, Databases, ID, Query } = Appwrite;
-
-        const client = new Client()
-            .setEndpoint('https://fra.cloud.appwrite.io/v1')
-            .setProject('6988df30002f5dcb4f7d');
-
+        const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('6988df30002f5dcb4f7d');
         const account = new Account(client);
         const databases = new Databases(client);
-
         const DATABASE_ID = '6988df7f0000d935ff6b';
         const STUDENTS_COLLECTION_ID = 'students';
         const GRADES_COLLECTION_ID = 'grades';
-
-        const ADMIN_EMAIL = 'admin@hmd.com';
-        
+        const ADMIN_EMAIL = atob('YWRtaW5AaG1kLmNvbQ==');
         let currentUser = null;
         let isAdmin = false;
 
-        // ========== Database - المعاملات الصحيحة ==========
-        const db = {
-            "1": {
-                "جذع مشترك علوم": [
-                    ["رياضيات", 3],
-                    ["علوم طبيعية", 2],
-                    ["فيزياء", 2],
-                    ["عربية", 3],
-                    ["فرنسية", 3],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "جذع مشترك آداب": [
-                    ["عربية", 4],
-                    ["فرنسية", 3],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 3],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["رياضيات", 2],
-                    ["علوم طبيعية", 1],
-                    ["تربية بدنية", 1]
-                ]
-            },
-            "2": {
-                "علوم تجريبية": [
-                    ["رياضيات", 4],
-                    ["علوم طبيعية", 3],
-                    ["فيزياء", 3],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "رياضيات": [
-                    ["رياضيات", 5],
-                    ["فيزياء", 4],
-                    ["علوم طبيعية", 2],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "تقني رياضي": [
-                    ["رياضيات", 4],
-                    ["فيزياء", 4],
-                    ["تكنولوجيا", 7],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 1],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "تسيير واقتصاد": [
-                    ["رياضيات", 3],
-                    ["اقتصاد وتسيير", 4],
-                    ["قانون", 2],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "آداب وفلسفة": [
-                    ["فلسفة", 4],
-                    ["عربية", 4],
-                    ["تاريخ وجغرافيا", 3],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تربية إسلامية", 2],
-                    ["رياضيات", 2],
-                    ["علوم طبيعية", 1],
-                    ["تربية بدنية", 1]
-                ],
-                "لغات أجنبية": [
-                    ["فرنسية", 4],
-                    ["إنجليزية", 3],
-                    ["عربية", 3],
-                    ["إسبانية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["رياضيات", 2],
-                    ["تربية بدنية", 1]
-                ]
-            },
-            "3": {
-                "علوم تجريبية": [
-                    ["رياضيات", 4],
-                    ["علوم طبيعية", 5],
-                    ["فيزياء", 4],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "رياضيات": [
-                    ["رياضيات", 7],
-                    ["فيزياء", 6],
-                    ["علوم طبيعية", 2],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "تقني رياضي": [
-                    ["رياضيات", 5],
-                    ["فيزياء", 5],
-                    ["تكنولوجيا", 7],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 1],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "تسيير واقتصاد": [
-                    ["رياضيات", 3],
-                    ["اقتصاد وتسيير", 5],
-                    ["قانون", 3],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "آداب وفلسفة": [
-                    ["فلسفة", 7],
-                    ["عربية", 5],
-                    ["تاريخ وجغرافيا", 4],
-                    ["فرنسية", 3],
-                    ["إنجليزية", 2],
-                    ["تربية إسلامية", 2],
-                    ["رياضيات", 2],
-                    ["علوم طبيعية", 1],
-                    ["تربية بدنية", 1]
-                ],
-                "لغات أجنبية": [
-                    ["فرنسية", 5],
-                    ["إنجليزية", 4],
-                    ["عربية", 3],
-                    ["إسبانية", 3],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["رياضيات", 2],
-                    ["تربية بدنية", 1]
-                ]
-            }
-        };
-
-        // ========== Dark Mode ==========
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('themeIcon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
-            localStorage.setItem('hmd_theme', isDark ? 'dark' : 'light');
-            showSuccessMessage(isDark ? '🌙 الوضع الليلي' : '☀️ الوضع النهاري');
-        }
-
-        // ========== Authentication ==========
-        async function checkAuth() {
-            try {
-                const user = await account.get();
-                currentUser = user;
-                isAdmin = (user.email === ADMIN_EMAIL);
-                hideLoginPanel();
-                await loadUserData();
-                await autoLoadSavedGrades();
-            } catch (error) {
-                showLoginPanel();
-            }
-        }
+        const db = {"1":{"جذع مشترك علوم":[["رياضيات",3],["علوم طبيعية",2],["فيزياء",2],["عربية",3],["فرنسية",3],["إنجليزية",2],["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]],"جذع مشترك آداب":[["عربية",4],["فرنسية",3],["إنجليزية",2],["تاريخ وجغرافيا",3],["تربية إسلامية",2],["فلسفة",2],["رياضيات",2],["علوم طبيعية",1],["تربية بدنية",1]]},"2":{"علوم تجريبية":[["رياضيات",4],["علوم طبيعية",3],["فيزياء",3],["عربية",2],["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]],"رياضيات":[["رياضيات",5],["فيزياء",4],["علوم طبيعية",2],["عربية",2],["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]],"تقني رياضي":[["رياضيات",4],["فيزياء",4],["تكنولوجيا",7],["عربية",2],["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",1],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]],"تسيير واقتصاد":[["رياضيات",3],["اقتصاد وتسيير",4],["قانون",2],["محاسبة",3],["عربية",2],["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]],"آداب وفلسفة":[["فلسفة",4],["عربية",4],["فرنسية",3],["إنجليزية",2],["تاريخ وجغرافيا",3],["تربية إسلامية",2],["رياضيات",1],["علوم طبيعية",1],["تربية بدنية",1]],"لغات أجنبية":[["فرنسية",4],["إنجليزية",4],["عربية",3],["إسبانية/ألمانية",3],["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["رياضيات",1],["تربية بدنية",1]]},"3":{"علوم تجريبية":[["رياضيات",4],["علوم طبيعية",5],["فيزياء",5],["عربية",2],["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",1],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]],"رياضيات":[["رياضيات",7],["فيزياء",6],["علوم طبيعية",2],["عربية",2],["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",1],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]],"تقني رياضي":[["رياضيات",5],["فيزياء",5],["هندسة كهربائية",5],["هندسة ميكانيكية",4],["هندسة مدنية",3],["هندسة الطرائق",2],["عربية",2],["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",1],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]],"تسيير واقتصاد":[["رياضيات",3],["اقتصاد وتسيير",5],["قانون",3],["محاسبة ومالية",4],["عربية",2],["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]],"آداب وفلسفة":[["فلسفة",7],["عربية",5],["فرنسية",3],["إنجليزية",2],["تاريخ وجغرافيا",3],["تربية إسلامية",2],["رياضيات",2],["علوم طبيعية",1],["تربية بدنية",1]],"لغات أجنبية":[["فرنسية",5],["إنجليزية",4],["عربية",4],["إسبانية/ألمانية",4],["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["رياضيات",2],["تربية بدنية",1]]}};
 
         function switchAuthTab(tab) {
-            const tabs = document.querySelectorAll('.tab-btn');
-            const contents = document.querySelectorAll('.tab-content');
-            
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
-            
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginTab = document.querySelectorAll('.tab-btn')[0];
+            const registerTab = document.querySelectorAll('.tab-btn')[1];
             if (tab === 'login') {
-                tabs[0].classList.add('active');
-                document.getElementById('loginForm').classList.add('active');
+                loginForm.classList.add('active'); registerForm.classList.remove('active');
+                loginTab.classList.add('active'); registerTab.classList.remove('active');
             } else {
-                tabs[1].classList.add('active');
-                document.getElementById('registerForm').classList.add('active');
-                // Show admin info
-                document.getElementById('registerInfo').classList.add('show');
+                loginForm.classList.remove('active'); registerForm.classList.add('active');
+                loginTab.classList.remove('active'); registerTab.classList.add('active');
             }
         }
 
         async function handleLogin(event) {
             event.preventDefault();
-            
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const loginBtn = document.getElementById('loginBtn');
             const errorEl = document.getElementById('loginError');
-            const infoEl = document.getElementById('loginInfo');
-            
             try {
                 loginBtn.disabled = true;
                 loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
                 errorEl.classList.remove('show');
-                infoEl.classList.remove('show');
-                
                 await account.createEmailPasswordSession(email, password);
                 currentUser = await account.get();
                 isAdmin = (currentUser.email === ADMIN_EMAIL);
-                
                 hideLoginPanel();
                 await loadUserData();
-                await autoLoadSavedGrades();
-                showSuccessMessage('تم تسجيل الدخول بنجاح! 🎉');
-                
+                showSuccessMessage('🎉 تم تسجيل الدخول بنجاح!');
             } catch (error) {
-                console.error('Login error:', error);
-                
-                if (error.code === 401) {
-                    // Check if it's admin trying to login
-                    if (email === ADMIN_EMAIL) {
-                        infoEl.innerHTML = '⚠️ حساب المدير غير مسجل. انتقل إلى <strong>إنشاء حساب</strong> واستخدم البريد <code>admin@hmd.com</code>';
-                        infoEl.classList.add('show');
-                    } else {
-                        errorEl.textContent = '⚠️ البريد الإلكتروني أو كلمة المرور غير صحيحة';
-                        errorEl.classList.add('show');
-                    }
-                } else {
-                    errorEl.textContent = '⚠️ خطأ في تسجيل الدخول';
-                    errorEl.classList.add('show');
-                }
+                errorEl.textContent = '⚠️ البريد الإلكتروني أو كلمة المرور غير صحيحة';
+                errorEl.classList.add('show');
             } finally {
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
@@ -1492,57 +1182,30 @@
 
         async function handleRegister(event) {
             event.preventDefault();
-            
             const name = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             const registerBtn = document.getElementById('registerBtn');
             const errorEl = document.getElementById('registerError');
-            
             try {
                 registerBtn.disabled = true;
                 registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...';
                 errorEl.classList.remove('show');
-                
-                // Create account
                 await account.create(ID.unique(), email, password, name);
                 await account.createEmailPasswordSession(email, password);
                 currentUser = await account.get();
                 isAdmin = (currentUser.email === ADMIN_EMAIL);
-                
-                // Save to database
-                await databases.createDocument(
-                    DATABASE_ID,
-                    STUDENTS_COLLECTION_ID,
-                    ID.unique(),
-                    {
-                        userId: currentUser.$id,
-                        fullName: name,
-                        email: email,
-                        password: password,
-                        avatar: name.charAt(0).toUpperCase()
-                    }
-                );
-                
+                await databases.createDocument(DATABASE_ID, STUDENTS_COLLECTION_ID, ID.unique(), {
+                    userId: currentUser.$id, fullName: name, email: email, password: password,
+                    avatar: name.charAt(0).toUpperCase()
+                });
                 hideLoginPanel();
                 await loadUserData();
-                
-                if (isAdmin) {
-                    showSuccessMessage('🎉 تم إنشاء حساب المدير بنجاح!');
-                } else {
-                    showSuccessMessage('🎉 تم إنشاء الحساب بنجاح!');
-                }
-                
+                showSuccessMessage('🎉 تم إنشاء الحساب بنجاح!');
             } catch (error) {
-                console.error('Register error:', error);
                 let errorMessage = 'خطأ في إنشاء الحساب';
-                
-                if (error.code === 409) {
-                    errorMessage = 'البريد الإلكتروني مُستخدم بالفعل';
-                } else if (error.type === 'user_invalid_credentials') {
-                    errorMessage = 'كلمة المرور ضعيفة (8 أحرف على الأقل)';
-                }
-                
+                if (error.code === 409) errorMessage = 'البريد الإلكتروني مُستخدم بالفعل';
+                else if (error.type === 'user_invalid_credentials') errorMessage = 'كلمة المرور ضعيفة (8 أحرف على الأقل)';
                 errorEl.textContent = '⚠️ ' + errorMessage;
                 errorEl.classList.add('show');
             } finally {
@@ -1554,14 +1217,12 @@
         async function logout() {
             try {
                 await account.deleteSession('current');
-                currentUser = null;
-                isAdmin = false;
+                currentUser = null; isAdmin = false;
                 showLoginPanel();
                 document.getElementById('adminPanel').classList.remove('show');
+                document.getElementById('adminPanelBtn').style.display = 'none';
                 showSuccessMessage('تم تسجيل الخروج بنجاح!');
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
+            } catch (error) { console.error('Logout error:', error); }
         }
 
         function showLoginPanel() {
@@ -1576,12 +1237,7 @@
 
         async function loadUserData() {
             try {
-                const response = await databases.listDocuments(
-                    DATABASE_ID,
-                    STUDENTS_COLLECTION_ID,
-                    [Query.equal('userId', currentUser.$id)]
-                );
-                
+                const response = await databases.listDocuments(DATABASE_ID, STUDENTS_COLLECTION_ID, [Query.equal('userId', currentUser.$id)]);
                 if (response.documents.length > 0) {
                     const student = response.documents[0];
                     document.getElementById('userName').textContent = student.fullName;
@@ -1590,204 +1246,113 @@
                     document.getElementById('userName').textContent = currentUser.name || 'مستخدم';
                     document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
                 }
-                
-                if (isAdmin) {
-                    document.getElementById('adminPanelBtn').style.display = 'inline-flex';
-                }
-                
-            } catch (error) {
-                console.error('Error loading user data:', error);
-            }
+                if (isAdmin) document.getElementById('adminPanelBtn').style.display = 'inline-flex';
+                else document.getElementById('adminPanelBtn').style.display = 'none';
+            } catch (error) { console.error('Error loading user data:', error); }
         }
 
-        // ========== Admin Panel ==========
         function toggleAdminPanel() {
+            if (!isAdmin) { showSuccessMessage('⚠️ غير مصرح لك بالوصول!'); return; }
             const panel = document.getElementById('adminPanel');
-            if (panel.classList.contains('show')) {
-                panel.classList.remove('show');
-            } else {
-                panel.classList.add('show');
-                loadAllStudents();
-            }
+            if (panel.classList.contains('show')) panel.classList.remove('show');
+            else { panel.classList.add('show'); loadAllStudents(); panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         }
 
         async function loadAllStudents() {
-            if (!isAdmin) {
-                showSuccessMessage('⚠️ غير مصرح لك بالوصول!');
-                return;
-            }
-
+            if (!isAdmin) { showSuccessMessage('⚠️ غير مصرح لك بالوصول!'); return; }
             try {
-                const response = await databases.listDocuments(
-                    DATABASE_ID,
-                    STUDENTS_COLLECTION_ID,
-                    [Query.limit(100)]
-                );
-
+                const response = await databases.listDocuments(DATABASE_ID, STUDENTS_COLLECTION_ID, [Query.limit(100)]);
                 const tbody = document.getElementById('studentsTableBody');
                 tbody.innerHTML = '';
-
-                if (response.documents.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5">لا يوجد طلاب مسجلين</td></tr>';
-                    return;
-                }
-
+                if (response.documents.length === 0) { tbody.innerHTML = '<tr><td colspan="5">لا يوجد طلاب مسجلين</td></tr>'; return; }
                 response.documents.forEach((student, index) => {
-                    const row = `
-                        <tr>
-                            <td><strong>${index + 1}</strong></td>
-                            <td>${student.fullName}</td>
-                            <td>${student.email}</td>
-                            <td><code style="background: var(--gray-100); padding: 4px 8px; border-radius: 6px;">${student.password || 'غير متاح'}</code></td>
-                            <td>${new Date(student.$createdAt).toLocaleDateString('ar-DZ')}</td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
+                    tbody.innerHTML += `<tr><td><strong>${index + 1}</strong></td><td>${student.fullName}</td><td>${student.email}</td><td><code style="background: var(--gray-100); padding: 4px 8px; border-radius: 6px;">${student.password || 'غير متاح'}</code></td><td>${new Date(student.$createdAt).toLocaleDateString('ar-DZ')}</td></tr>`;
                 });
-
                 showSuccessMessage(`✓ تم تحميل ${response.documents.length} طالب`);
-            } catch (error) {
-                console.error('Error loading students:', error);
-                showSuccessMessage('⚠️ فشل تحميل البيانات!');
-            }
+            } catch (error) { showSuccessMessage('⚠️ فشل تحميل البيانات!'); }
         }
 
         function exportToCSV() {
-            if (!isAdmin) {
-                showSuccessMessage('⚠️ غير مصرح لك بالوصول!');
-                return;
-            }
-
-            const table = document.querySelector('#studentsTableBody').parentElement;
+            if (!isAdmin) { showSuccessMessage('⚠️ غير مصرح لك بالوصول!'); return; }
+            const table = document.querySelector('.students-table table');
             let csv = [];
-            
             const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent);
             csv.push(headers.join(','));
-            
-            const rows = table.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const cols = Array.from(row.querySelectorAll('td')).map(td => {
-                    return '"' + td.textContent.replace(/"/g, '""') + '"';
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const rowData = Array.from(row.querySelectorAll('td')).map(td => {
+                    let text = td.textContent.trim();
+                    if (text.includes(',') || text.includes('"')) text = '"' + text.replace(/"/g, '""') + '"';
+                    return text;
                 });
-                csv.push(cols.join(','));
+                csv.push(rowData.join(','));
             });
-            
             const csvContent = csv.join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = 'students_data_' + new Date().toISOString().split('T')[0] + '.csv';
             link.click();
-            
             showSuccessMessage('✓ تم تصدير البيانات!');
         }
 
-        // ========== Auto-load ==========
-        async function autoLoadSavedGrades() {
-            if (!currentUser) return;
-            
-            try {
-                const year = document.getElementById('year-sel').value;
-                const stream = document.getElementById('stream-sel').value;
-                
-                const response = await databases.listDocuments(
-                    DATABASE_ID,
-                    GRADES_COLLECTION_ID,
-                    [
-                        Query.equal('userId', currentUser.$id),
-                        Query.equal('year', year),
-                        Query.equal('stream', stream)
-                    ]
-                );
-
-                if (response.documents.length > 0) {
-                    const vals = JSON.parse(response.documents[0].grades);
-                    document.querySelectorAll("#gpa-body input").forEach((i, idx) => {
-                        if(vals[idx] !== undefined) i.value = vals[idx];
-                    });
-                }
-            } catch (error) {
-                console.error('Auto-load error:', error);
-            }
-        }
-
-        // ========== Calculator Functions ==========
         function loadStreams() {
-            const y = document.getElementById('year-sel').value;
-            const s = document.getElementById('stream-sel');
-            s.innerHTML = "";
-            for (let x in db[y]) s.innerHTML += `<option value="${x}">${x}</option>`;
+            const yr = document.getElementById('year-sel').value;
+            const sel = document.getElementById('stream-sel');
+            sel.innerHTML = "";
+            for (let x in db[yr]) sel.innerHTML += `<option value="${x}">${x}</option>`;
             loadGPATable();
         }
 
         function loadGPATable() {
-            const y = document.getElementById('year-sel').value;
+            const yr = document.getElementById('year-sel').value;
             const st = document.getElementById('stream-sel').value;
             let h = "";
-            let subs = [...db[y][st]];
-            
+            let subs = [...db[yr][st]];
             if(document.getElementById('tam-chk').checked) subs.push(["أمازيغية", 2]);
-            
             subs.forEach(s => {
-                h += `<tr data-c="${s[1]}">
-                    <td><strong>${s[0]}</strong></td>
-                    <td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td>
-                    <td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td>
-                    <td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td>
-                    <td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td>
-                    <td><strong>${s[1]}</strong></td>
-                    <td class="rt"><strong>0.00</strong></td>
-                </tr>`;
+                h += `<tr data-c="${s[1]}"><td><strong>${s[0]}</strong></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><strong>${s[1]}</strong></td><td class="avg"><strong>0.00</strong></td><td class="sum"><strong>0.00</strong></td></tr>`;
             });
             document.getElementById('gpa-body').innerHTML = h;
-            document.getElementById('final-res').classList.remove('show');
-            
-            if (currentUser) {
-                autoLoadSavedGrades();
-            }
         }
 
-        function resetForm() {
-            document.querySelectorAll("#gpa-body input").forEach(i => i.value = '');
-            document.querySelectorAll(".rt").forEach(r => r.innerHTML = '<strong>0.00</strong>');
-            document.getElementById('final-res').classList.remove('show');
-            showSuccessMessage('تم إعادة تعيين النموذج ✓');
-        }
-
-        function getMotivationalMessage(avg) {
-            if (avg >= 18) return { icon: '🏆', msg: 'ممتاز جداً! أنت متفوق!', class: 'excellent' };
-            if (avg >= 16) return { icon: '🌟', msg: 'ممتاز! استمر بهذا الأداء!', class: 'excellent' };
-            if (avg >= 14) return { icon: '👏', msg: 'جيد جداً!', class: 'good' };
-            if (avg >= 12) return { icon: '👍', msg: 'جيد!', class: 'good' };
-            if (avg >= 10) return { icon: '💪', msg: 'مقبول!', class: 'average' };
-            return { icon: '📚', msg: 'يجب بذل المزيد من الجهد!', class: 'weak' };
-        }
-
-        function calcGPA() {
-            let tP = 0, tC = 0;
+        function calculateGPA() {
+            let totalPoints = 0, totalCoef = 0;
             document.querySelectorAll("#gpa-body tr").forEach(r => {
-                const ins = r.querySelectorAll('input'), c = parseFloat(r.dataset.c);
-                
-                let eval = parseFloat(ins[0].value) || 0;
-                let f1 = parseFloat(ins[1].value) || 0;
-                let f2 = parseFloat(ins[2].value) || 0;
-                let exam = parseFloat(ins[3].value) || 0;
-                
-                let divisor = (f2 > 0) ? 5 : 4;
-                let subAvg = (eval + f1 + f2 + (exam * 2)) / divisor;
-                
-                r.querySelector('.rt').innerHTML = `<strong>${subAvg.toFixed(2)}</strong>`;
-                tP += subAvg * c;
-                tC += c;
+                const inputs = r.querySelectorAll('input');
+                const e = parseFloat(inputs[0].value) || 0;
+                const t1 = parseFloat(inputs[1].value) || 0;
+                const t2 = parseFloat(inputs[2].value) || 0;
+                const ex = parseFloat(inputs[3].value) || 0;
+                const c = parseFloat(r.dataset.c);
+                const name = r.cells[0].innerText;
+                let avg = 0;
+                if (name === "أمازيغية") {
+                    avg = (e + t1 + t2 + (ex * 2)) / 5;
+                    let extra = avg > 10 ? (avg - 10) * c : 0;
+                    r.querySelector('.avg').innerHTML = `<strong>${avg.toFixed(2)}</strong>`;
+                    r.querySelector('.sum').innerHTML = `<strong>+${extra.toFixed(2)}</strong>`;
+                    totalPoints += extra;
+                } else {
+                    if (t2 > 0) avg = (e + t1 + t2 + (ex * 2)) / 5;
+                    else avg = (e + t1 + (ex * 2)) / 4;
+                    r.querySelector('.avg').innerHTML = `<strong>${avg.toFixed(2)}</strong>`;
+                    r.querySelector('.sum').innerHTML = `<strong>${(avg * c).toFixed(2)}</strong>`;
+                    totalPoints += avg * c;
+                    totalCoef += c;
+                }
             });
-            
-            const finalAvg = (tP/tC).toFixed(2);
+            const finalAvg = totalPoints / totalCoef;
             const resEl = document.getElementById('final-res');
-            const msg = getMotivationalMessage(parseFloat(finalAvg));
-            
-            resEl.className = 'result-box show ' + msg.class;
+            let msg = { cls: 'average', icon: '📊', msg: 'جيد' };
+            if (finalAvg >= 16) msg = { cls: 'excellent', icon: '🎉', msg: 'ممتاز جداً!' };
+            else if (finalAvg >= 14) msg = { cls: 'excellent', icon: '⭐', msg: 'ممتاز!' };
+            else if (finalAvg >= 12) msg = { cls: 'good', icon: '👍', msg: 'جيد جداً' };
+            else if (finalAvg >= 10) msg = { cls: 'good', icon: '✓', msg: 'جيد' };
+            else if (finalAvg >= 8) msg = { cls: 'average', icon: '📊', msg: 'متوسط' };
+            else msg = { cls: 'weak', icon: '⚠️', msg: 'ضعيف' };
+            resEl.className = 'result-box show ' + msg.cls;
             resEl.querySelector('.result-icon').textContent = msg.icon;
-            resEl.querySelector('.result-text').textContent = `معدلك هو: ${finalAvg}`;
+            resEl.querySelector('.result-text').textContent = `المعدل النهائي: ${finalAvg.toFixed(2)}`;
             resEl.querySelector('.result-message').textContent = msg.msg;
         }
 
@@ -1795,17 +1360,17 @@
             const t1 = parseFloat(document.getElementById('t1-avg').value) || 0;
             const t2 = parseFloat(document.getElementById('t2-avg').value) || 0;
             const t3 = parseFloat(document.getElementById('t3-avg').value) || 0;
-            
-            if(t1 === 0 || t2 === 0 || t3 === 0) {
-                showSuccessMessage('⚠️ يرجى إدخال معدلات الفصول الثلاثة!');
-                return;
-            }
-            
-            const yearlyAvg = ((t1 + t2 + t3) / 3).toFixed(2);
+            if(!t1 || !t2 || !t3) { showSuccessMessage('⚠️ يرجى إدخال جميع المعدلات!'); return; }
+            const yearlyAvg = ((t1 + t2 + (t3 * 3)) / 5).toFixed(2);
             const resEl = document.getElementById('yearly-result');
-            const msg = getMotivationalMessage(parseFloat(yearlyAvg));
-            
-            resEl.className = 'result-box show ' + msg.class;
+            let msg = { cls: 'average', icon: '📊', msg: 'جيد' };
+            if (yearlyAvg >= 16) msg = { cls: 'excellent', icon: '🎉', msg: 'ممتاز جداً!' };
+            else if (yearlyAvg >= 14) msg = { cls: 'excellent', icon: '⭐', msg: 'ممتاز!' };
+            else if (yearlyAvg >= 12) msg = { cls: 'good', icon: '👍', msg: 'جيد جداً' };
+            else if (yearlyAvg >= 10) msg = { cls: 'good', icon: '✓', msg: 'جيد' };
+            else if (yearlyAvg >= 8) msg = { cls: 'average', icon: '📊', msg: 'متوسط' };
+            else msg = { cls: 'weak', icon: '⚠️', msg: 'ضعيف' };
+            resEl.className = 'result-box show ' + msg.cls;
             resEl.querySelector('.result-icon').textContent = msg.icon;
             resEl.querySelector('.result-text').textContent = `المعدل السنوي: ${yearlyAvg}`;
             resEl.querySelector('.result-message').textContent = msg.msg;
@@ -1816,17 +1381,10 @@
             const evalMark = parseFloat(document.getElementById('eval-mark').value) || 0;
             const test1 = parseFloat(document.getElementById('test1-mark').value) || 0;
             const test2 = parseFloat(document.getElementById('test2-mark').value) || 0;
-            
-            if(!targetAvg) {
-                showSuccessMessage('⚠️ يرجى إدخال المعدل المطلوب!');
-                return;
-            }
-            
+            if(!targetAvg) { showSuccessMessage('⚠️ يرجى إدخال المعدل المطلوب!'); return; }
             let divisor = (test2 > 0) ? 5 : 4;
             let neededExam = ((targetAvg * divisor) - evalMark - test1 - test2) / 2;
-            
             const resEl = document.getElementById('needed-result');
-            
             if(neededExam > 20) {
                 resEl.className = 'result-box show weak';
                 resEl.querySelector('.result-icon').textContent = '⚠️';
@@ -1858,14 +1416,8 @@
             let h = "";
             let subs = [...db["3"][st]];
             if(document.getElementById('tam-bac').checked) subs.push(["أمازيغية", 2]);
-            
             subs.forEach(s => {
-                h += `<tr data-c="${s[1]}">
-                    <td><strong>${s[0]}</strong></td>
-                    <td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td>
-                    <td><strong>${s[1]}</strong></td>
-                    <td class="b-sum"><strong>0.00</strong></td>
-                </tr>`;
+                h += `<tr data-c="${s[1]}"><td><strong>${s[0]}</strong></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><strong>${s[1]}</strong></td><td class="b-sum"><strong>0.00</strong></td></tr>`;
             });
             document.getElementById('bac-body').innerHTML = h;
         }
@@ -1889,107 +1441,39 @@
             document.getElementById('res-avg').textContent = (tP/tC).toFixed(2);
         }
 
-        // ========== Storage ==========
         async function saveDataToCloud() {
-            if (!currentUser) {
-                showSuccessMessage('⚠️ يجب تسجيل الدخول!');
-                return;
-            }
-
+            if (!currentUser) { showSuccessMessage('⚠️ يجب تسجيل الدخول!'); return; }
             try {
                 const vals = [];
                 document.querySelectorAll("#gpa-body input").forEach(i => vals.push(i.value));
-                
                 const year = document.getElementById('year-sel').value;
                 const stream = document.getElementById('stream-sel').value;
-                
-                const existing = await databases.listDocuments(
-                    DATABASE_ID,
-                    GRADES_COLLECTION_ID,
-                    [
-                        Query.equal('userId', currentUser.$id),
-                        Query.equal('year', year),
-                        Query.equal('stream', stream)
-                    ]
-                );
-
-                const data = {
-                    userId: currentUser.$id,
-                    year: year,
-                    stream: stream,
-                    grades: JSON.stringify(vals),
-                    updatedAt: new Date().toISOString()
-                };
-
-                if (existing.documents.length > 0) {
-                    await databases.updateDocument(
-                        DATABASE_ID,
-                        GRADES_COLLECTION_ID,
-                        existing.documents[0].$id,
-                        data
-                    );
-                } else {
-                    await databases.createDocument(
-                        DATABASE_ID,
-                        GRADES_COLLECTION_ID,
-                        ID.unique(),
-                        data
-                    );
-                }
-
+                const existing = await databases.listDocuments(DATABASE_ID, GRADES_COLLECTION_ID, [Query.equal('userId', currentUser.$id), Query.equal('year', year), Query.equal('stream', stream)]);
+                const data = { userId: currentUser.$id, year: year, stream: stream, grades: JSON.stringify(vals), updatedAt: new Date().toISOString() };
+                if (existing.documents.length > 0) await databases.updateDocument(DATABASE_ID, GRADES_COLLECTION_ID, existing.documents[0].$id, data);
+                else await databases.createDocument(DATABASE_ID, GRADES_COLLECTION_ID, ID.unique(), data);
                 showSuccessMessage('✓ تم الحفظ!');
-            } catch (error) {
-                console.error('Save error:', error);
-                showSuccessMessage('⚠️ فشل الحفظ!');
-            }
+            } catch (error) { showSuccessMessage('⚠️ فشل الحفظ!'); }
         }
 
         async function loadDataFromCloud() {
-            if (!currentUser) {
-                showSuccessMessage('⚠️ يجب تسجيل الدخول!');
-                return;
-            }
-
+            if (!currentUser) { showSuccessMessage('⚠️ يجب تسجيل الدخول!'); return; }
             try {
                 const year = document.getElementById('year-sel').value;
                 const stream = document.getElementById('stream-sel').value;
-                
-                const response = await databases.listDocuments(
-                    DATABASE_ID,
-                    GRADES_COLLECTION_ID,
-                    [
-                        Query.equal('userId', currentUser.$id),
-                        Query.equal('year', year),
-                        Query.equal('stream', stream)
-                    ]
-                );
-
+                const response = await databases.listDocuments(DATABASE_ID, GRADES_COLLECTION_ID, [Query.equal('userId', currentUser.$id), Query.equal('year', year), Query.equal('stream', stream)]);
                 if (response.documents.length > 0) {
                     const vals = JSON.parse(response.documents[0].grades);
-                    document.querySelectorAll("#gpa-body input").forEach((i, idx) => {
-                        if(vals[idx] !== undefined) i.value = vals[idx];
-                    });
+                    document.querySelectorAll("#gpa-body input").forEach((i, idx) => { if(vals[idx] !== undefined) i.value = vals[idx]; });
                     showSuccessMessage('✓ تم الاسترجاع!');
-                } else {
-                    showSuccessMessage('⚠️ لا توجد بيانات!');
-                }
-            } catch (error) {
-                console.error('Load error:', error);
-                showSuccessMessage('⚠️ فشل الاسترجاع!');
-            }
+                } else showSuccessMessage('⚠️ لا توجد بيانات!');
+            } catch (error) { showSuccessMessage('⚠️ فشل الاسترجاع!'); }
         }
 
         function captureResult() {
             const resultEl = document.getElementById('final-res');
-            if(!resultEl.classList.contains('show')) {
-                showSuccessMessage('⚠️ قم بحساب المعدل أولاً!');
-                return;
-            }
-            
-            html2canvas(resultEl, {
-                backgroundColor: null,
-                scale: 2
-            }).then(canvas => {
+            if(!resultEl.classList.contains('show')) { showSuccessMessage('⚠️ قم بحساب المعدل أولاً!'); return; }
+            html2canvas(resultEl, { backgroundColor: null, scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'معدلي-HMD.png';
                 link.href = canvas.toDataURL();
@@ -1999,16 +1483,9 @@
         }
 
         function switchTab(index) {
-            document.querySelectorAll('.tab').forEach((t, i) => {
-                t.classList.toggle('active', i === index);
-            });
-            document.querySelectorAll('.panel').forEach((p, i) => {
-                p.classList.toggle('active', i === index);
-            });
-            
-            if (index !== 4) {
-                document.getElementById('adminPanel').classList.remove('show');
-            }
+            document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === index));
+            document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === index));
+            if (index !== 4) document.getElementById('adminPanel').classList.remove('show');
         }
 
         function showSuccessMessage(msg) {
@@ -2018,18 +1495,32 @@
             setTimeout(() => el.classList.remove('show'), 3000);
         }
 
-        // ========== Initialize ==========
-        window.addEventListener('DOMContentLoaded', () => {
-            loadStreams();
-            loadBacStreams();
-            
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            if(document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
+                localStorage.setItem('hmd_theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
+                localStorage.setItem('hmd_theme', 'light');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            loadStreams(); loadBacStreams();
             const savedTheme = localStorage.getItem('hmd_theme');
             if(savedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
-                document.getElementById('themeIcon').className = 'fas fa-sun';
+                document.getElementById('themeIcon').classList.remove('fa-moon');
+                document.getElementById('themeIcon').classList.add('fa-sun');
             }
-            
-            checkAuth();
+            try {
+                currentUser = await account.get();
+                isAdmin = (currentUser.email === ADMIN_EMAIL);
+                hideLoginPanel();
+                await loadUserData();
+            } catch (error) { showLoginPanel(); }
         });
     </script>
 </body>
