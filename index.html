@@ -60,7 +60,7 @@
         body.dark-mode tbody tr:hover {
             background: #334155;
         }
-        
+
         /* Login Overlay */
         .login-overlay {
             position: fixed;
@@ -220,9 +220,8 @@
             transform: none;
         }
 
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
+        .error-message,
+        .info-message {
             padding: 12px;
             border-radius: 8px;
             font-size: 0.9rem;
@@ -230,7 +229,19 @@
             margin-bottom: 16px;
         }
 
-        .error-message.show {
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .info-message {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+
+        .error-message.show,
+        .info-message.show {
             display: block;
         }
 
@@ -880,6 +891,7 @@
             <div id="loginForm" class="tab-content active">
                 <form class="login-form" onsubmit="handleLogin(event)">
                     <div class="error-message" id="loginError"></div>
+                    <div class="info-message" id="loginInfo"></div>
                     
                     <div class="form-group">
                         <label class="form-label">البريد الإلكتروني</label>
@@ -901,6 +913,9 @@
             <div id="registerForm" class="tab-content">
                 <form class="login-form" onsubmit="handleRegister(event)">
                     <div class="error-message" id="registerError"></div>
+                    <div class="info-message" id="registerInfo">
+                        💡 <strong>للمدير:</strong> استخدم البريد <code>admin@hmd.com</code> لإنشاء حساب المدير
+                    </div>
                     
                     <div class="form-group">
                         <label class="form-label">الاسم الكامل</label>
@@ -1210,13 +1225,12 @@
         const STUDENTS_COLLECTION_ID = 'students';
         const GRADES_COLLECTION_ID = 'grades';
 
-        // Admin email (يمكنك تغييرها)
         const ADMIN_EMAIL = 'admin@hmd.com';
         
         let currentUser = null;
         let isAdmin = false;
 
-        // ========== CORRECTED Database - تم إصلاح المعاملات ==========
+        // ========== Database - المعاملات الصحيحة ==========
         const db = {
             "1": {
                 "جذع مشترك علوم": [
@@ -1389,7 +1403,7 @@
             }
         };
 
-        // ========== Dark Mode Toggle ==========
+        // ========== Dark Mode ==========
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
@@ -1398,7 +1412,7 @@
             showSuccessMessage(isDark ? '🌙 الوضع الليلي' : '☀️ الوضع النهاري');
         }
 
-        // ========== Authentication Functions ==========
+        // ========== Authentication ==========
         async function checkAuth() {
             try {
                 const user = await account.get();
@@ -1425,6 +1439,8 @@
             } else {
                 tabs[1].classList.add('active');
                 document.getElementById('registerForm').classList.add('active');
+                // Show admin info
+                document.getElementById('registerInfo').classList.add('show');
             }
         }
 
@@ -1435,11 +1451,13 @@
             const password = document.getElementById('loginPassword').value;
             const loginBtn = document.getElementById('loginBtn');
             const errorEl = document.getElementById('loginError');
+            const infoEl = document.getElementById('loginInfo');
             
             try {
                 loginBtn.disabled = true;
                 loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
                 errorEl.classList.remove('show');
+                infoEl.classList.remove('show');
                 
                 await account.createEmailPasswordSession(email, password);
                 currentUser = await account.get();
@@ -1452,14 +1470,20 @@
                 
             } catch (error) {
                 console.error('Login error:', error);
-                let errorMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
                 
-                if (error.code === 429) {
-                    errorMessage = 'عدد كبير من المحاولات، حاول لاحقاً';
+                if (error.code === 401) {
+                    // Check if it's admin trying to login
+                    if (email === ADMIN_EMAIL) {
+                        infoEl.innerHTML = '⚠️ حساب المدير غير مسجل. انتقل إلى <strong>إنشاء حساب</strong> واستخدم البريد <code>admin@hmd.com</code>';
+                        infoEl.classList.add('show');
+                    } else {
+                        errorEl.textContent = '⚠️ البريد الإلكتروني أو كلمة المرور غير صحيحة';
+                        errorEl.classList.add('show');
+                    }
+                } else {
+                    errorEl.textContent = '⚠️ خطأ في تسجيل الدخول';
+                    errorEl.classList.add('show');
                 }
-                
-                errorEl.textContent = '⚠️ ' + errorMessage;
-                errorEl.classList.add('show');
             } finally {
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
@@ -1486,7 +1510,7 @@
                 currentUser = await account.get();
                 isAdmin = (currentUser.email === ADMIN_EMAIL);
                 
-                // Save to students collection with password
+                // Save to database
                 await databases.createDocument(
                     DATABASE_ID,
                     STUDENTS_COLLECTION_ID,
@@ -1495,14 +1519,19 @@
                         userId: currentUser.$id,
                         fullName: name,
                         email: email,
-                        password: password, // حفظ كلمة المرور (للمدير فقط)
+                        password: password,
                         avatar: name.charAt(0).toUpperCase()
                     }
                 );
                 
                 hideLoginPanel();
                 await loadUserData();
-                showSuccessMessage('تم إنشاء الحساب بنجاح! 🎉');
+                
+                if (isAdmin) {
+                    showSuccessMessage('🎉 تم إنشاء حساب المدير بنجاح!');
+                } else {
+                    showSuccessMessage('🎉 تم إنشاء الحساب بنجاح!');
+                }
                 
             } catch (error) {
                 console.error('Register error:', error);
@@ -1511,7 +1540,7 @@
                 if (error.code === 409) {
                     errorMessage = 'البريد الإلكتروني مُستخدم بالفعل';
                 } else if (error.type === 'user_invalid_credentials') {
-                    errorMessage = 'كلمة المرور ضعيفة جداً (8 أحرف على الأقل)';
+                    errorMessage = 'كلمة المرور ضعيفة (8 أحرف على الأقل)';
                 }
                 
                 errorEl.textContent = '⚠️ ' + errorMessage;
@@ -1562,7 +1591,6 @@
                     document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
                 }
                 
-                // Show admin button if admin
                 if (isAdmin) {
                     document.getElementById('adminPanelBtn').style.display = 'inline-flex';
                 }
@@ -1572,7 +1600,7 @@
             }
         }
 
-        // ========== Admin Panel Functions ==========
+        // ========== Admin Panel ==========
         function toggleAdminPanel() {
             const panel = document.getElementById('adminPanel');
             if (panel.classList.contains('show')) {
@@ -1633,11 +1661,9 @@
             const table = document.querySelector('#studentsTableBody').parentElement;
             let csv = [];
             
-            // Headers
             const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent);
             csv.push(headers.join(','));
             
-            // Rows
             const rows = table.querySelectorAll('tbody tr');
             rows.forEach(row => {
                 const cols = Array.from(row.querySelectorAll('td')).map(td => {
@@ -1653,10 +1679,10 @@
             link.download = 'students_data_' + new Date().toISOString().split('T')[0] + '.csv';
             link.click();
             
-            showSuccessMessage('✓ تم تصدير البيانات بنجاح!');
+            showSuccessMessage('✓ تم تصدير البيانات!');
         }
 
-        // ========== Auto-load saved grades ==========
+        // ========== Auto-load ==========
         async function autoLoadSavedGrades() {
             if (!currentUser) return;
             
@@ -1731,9 +1757,9 @@
         function getMotivationalMessage(avg) {
             if (avg >= 18) return { icon: '🏆', msg: 'ممتاز جداً! أنت متفوق!', class: 'excellent' };
             if (avg >= 16) return { icon: '🌟', msg: 'ممتاز! استمر بهذا الأداء!', class: 'excellent' };
-            if (avg >= 14) return { icon: '👏', msg: 'جيد جداً! أنت على الطريق الصحيح!', class: 'good' };
-            if (avg >= 12) return { icon: '👍', msg: 'جيد! حاول تحسين أدائك!', class: 'good' };
-            if (avg >= 10) return { icon: '💪', msg: 'مقبول، يمكنك الأفضل!', class: 'average' };
+            if (avg >= 14) return { icon: '👏', msg: 'جيد جداً!', class: 'good' };
+            if (avg >= 12) return { icon: '👍', msg: 'جيد!', class: 'good' };
+            if (avg >= 10) return { icon: '💪', msg: 'مقبول!', class: 'average' };
             return { icon: '📚', msg: 'يجب بذل المزيد من الجهد!', class: 'weak' };
         }
 
@@ -1805,18 +1831,18 @@
                 resEl.className = 'result-box show weak';
                 resEl.querySelector('.result-icon').textContent = '⚠️';
                 resEl.querySelector('.result-text').textContent = `العلامة المطلوبة: ${neededExam.toFixed(2)}`;
-                resEl.querySelector('.result-message').textContent = 'من المستحيل الوصول لهذا المعدل!';
+                resEl.querySelector('.result-message').textContent = 'من المستحيل!';
             } else if(neededExam < 0) {
                 resEl.className = 'result-box show excellent';
                 resEl.querySelector('.result-icon').textContent = '🎉';
-                resEl.querySelector('.result-text').textContent = 'أنت متفوق!';
-                resEl.querySelector('.result-message').textContent = 'لقد حققت المعدل المطلوب!';
+                resEl.querySelector('.result-text').textContent = 'متفوق!';
+                resEl.querySelector('.result-message').textContent = 'حققت المعدل!';
             } else {
                 const msgClass = neededExam <= 10 ? 'excellent' : neededExam <= 15 ? 'good' : 'average';
                 resEl.className = 'result-box show ' + msgClass;
                 resEl.querySelector('.result-icon').textContent = '🎯';
                 resEl.querySelector('.result-text').textContent = `العلامة المطلوبة: ${neededExam.toFixed(2)}`;
-                resEl.querySelector('.result-message').textContent = neededExam <= 10 ? 'سهل جداً!' : neededExam <= 15 ? 'ممكن!' : 'يتطلب جهداً!';
+                resEl.querySelector('.result-message').textContent = neededExam <= 10 ? 'سهل!' : neededExam <= 15 ? 'ممكن!' : 'يتطلب جهد!';
             }
         }
 
@@ -1863,10 +1889,10 @@
             document.getElementById('res-avg').textContent = (tP/tC).toFixed(2);
         }
 
-        // ========== Storage Functions ==========
+        // ========== Storage ==========
         async function saveDataToCloud() {
             if (!currentUser) {
-                showSuccessMessage('⚠️ يجب تسجيل الدخول أولاً!');
+                showSuccessMessage('⚠️ يجب تسجيل الدخول!');
                 return;
             }
 
@@ -1911,16 +1937,16 @@
                     );
                 }
 
-                showSuccessMessage('✓ تم حفظ البيانات بنجاح!');
+                showSuccessMessage('✓ تم الحفظ!');
             } catch (error) {
                 console.error('Save error:', error);
-                showSuccessMessage('⚠️ فشل حفظ البيانات!');
+                showSuccessMessage('⚠️ فشل الحفظ!');
             }
         }
 
         async function loadDataFromCloud() {
             if (!currentUser) {
-                showSuccessMessage('⚠️ يجب تسجيل الدخول أولاً!');
+                showSuccessMessage('⚠️ يجب تسجيل الدخول!');
                 return;
             }
 
@@ -1943,13 +1969,13 @@
                     document.querySelectorAll("#gpa-body input").forEach((i, idx) => {
                         if(vals[idx] !== undefined) i.value = vals[idx];
                     });
-                    showSuccessMessage('✓ تم استرجاع البيانات!');
+                    showSuccessMessage('✓ تم الاسترجاع!');
                 } else {
-                    showSuccessMessage('⚠️ لا توجد بيانات محفوظة!');
+                    showSuccessMessage('⚠️ لا توجد بيانات!');
                 }
             } catch (error) {
                 console.error('Load error:', error);
-                showSuccessMessage('⚠️ فشل استرجاع البيانات!');
+                showSuccessMessage('⚠️ فشل الاسترجاع!');
             }
         }
 
@@ -1968,7 +1994,7 @@
                 link.download = 'معدلي-HMD.png';
                 link.href = canvas.toDataURL();
                 link.click();
-                showSuccessMessage('✓ تم حفظ الصورة! 📸');
+                showSuccessMessage('✓ تم الحفظ! 📸');
             });
         }
 
@@ -1980,7 +2006,6 @@
                 p.classList.toggle('active', i === index);
             });
             
-            // Hide admin panel when switching tabs
             if (index !== 4) {
                 document.getElementById('adminPanel').classList.remove('show');
             }
