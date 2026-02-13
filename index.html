@@ -1105,12 +1105,6 @@
                         </svg>
                         تسجيل الدخول بـ Google
                     </button>
-
-                    <div style="text-align: center; margin-top: 8px;">
-                        <small style="color: var(--gray-600); font-size: 0.75rem;">
-                            <i class="fas fa-info-circle"></i> قيد التطوير - استخدم البريد الإلكتروني حالياً
-                        </small>
-                    </div>
                 </div>
 
                 <div style="text-align: center; margin-top: 16px;">
@@ -1464,7 +1458,7 @@
         let notificationShownCount = 0;
         
         // تعطيل/تفعيل تسجيل الدخول بـ Google
-        const ENABLE_GOOGLE_LOGIN = true; // غير هذا إلى true عند تفعيل Google OAuth في Appwrite
+        const ENABLE_GOOGLE_LOGIN = true;
 
         const db = {
             "1": {
@@ -1685,19 +1679,17 @@
 
         async function loginWithGoogle() {
             try {
-                // التحقق من توفر Google OAuth
                 showSuccessMessage('⏳ جاري تحويلك إلى Google...');
                 
-                // محاولة إنشاء جلسة OAuth
+                // استخدام URLs صحيحة
                 account.createOAuth2Session(
                     'google',
-                    window.location.origin,
-                    window.location.origin + '/auth/failure'
+                    'https://houssislam-collab.github.io/HMD_Calcu/',
+                    'https://houssislam-collab.github.io/HMD_Calcu/'
                 );
             } catch (error) {
                 console.error('Google login error:', error);
                 
-                // عرض رسالة خطأ واضحة
                 const errorEl = document.getElementById('loginError');
                 errorEl.innerHTML = `
                     <strong>⚠️ تسجيل الدخول بـ Google غير متاح حالياً</strong><br>
@@ -1705,7 +1697,6 @@
                 `;
                 errorEl.classList.add('show');
                 
-                // إخفاء الرسالة بعد 5 ثواني
                 setTimeout(() => {
                     errorEl.classList.remove('show');
                 }, 5000);
@@ -1724,7 +1715,6 @@
             document.getElementById('userAvatar').textContent = '👤';
             document.getElementById('userAvatar').style.background = 'linear-gradient(135deg, #64748b, #475569)';
             
-            // إخفاء الأزرار المحظورة في وضع الضيف
             const saveBtn = document.querySelector('button[onclick="saveDataToCloud()"]');
             const loadBtn = document.querySelector('button[onclick="loadDataFromCloud()"]');
             const captureBtn = document.querySelector('button[onclick="captureResult()"]');
@@ -1733,7 +1723,6 @@
             if (loadBtn) loadBtn.classList.add('guest-disabled');
             if (captureBtn) captureBtn.classList.add('guest-disabled');
             
-            // إظهار التنبيه
             const guestNotice = document.getElementById('guestNotice');
             if (guestNotice) guestNotice.style.display = 'block';
             
@@ -1814,7 +1803,6 @@
                     document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
                 }
                 
-                // إزالة قيود الضيف عند تسجيل الدخول
                 const saveBtn = document.querySelector('button[onclick="saveDataToCloud()"]');
                 const loadBtn = document.querySelector('button[onclick="loadDataFromCloud()"]');
                 const captureBtn = document.querySelector('button[onclick="captureResult()"]');
@@ -1823,7 +1811,6 @@
                 if (loadBtn) loadBtn.classList.remove('guest-disabled');
                 if (captureBtn) captureBtn.classList.remove('guest-disabled');
                 
-                // إخفاء التنبيه
                 const guestNotice = document.getElementById('guestNotice');
                 if (guestNotice) guestNotice.style.display = 'none';
                 
@@ -1936,7 +1923,6 @@
             resEl.querySelector('.result-text').textContent = `المعدل النهائي: ${finalAvg.toFixed(2)}`;
             resEl.querySelector('.result-message').textContent = msg.msg;
             
-            // تتبع أفعال الضيف
             trackGuestAction();
         }
 
@@ -1945,12 +1931,10 @@
             
             guestActionCount++;
             
-            // إظهار الإشعار بعد 3 حسابات للمرة الأولى
             if (guestActionCount === 3 && notificationShownCount === 0) {
                 setTimeout(() => showSignupNotification(), 2000);
             }
             
-            // إظهار الإشعار بعد 6 حسابات للمرة الثانية
             if (guestActionCount === 6 && notificationShownCount === 1) {
                 setTimeout(() => showSignupNotification(), 2000);
             }
@@ -1964,7 +1948,6 @@
             const text = notification.querySelector('.signup-notification-text');
             const icon = notification.querySelector('.signup-notification-icon');
             
-            // رسائل مختلفة لكل مرة
             const messages = [
                 {
                     icon: '🎓',
@@ -1986,7 +1969,6 @@
             notification.classList.add('show');
             notificationShownCount++;
             
-            // إخفاء تلقائي بعد 12 ثانية
             setTimeout(() => {
                 if (notification.classList.contains('show')) {
                     notification.classList.remove('show');
@@ -2024,7 +2006,6 @@
             resEl.querySelector('.result-text').textContent = `المعدل السنوي: ${yearlyAvg}`;
             resEl.querySelector('.result-message').textContent = msg.msg;
             
-            // تتبع أفعال الضيف
             trackGuestAction();
         }
 
@@ -2055,7 +2036,6 @@
                 resEl.querySelector('.result-message').textContent = neededExam <= 10 ? 'سهل!' : neededExam <= 15 ? 'ممكن!' : 'يتطلب جهد!';
             }
             
-            // تتبع أفعال الضيف
             trackGuestAction();
         }
 
@@ -2095,7 +2075,6 @@
             document.getElementById('res-coef').textContent = tC;
             document.getElementById('res-avg').textContent = (tP/tC).toFixed(2);
             
-            // تتبع أفعال الضيف
             trackGuestAction();
         }
 
@@ -2189,7 +2168,6 @@
         window.addEventListener('DOMContentLoaded', async () => {
             loadStreams(); loadBacStreams();
             
-            // إخفاء قسم Google إذا كان معطلاً
             if (!ENABLE_GOOGLE_LOGIN) {
                 const googleSection = document.getElementById('googleLoginSection');
                 if (googleSection) googleSection.style.display = 'none';
