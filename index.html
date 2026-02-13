@@ -1681,11 +1681,11 @@
             try {
                 showSuccessMessage('⏳ جاري تحويلك إلى Google...');
                 
-                // استخدام URLs صحيحة
+                // استخدام الرابط الصحيح لموقعك
                 account.createOAuth2Session(
                     'google',
-                    'https://houssislam-collab.github.io/HMD_Calcu/',
-                    'https://houssislam-collab.github.io/HMD_Calcu/'
+                    'https://houssislam-collab.github.io/HMD_Calcu',
+                    'https://houssislam-collab.github.io/HMD_Calcu'
                 );
             } catch (error) {
                 console.error('Google login error:', error);
@@ -1700,6 +1700,53 @@
                 setTimeout(() => {
                     errorEl.classList.remove('show');
                 }, 5000);
+            }
+        }
+
+        async function handleOAuthCallback() {
+            try {
+                // التحقق من وجود جلسة Google نشطة
+                currentUser = await account.get();
+                
+                if (currentUser) {
+                    isAdmin = (currentUser.email === ADMIN_EMAIL);
+                    isGuest = false;
+                    
+                    // البحث عن الطالب في قاعدة البيانات
+                    const response = await databases.listDocuments(
+                        DATABASE_ID, 
+                        STUDENTS_COLLECTION_ID, 
+                        [Query.equal('userId', currentUser.$id)]
+                    );
+                    
+                    // إذا لم يكن موجوداً، أنشئ سجل جديد له
+                    if (response.documents.length === 0) {
+                        await databases.createDocument(
+                            DATABASE_ID, 
+                            STUDENTS_COLLECTION_ID, 
+                            ID.unique(), 
+                            {
+                                userId: currentUser.$id,
+                                fullName: currentUser.name || 'مستخدم Google',
+                                email: currentUser.email,
+                                password: 'Google-OAuth',
+                                avatar: (currentUser.name || 'G').charAt(0).toUpperCase()
+                            }
+                        );
+                    }
+                    
+                    hideLoginPanel();
+                    await loadUserData();
+                    showSuccessMessage('🎉 تم تسجيل الدخول بنجاح عبر Google!');
+                    
+                    // مسح معاملات URL
+                    if (window.location.search) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                }
+            } catch (error) {
+                console.error('OAuth callback error:', error);
+                // لا نفعل شيء - سيظهر شاشة تسجيل الدخول العادية
             }
         }
 
@@ -2166,7 +2213,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            loadStreams(); loadBacStreams();
+            loadStreams(); 
+            loadBacStreams();
             
             if (!ENABLE_GOOGLE_LOGIN) {
                 const googleSection = document.getElementById('googleLoginSection');
@@ -2179,12 +2227,16 @@
                 document.getElementById('themeIcon').classList.remove('fa-moon');
                 document.getElementById('themeIcon').classList.add('fa-sun');
             }
+            
             try {
+                // محاولة الحصول على الجلسة الحالية (بما في ذلك Google OAuth)
                 currentUser = await account.get();
                 isAdmin = (currentUser.email === ADMIN_EMAIL);
                 isGuest = false;
-                hideLoginPanel();
-                await loadUserData();
+                
+                // التعامل مع OAuth callback من Google
+                await handleOAuthCallback();
+                
             } catch (error) { 
                 showLoginPanel(); 
             }
