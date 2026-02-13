@@ -1095,15 +1095,23 @@
                     أو
                 </div>
 
-                <button type="button" class="login-btn" onclick="loginWithGoogle()" style="background: white; color: #333; border: 2px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <svg width="18" height="18" viewBox="0 0 18 18" style="margin-left: 8px;">
-                        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
-                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
-                        <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
-                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-                    </svg>
-                    تسجيل الدخول بـ Google
-                </button>
+                <div id="googleLoginSection">
+                    <button type="button" class="login-btn" onclick="loginWithGoogle()" id="googleLoginBtn" style="background: white; color: #333; border: 2px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <svg width="18" height="18" viewBox="0 0 18 18" style="margin-left: 8px;">
+                            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                            <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
+                            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+                        </svg>
+                        تسجيل الدخول بـ Google
+                    </button>
+
+                    <div style="text-align: center; margin-top: 8px;">
+                        <small style="color: var(--gray-600); font-size: 0.75rem;">
+                            <i class="fas fa-info-circle"></i> قيد التطوير - استخدم البريد الإلكتروني حالياً
+                        </small>
+                    </div>
+                </div>
 
                 <div style="text-align: center; margin-top: 16px;">
                     <button type="button" class="login-btn" onclick="continueAsGuest()" style="background: var(--gray-600);">
@@ -1454,6 +1462,9 @@
         let isGuest = false;
         let guestActionCount = 0;
         let notificationShownCount = 0;
+        
+        // تعطيل/تفعيل تسجيل الدخول بـ Google
+        const ENABLE_GOOGLE_LOGIN = true; // غير هذا إلى true عند تفعيل Google OAuth في Appwrite
 
         const db = {
             "1": {
@@ -1674,6 +1685,10 @@
 
         async function loginWithGoogle() {
             try {
+                // التحقق من توفر Google OAuth
+                showSuccessMessage('⏳ جاري تحويلك إلى Google...');
+                
+                // محاولة إنشاء جلسة OAuth
                 account.createOAuth2Session(
                     'google',
                     window.location.origin,
@@ -1681,7 +1696,19 @@
                 );
             } catch (error) {
                 console.error('Google login error:', error);
-                showSuccessMessage('⚠️ فشل تسجيل الدخول بـ Google');
+                
+                // عرض رسالة خطأ واضحة
+                const errorEl = document.getElementById('loginError');
+                errorEl.innerHTML = `
+                    <strong>⚠️ تسجيل الدخول بـ Google غير متاح حالياً</strong><br>
+                    <small>يرجى استخدام البريد الإلكتروني وكلمة المرور، أو المتابعة كضيف</small>
+                `;
+                errorEl.classList.add('show');
+                
+                // إخفاء الرسالة بعد 5 ثواني
+                setTimeout(() => {
+                    errorEl.classList.remove('show');
+                }, 5000);
             }
         }
 
@@ -2161,6 +2188,13 @@
 
         window.addEventListener('DOMContentLoaded', async () => {
             loadStreams(); loadBacStreams();
+            
+            // إخفاء قسم Google إذا كان معطلاً
+            if (!ENABLE_GOOGLE_LOGIN) {
+                const googleSection = document.getElementById('googleLoginSection');
+                if (googleSection) googleSection.style.display = 'none';
+            }
+            
             const savedTheme = localStorage.getItem('hmd_theme');
             if(savedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
