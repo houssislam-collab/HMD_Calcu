@@ -1268,12 +1268,18 @@
                 <label for="tam-chk">أدرس الأمازيغية</label>
             </div>
 
+            <div class="checkbox-group">
+                <input type="checkbox" id="art-chk" onchange="loadGPATable()">
+                <label for="art-chk">أدرس التربية الفنية</label>
+            </div>
+
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>المادة</th>
                             <th>تقويم مستمر</th>
+                            <th>أعمال تطبيقية</th>
                             <th>فروض 1</th>
                             <th>فروض 2</th>
                             <th>اختبار 20/</th>
@@ -1473,8 +1479,7 @@
                     ["علوم إسلامية", 2],
                     ["تكنولوجيا", 2],
                     ["معلوماتية", 2],
-                    ["تربية بدنية", 1],
-                    ["تربية فنية", 1]
+                    ["تربية بدنية", 1]
                 ],
                 "جذع مشترك آداب": [
                     ["لغة عربية", 5],
@@ -1486,8 +1491,7 @@
                     ["علوم إسلامية", 2],
                     ["علوم طبيعية", 2],
                     ["علوم فيزيائية", 2],
-                    ["تربية بدنية", 1],
-                    ["تربية فنية", 1]
+                    ["تربية بدنية", 1]
                 ]
             },
             "2": {
@@ -1924,8 +1928,9 @@
             let h = "";
             let subs = [...db[yr][st]];
             if(document.getElementById('tam-chk').checked) subs.push(["أمازيغية", 2]);
+            if(document.getElementById('art-chk').checked) subs.push(["تربية فنية", 1]);
             subs.forEach(s => {
-                h += `<tr data-c="${s[1]}"><td><strong>${s[0]}</strong></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><strong>${s[1]}</strong></td><td class="avg"><strong>0.00</strong></td><td class="sum"><strong>0.00</strong></td></tr>`;
+                h += `<tr data-c="${s[1]}"><td><strong>${s[0]}</strong></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><strong>${s[1]}</strong></td><td class="avg"><strong>0.00</strong></td><td class="sum"><strong>0.00</strong></td></tr>`;
             });
             document.getElementById('gpa-body').innerHTML = h;
         }
@@ -1935,21 +1940,25 @@
             document.querySelectorAll("#gpa-body tr").forEach(r => {
                 const inputs = r.querySelectorAll('input');
                 const e = parseFloat(inputs[0].value) || 0;
-                const t1 = parseFloat(inputs[1].value) || 0;
-                const t2 = parseFloat(inputs[2].value) || 0;
-                const ex = parseFloat(inputs[3].value) || 0;
+                const ap = parseFloat(inputs[1].value) || 0;
+                const t1 = parseFloat(inputs[2].value) || 0;
+                const t2 = parseFloat(inputs[3].value) || 0;
+                const ex = parseFloat(inputs[4].value) || 0;
                 const c = parseFloat(r.dataset.c);
                 const name = r.cells[0].innerText;
                 let avg = 0;
-                if (name === "أمازيغية") {
-                    avg = (e + t1 + t2 + (ex * 2)) / 5;
+                if (name === "أمازيغية" || name === "تربية فنية") {
+                    // حساب المادة الاختيارية (النقاط الإضافية فقط)
+                    if (t2 > 0) avg = (e + ap + t1 + t2 + (ex * 2)) / 6;
+                    else avg = (e + ap + t1 + (ex * 2)) / 5;
                     let extra = avg > 10 ? (avg - 10) * c : 0;
                     r.querySelector('.avg').innerHTML = `<strong>${avg.toFixed(2)}</strong>`;
                     r.querySelector('.sum').innerHTML = `<strong>+${extra.toFixed(2)}</strong>`;
                     totalPoints += extra;
                 } else {
-                    if (t2 > 0) avg = (e + t1 + t2 + (ex * 2)) / 5;
-                    else avg = (e + t1 + (ex * 2)) / 4;
+                    // حساب المادة العادية مع الأعمال التطبيقية
+                    if (t2 > 0) avg = (e + ap + t1 + t2 + (ex * 2)) / 6;
+                    else avg = (e + ap + t1 + (ex * 2)) / 5;
                     r.querySelector('.avg').innerHTML = `<strong>${avg.toFixed(2)}</strong>`;
                     r.querySelector('.sum').innerHTML = `<strong>${(avg * c).toFixed(2)}</strong>`;
                     totalPoints += avg * c;
