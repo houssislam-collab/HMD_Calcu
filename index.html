@@ -1,2255 +1,1689 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>HMD - BAC 2026 النظام المتكامل</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
-    <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #ec4899;
-            --accent: #06b6d4;
-            --success: #22c55e;
-            --danger: #ef4444;
-            --dark: #0f172a;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-900: #0f172a;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
-            color: var(--gray-900);
-            transition: all 0.3s ease;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            padding: 0;
-            margin: 0;
-        }
-        
-        body.dark-mode {
-            background: linear-gradient(135deg, #000000 0%, #0f172a 100%);
-            color: #f8fafc;
-        }
-        
-        body.dark-mode .panel,
-        body.dark-mode .login-container,
-        body.dark-mode .admin-panel {
-            background: rgba(30, 41, 59, 0.98);
-            color: #f8fafc;
-        }
-        
-        body.dark-mode .tab,
-        body.dark-mode select,
-        body.dark-mode input[type="number"],
-        body.dark-mode input[type="text"],
-        body.dark-mode input[type="email"],
-        body.dark-mode input[type="password"] {
-            background: #334155;
-            border-color: #475569;
-            color: #f8fafc;
-        }
-        
-        body.dark-mode tbody tr:hover {
-            background: #334155;
-        }
-
-        .login-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-            padding: 16px;
-        }
-
-        .login-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 24px;
-            padding: 32px 24px;
-            max-width: 420px;
-            width: 100%;
-            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .login-logo {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 16px;
-            margin: 0 auto 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-        }
-
-        .login-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 6px;
-        }
-
-        .login-subtitle {
-            color: var(--gray-600);
-            font-size: 0.85rem;
-        }
-
-        .login-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            background: var(--gray-100);
-            padding: 4px;
-            border-radius: 10px;
-        }
-
-        body.dark-mode .login-tabs {
-            background: #334155;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: var(--gray-600);
-            font-size: 0.9rem;
-        }
-
-        .tab-btn.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        body.dark-mode .tab-btn.active {
-            background: #475569;
-            color: #818cf8;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--gray-700);
-            font-size: 0.85rem;
-        }
-
-        body.dark-mode .form-label {
-            color: #cbd5e1;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid var(--gray-200);
-            border-radius: 10px;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: var(--gray-50);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        .login-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        .login-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .error-message {
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            display: none;
-            margin-bottom: 12px;
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .user-info {
-            position: relative;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 8px 14px;
-            border-radius: 40px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            display: none;
-            align-items: center;
-            gap: 8px;
-            z-index: 1000;
-            font-size: 0.85rem;
-            margin: 12px;
-            overflow: hidden;
-        }
-
-        .user-info-wrapper {
-            width: 100%;
-            display: none;
-        }
-
-        .user-info-wrapper.show {
-            display: block;
-        }
-
-        body.dark-mode .user-info {
-            background: rgba(30, 41, 59, 0.95);
-        }
-
-        .user-info.show {
-            display: flex;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 0.9rem;
-            flex-shrink: 0;
-        }
-
-        .logout-btn,
-        .admin-btn {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 16px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .admin-btn {
-            background: var(--accent);
-        }
-
-        .logout-btn:hover {
-            background: #dc2626;
-        }
-
-        .admin-btn:hover {
-            background: #0891b2;
-        }
-
-        .header {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(236, 72, 153, 0.9));
-            padding: 20px 16px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-
-        .logo {
-            width: 60px;
-            height: 60px;
-            background: white;
-            border-radius: 16px;
-            margin: 0 auto 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .title {
-            font-size: 1.75rem;
-            font-weight: 900;
-            color: white;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            margin-bottom: 6px;
-        }
-
-        .subtitle {
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-            color: white;
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.1) rotate(15deg);
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 16px 12px;
-            background: var(--gray-50);
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        body.dark-mode .tabs {
-            background: #0f172a;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            background: white;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            color: var(--gray-700);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-            font-size: 0.85rem;
-            flex-shrink: 0;
-        }
-
-        .tab:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .tab.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        body.dark-mode .tab {
-            background: #1e293b;
-            border-color: #334155;
-            color: #cbd5e1;
-        }
-
-        body.dark-mode .tab.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px 12px;
-        }
-
-        .panel {
-            display: none;
-            background: white;
-            padding: 24px 16px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-        }
-
-        .panel.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .panel-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .panel-icon {
-            font-size: 3rem;
-            margin-bottom: 12px;
-        }
-
-        .panel-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
-
-        .panel-subtitle {
-            color: var(--gray-600);
-            font-size: 0.9rem;
-        }
-
-        body.dark-mode .panel-subtitle {
-            color: #94a3b8;
-        }
-
-        .form-row {
-            display: grid;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .form-row.cols-2 { grid-template-columns: 1fr; }
-        .form-row.cols-3 { grid-template-columns: 1fr; }
-        .form-row.cols-4 { grid-template-columns: 1fr; }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--gray-700);
-            font-size: 0.85rem;
-        }
-
-        body.dark-mode label {
-            color: #cbd5e1;
-        }
-
-        select,
-        input[type="number"],
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid var(--gray-200);
-            border-radius: 10px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            background: var(--gray-50);
-        }
-
-        select:focus,
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
-
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin: 16px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            font-size: 0.75rem;
-        }
-
-        thead {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        th, td {
-            padding: 8px 4px;
-            text-align: center;
-        }
-
-        th {
-            font-weight: 700;
-            font-size: 0.7rem;
-        }
-
-        tbody tr {
-            background: white;
-            transition: background 0.3s ease;
-        }
-
-        tbody tr:nth-child(even) {
-            background: var(--gray-50);
-        }
-
-        tbody tr:hover {
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        body.dark-mode tbody tr {
-            background: #1e293b;
-        }
-
-        body.dark-mode tbody tr:nth-child(even) {
-            background: #0f172a;
-        }
-
-        tbody input {
-            padding: 5px 6px;
-            font-size: 0.75rem;
-            min-width: 45px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex: 1;
-            min-width: 140px;
-            justify-content: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, var(--accent), #0891b2);
-            color: white;
-            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #16a34a);
-            color: white;
-            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-        }
-
-        .result-box {
-            display: none;
-            text-align: center;
-            padding: 28px 20px;
-            border-radius: 16px;
-            margin: 20px 0;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .result-box.show {
-            display: block;
-            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        @keyframes bounceIn {
-            0% { opacity: 0; transform: scale(0.3); }
-            50% { transform: scale(1.05); }
-            70% { transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .result-box.excellent {
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: white;
-        }
-
-        .result-box.good {
-            background: linear-gradient(135deg, #06b6d4, #0891b2);
-            color: white;
-        }
-
-        .result-box.average {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-        }
-
-        .result-box.weak {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-
-        .result-icon {
-            font-size: 3rem;
-            margin-bottom: 12px;
-        }
-
-        .result-text {
-            font-size: 1.5rem;
-            font-weight: 900;
-            margin-bottom: 8px;
-        }
-
-        .result-message {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.1));
-            padding: 20px;
-            border-radius: 14px;
-            text-align: center;
-            border: 2px solid rgba(99, 102, 241, 0.2);
-        }
-
-        body.dark-mode .stat-card {
-            background: rgba(30, 41, 59, 0.95);
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--gray-600);
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        body.dark-mode .stat-label {
-            color: #cbd5e1;
-        }
-
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .success-message {
-            position: fixed;
-            top: 16px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-200%);
-            background: linear-gradient(135deg, var(--success), #16a34a);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(34, 197, 94, 0.4);
-            font-weight: 700;
-            z-index: 10000;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            font-size: 0.9rem;
-            max-width: calc(100vw - 32px);
-            text-align: center;
-        }
-
-        .success-message.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .admin-panel {
-            display: none !important;
-            background: white;
-            padding: 24px 16px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .admin-panel.show {
-            display: block !important;
-        }
-
-        .admin-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .admin-title {
-            font-size: 1.75rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--danger));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 12px;
-        }
-
-        .students-table {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 16px 0;
-        }
-
-        input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: var(--primary);
-        }
-
-        .guest-disabled {
-            opacity: 0.5;
-            cursor: not-allowed !important;
-            pointer-events: none;
-        }
-
-        .guest-badge {
-            background: linear-gradient(135deg, #64748b, #475569);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            margin-right: 8px;
-        }
-
-        .signup-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #6366f1, #ec4899);
-            color: white;
-            padding: 20px 24px;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.5);
-            max-width: 380px;
-            z-index: 9998;
-            transform: translateY(150%);
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            animation: shake 0.5s ease-in-out;
-        }
-
-        .signup-notification.show {
-            transform: translateY(0);
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-10px) rotate(-2deg); }
-            75% { transform: translateY(-10px) rotate(2deg); }
-        }
-
-        .signup-notification-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .signup-notification-icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-
-        .signup-notification-close {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .signup-notification-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
-
-        .signup-notification-title {
-            font-size: 1.1rem;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .signup-notification-text {
-            font-size: 0.9rem;
-            margin-bottom: 16px;
-            line-height: 1.5;
-            opacity: 0.95;
-        }
-
-        .signup-notification-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .signup-notification-btn {
-            flex: 1;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
-        }
-
-        .signup-notification-btn.primary {
-            background: white;
-            color: var(--primary);
-        }
-
-        .signup-notification-btn.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
-        }
-
-        .signup-notification-btn.secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .signup-notification-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        @media (max-width: 430px) {
-            .signup-notification {
-                bottom: 16px;
-                right: 16px;
-                left: 16px;
-                max-width: none;
-                padding: 16px 20px;
-            }
-
-            .signup-notification-title {
-                font-size: 1rem;
-            }
-
-            .signup-notification-text {
-                font-size: 0.85rem;
-            }
-        }
-
-        /* iPhone 17 Pro (430 x 932) */
-        @media (max-width: 430px) and (min-height: 900px) {
-            .title { font-size: 1.6rem; }
-            .login-container { padding: 28px 20px; }
-            .form-row.cols-2,
-            .form-row.cols-3,
-            .form-row.cols-4 { grid-template-columns: 1fr; }
-        }
-
-        /* iPhone 14 Pro Max, iPhone 15 Pro Max (430 x 932) */
-        @media (max-width: 430px) {
-            .title { font-size: 1.6rem; }
-            .subtitle { font-size: 0.9rem; }
-            table { font-size: 0.75rem; }
-            th, td { padding: 8px 4px; }
-        }
-
-        /* iPhone 14 Pro, iPhone 15 Pro (393 x 852) */
-        @media (max-width: 393px) {
-            .title { font-size: 1.5rem; }
-            .panel { padding: 20px 12px; }
-            .btn { min-width: 120px; padding: 10px 16px; }
-        }
-
-        /* iPhone SE, iPhone 12 mini, iPhone 13 mini (375 x 667/812) */
-        @media (max-width: 375px) {
-            .title { font-size: 1.4rem; }
-            .subtitle { font-size: 0.85rem; }
-            .logo { width: 50px; height: 50px; font-size: 1.75rem; }
-            .login-container { padding: 24px 16px; }
-            .login-logo { width: 50px; height: 50px; font-size: 1.75rem; }
-            .login-title { font-size: 1.3rem; }
-            .panel-icon { font-size: 2.5rem; }
-            .panel-title { font-size: 1.3rem; }
-            table { font-size: 0.65rem; }
-            th, td { padding: 6px 2px; }
-            tbody input { padding: 4px 4px; font-size: 0.7rem; min-width: 40px; }
-            .btn { min-width: 110px; padding: 9px 14px; font-size: 0.8rem; }
-            .user-info { font-size: 0.75rem; padding: 6px 10px; }
-            .user-avatar { width: 28px; height: 28px; font-size: 0.8rem; }
-            .logout-btn, .admin-btn { padding: 5px 10px; font-size: 0.7rem; }
-        }
-
-        /* Galaxy Fold (280 x 653) */
-        @media (max-width: 280px) {
-            .title { font-size: 1.2rem; }
-            .subtitle { font-size: 0.75rem; }
-            .logo { width: 40px; height: 40px; font-size: 1.5rem; }
-            .tabs { gap: 4px; padding: 12px 8px; }
-            .tab { padding: 8px 12px; font-size: 0.75rem; gap: 4px; }
-            .btn-group { gap: 6px; }
-            .btn { min-width: 100px; padding: 8px 12px; font-size: 0.75rem; }
-            table { font-size: 0.65rem; }
-        }
-
-        /* Tablets (768px and above) */
-        @media (min-width: 768px) {
-            .title { font-size: 2rem; }
-            .panel { padding: 32px 24px; }
-            .form-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
-            .form-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
-            .form-row.cols-4 { grid-template-columns: repeat(2, 1fr); }
-            table { font-size: 0.9rem; }
-            th, td { padding: 12px 8px; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .tabs { flex-wrap: wrap; }
-            .btn-group { flex-wrap: wrap; }
-            .btn { flex: 0 1 auto; }
-        }
-
-        /* Desktop (1024px and above) */
-        @media (min-width: 1024px) {
-            .title { font-size: 2.5rem; }
-            .subtitle { font-size: 1.1rem; }
-            .panel { padding: 40px; }
-            .form-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
-            .form-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
-            .form-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
-            table { font-size: 1rem; }
-            th, td { padding: 14px 12px; }
-            .stats-grid { grid-template-columns: repeat(3, 1fr); }
-            .login-container { padding: 48px 40px; }
-        }
-
-        /* Landscape orientation */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .login-container { max-height: 85vh; }
-            .header { padding: 12px 16px; }
-            .logo { width: 40px; height: 40px; font-size: 1.5rem; margin-bottom: 8px; }
-            .title { font-size: 1.3rem; }
-            .subtitle { font-size: 0.8rem; }
-            .panel-header { margin-bottom: 16px; }
-            .panel-icon { font-size: 2rem; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>HMD - BAC 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
+
+<style>
+:root {
+  --ink: #0a0a0f;
+  --ink2: #16161f;
+  --ink3: #1e1e2a;
+  --surface: #f5f3ee;
+  --surface2: #ede9e0;
+  --gold: #c9a84c;
+  --gold2: #e8c56a;
+  --crimson: #c0392b;
+  --teal: #1a7a6e;
+  --teal2: #22a090;
+  --muted: #6b6878;
+  --border: rgba(201,168,76,0.25);
+  --radius: 16px;
+  --ff: 'Tajawal', sans-serif;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: var(--ff);
+  background: var(--ink);
+  color: var(--surface);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+
+/* ── LOGIN OVERLAY ── */
+#loginOverlay {
+  position:fixed; inset:0; z-index:9999;
+  background: linear-gradient(135deg, #0a0a0f 0%, #16161f 100%);
+  display:flex; align-items:center; justify-content:center; padding:16px;
+  transition: opacity .4s ease;
+}
+#loginOverlay.hidden { opacity:0; pointer-events:none; }
+
+.login-box {
+  background: var(--ink2);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 40px 32px;
+  width: 100%; max-width: 440px;
+  box-shadow: 0 40px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(201,168,76,.15);
+  animation: slideUp .5s cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(40px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.login-brand {
+  text-align:center; margin-bottom:32px;
+}
+
+.login-logo {
+  width:64px; height:64px; margin:0 auto 16px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  border-radius:18px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.8rem;
+  box-shadow: 0 12px 30px rgba(201,168,76,.3);
+}
+
+.login-title {
+  font-size:1.7rem; font-weight:900; letter-spacing:-0.5px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+.login-sub { color:var(--muted); font-size:.85rem; margin-top:4px; }
+
+.auth-tabs {
+  display:flex; background:var(--ink3); border-radius:12px; padding:4px;
+  margin-bottom:24px;
+}
+
+.auth-tab {
+  flex:1; padding:10px; border:none; background:transparent;
+  border-radius:9px; font-family:var(--ff); font-weight:700; font-size:.9rem;
+  color:var(--muted); cursor:pointer; transition:all .3s;
+}
+
+.auth-tab.active {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: var(--ink); box-shadow:0 4px 12px rgba(201,168,76,.3);
+}
+
+.form-tab { display:none; }
+.form-tab.active { display:block; }
+
+.field { margin-bottom:16px; }
+.field label { display:block; font-weight:700; font-size:.82rem; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+
+.field input {
+  width:100%; padding:12px 16px;
+  background:var(--ink3); border:1.5px solid rgba(255,255,255,.08);
+  border-radius:12px; font-family:var(--ff); font-size:.95rem; color:var(--surface);
+  transition:all .3s;
+}
+
+.field input:focus {
+  outline:none; border-color: var(--gold);
+  box-shadow:0 0 0 4px rgba(201,168,76,.12);
+}
+
+.err-msg {
+  background:rgba(192,57,43,.15); border:1px solid rgba(192,57,43,.3);
+  color:#ff8a7a; padding:10px 14px; border-radius:10px;
+  font-size:.83rem; margin-bottom:14px; display:none;
+}
+.err-msg.show { display:block; }
+
+.btn-gold {
+  width:100%; padding:14px; border:none; border-radius:12px; cursor:pointer;
+  font-family:var(--ff); font-size:1rem; font-weight:800;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color:var(--ink); transition:all .3s;
+  box-shadow: 0 4px 16px rgba(201,168,76,.3);
+}
+.btn-gold:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,168,76,.4); }
+.btn-gold:disabled { opacity:.5; cursor:not-allowed; }
+
+.divider { text-align:center; color:var(--muted); font-size:.8rem; margin:14px 0; position:relative; }
+.divider::before, .divider::after {
+  content:''; position:absolute; top:50%; width:40%; height:1px;
+  background:rgba(255,255,255,.08);
+}
+.divider::before { right:0; } .divider::after { left:0; }
+
+.btn-outline {
+  width:100%; padding:12px; border:1.5px solid rgba(255,255,255,.1);
+  border-radius:12px; background:transparent; cursor:pointer;
+  font-family:var(--ff); font-size:.9rem; font-weight:700; color:var(--surface);
+  transition:all .3s; display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-outline:hover { border-color:var(--gold); color:var(--gold); }
+
+.btn-ghost {
+  width:100%; padding:12px; border:none; background:rgba(255,255,255,.05);
+  border-radius:12px; cursor:pointer; font-family:var(--ff);
+  font-size:.9rem; font-weight:700; color:var(--muted); transition:all .3s; margin-top:8px;
+}
+.btn-ghost:hover { background:rgba(255,255,255,.08); color:var(--surface); }
+
+/* ── USER BAR ── */
+#userBar {
+  display:none; align-items:center; gap:10px;
+  padding:10px 16px; background:var(--ink2);
+  border-bottom:1px solid var(--border);
+}
+#userBar.show { display:flex; }
+
+.u-avatar {
+  width:34px; height:34px; border-radius:50%;
+  background:linear-gradient(135deg, var(--gold), var(--gold2));
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:.9rem; color:var(--ink); flex-shrink:0;
+}
+
+.u-name { font-weight:700; font-size:.85rem; flex:1; }
+.guest-chip { background:var(--ink3); color:var(--muted); padding:2px 10px; border-radius:20px; font-size:.7rem; font-weight:700; }
+
+.btn-sm {
+  padding:6px 14px; border:none; border-radius:20px; cursor:pointer;
+  font-family:var(--ff); font-size:.75rem; font-weight:700; transition:all .3s;
+}
+.btn-danger { background:var(--crimson); color:white; }
+.btn-danger:hover { background:#e74c3c; }
+.btn-teal { background:var(--teal); color:white; }
+.btn-teal:hover { background:var(--teal2); }
+
+/* ── HEADER ── */
+.site-header {
+  position:relative; z-index:1;
+  background: linear-gradient(180deg, var(--ink2) 0%, transparent 100%);
+  padding:40px 20px 30px; text-align:center;
+  border-bottom:1px solid var(--border);
+}
+
+.header-emblem {
+  width:72px; height:72px; margin:0 auto 16px;
+  background:linear-gradient(135deg, var(--gold), var(--gold2));
+  border-radius:22px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:2.2rem;
+  box-shadow:0 16px 40px rgba(201,168,76,.25);
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+.site-title {
+  font-size:2.2rem; font-weight:900; letter-spacing:-1px;
+  background:linear-gradient(135deg, var(--gold) 0%, var(--gold2) 50%, #fff 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+.site-sub { color:var(--muted); font-size:.9rem; margin-top:4px; }
+
+.theme-btn {
+  position:absolute; top:20px; right:16px;
+  width:42px; height:42px; border-radius:50%;
+  background:rgba(255,255,255,.06); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--gold); font-size:1.1rem; transition:all .3s;
+}
+.theme-btn:hover { background:rgba(201,168,76,.15); transform:rotate(20deg); }
+
+/* ── NAVIGATION TABS ── */
+.nav-tabs {
+  display:flex; gap:6px; padding:14px 12px;
+  background:var(--ink2); border-bottom:1px solid var(--border);
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.nav-tabs::-webkit-scrollbar { display:none; }
+
+.nav-tab {
+  display:flex; align-items:center; gap:6px;
+  padding:9px 18px; border:1.5px solid rgba(255,255,255,.07);
+  border-radius:30px; background:transparent; cursor:pointer;
+  font-family:var(--ff); font-size:.82rem; font-weight:700;
+  color:var(--muted); white-space:nowrap; flex-shrink:0; transition:all .3s;
+}
+.nav-tab:hover { border-color:var(--border); color:var(--gold); }
+.nav-tab.active {
+  background:linear-gradient(135deg, var(--gold), var(--gold2));
+  color:var(--ink); border-color:transparent;
+  box-shadow:0 4px 14px rgba(201,168,76,.3);
+}
+
+/* ── MAIN CONTENT ── */
+.main { max-width:1100px; margin:0 auto; padding:24px 14px; position:relative; z-index:1; }
+
+.panel { display:none; animation:fadeUp .4s ease; }
+.panel.active { display:block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── CARD ── */
+.card {
+  background:var(--ink2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:28px 20px; margin-bottom:20px;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+
+.card-header { text-align:center; margin-bottom:24px; }
+.card-icon { font-size:2.8rem; margin-bottom:10px; }
+.card-title {
+  font-size:1.5rem; font-weight:900; letter-spacing:-.5px;
+  background:linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:6px;
+}
+.card-sub { color:var(--muted); font-size:.85rem; }
+
+/* ── FORM CONTROLS ── */
+.row { display:grid; gap:12px; margin-bottom:16px; }
+.row.c2 { grid-template-columns:1fr 1fr; }
+.row.c3 { grid-template-columns:1fr 1fr 1fr; }
+.row.c4 { grid-template-columns:1fr 1fr 1fr 1fr; }
+
+@media(max-width:600px) {
+  .row.c2, .row.c3, .row.c4 { grid-template-columns:1fr; }
+}
+
+.ctrl-label { display:block; font-weight:700; font-size:.8rem; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+
+select, input[type=number], input[type=text] {
+  width:100%; padding:10px 14px;
+  background:var(--ink3); border:1.5px solid rgba(255,255,255,.07);
+  border-radius:10px; font-family:var(--ff); font-size:.9rem; color:var(--surface);
+  transition:all .3s; -webkit-appearance:none;
+}
+select:focus, input:focus {
+  outline:none; border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(201,168,76,.1);
+}
+select option { background:var(--ink2); }
+
+.chk-group { display:flex; align-items:center; gap:10px; margin:10px 0; }
+.chk-group input[type=checkbox] { width:18px; height:18px; accent-color:var(--gold); cursor:pointer; }
+.chk-group label { font-size:.88rem; font-weight:600; color:var(--surface); cursor:pointer; }
+
+/* ── TABLE ── */
+.tbl-wrap { width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; margin:16px 0; border-radius:12px; border:1px solid var(--border); }
+
+table { width:100%; border-collapse:collapse; font-size:.75rem; }
+thead { background:linear-gradient(135deg, var(--gold), var(--gold2)); }
+th { padding:10px 6px; font-weight:800; color:var(--ink); font-size:.7rem; text-align:center; }
+td { padding:8px 4px; text-align:center; border-bottom:1px solid rgba(255,255,255,.04); }
+tbody tr { background:var(--ink2); transition:background .2s; }
+tbody tr:nth-child(even) { background:var(--ink3); }
+tbody tr:hover { background:rgba(201,168,76,.06); }
+
+tbody input[type=number] {
+  padding:5px 6px; font-size:.75rem; min-width:46px; text-align:center;
+  background:var(--ink); border-radius:8px;
+}
+
+/* ── BUTTONS ── */
+.btn-group { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+
+.btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:11px 22px; border:none; border-radius:12px; cursor:pointer;
+  font-family:var(--ff); font-size:.85rem; font-weight:800;
+  transition:all .3s; flex:1; min-width:130px; justify-content:center;
+}
+.btn:hover { transform:translateY(-2px); }
+
+.btn-primary {
+  background:linear-gradient(135deg, var(--gold), var(--gold2));
+  color:var(--ink); box-shadow:0 4px 14px rgba(201,168,76,.3);
+}
+.btn-primary:hover { box-shadow:0 8px 24px rgba(201,168,76,.4); }
+
+.btn-save {
+  background:linear-gradient(135deg, var(--teal), var(--teal2));
+  color:white; box-shadow:0 4px 14px rgba(26,122,110,.25);
+}
+
+.btn-load {
+  background:linear-gradient(135deg, #2d4a7a, #3a5fa0);
+  color:white; box-shadow:0 4px 14px rgba(45,74,122,.25);
+}
+
+.btn-cam {
+  background:linear-gradient(135deg, #6b21a8, #9333ea);
+  color:white; box-shadow:0 4px 14px rgba(107,33,168,.25);
+}
+
+/* ── AI BUTTON ── */
+.btn-ai {
+  background:linear-gradient(135deg, #7c3aed, #db2777, #ea580c);
+  background-size:200% 200%; animation:gradShift 3s ease infinite;
+  color:white; box-shadow:0 4px 20px rgba(124,58,237,.4);
+  position:relative; overflow:hidden;
+}
+.btn-ai:hover { box-shadow:0 8px 30px rgba(124,58,237,.6); }
+@keyframes gradShift {
+  0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%}
+}
+.ai-badge {
+  background:rgba(255,255,255,.2); padding:2px 6px;
+  border-radius:6px; font-size:.65rem; font-weight:900; letter-spacing:.5px;
+}
+
+/* ── RESULT BOX ── */
+.result {
+  display:none; text-align:center; padding:30px 20px;
+  border-radius:var(--radius); margin:20px 0;
+  border:1px solid var(--border);
+}
+.result.show { display:block; animation:bounceIn .6s cubic-bezier(.68,-.55,.265,1.55); }
+@keyframes bounceIn {
+  0%{opacity:0;transform:scale(.4)} 50%{transform:scale(1.05)} 70%{transform:scale(.95)} 100%{opacity:1;transform:scale(1)}
+}
+.result.excellent { background:linear-gradient(135deg,rgba(22,163,74,.2),rgba(34,197,94,.15)); border-color:rgba(34,197,94,.3); }
+.result.good      { background:linear-gradient(135deg,rgba(6,182,212,.2),rgba(8,145,178,.15)); border-color:rgba(6,182,212,.3); }
+.result.average   { background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(217,119,6,.15)); border-color:rgba(245,158,11,.3); }
+.result.weak      { background:linear-gradient(135deg,rgba(192,57,43,.2),rgba(239,68,68,.15)); border-color:rgba(192,57,43,.3); }
+
+.result-icon { font-size:2.8rem; margin-bottom:10px; }
+.result-val  { font-size:1.8rem; font-weight:900; margin-bottom:6px; }
+.result.excellent .result-val { color:#4ade80; }
+.result.good      .result-val { color:#38bdf8; }
+.result.average   .result-val { color:#fbbf24; }
+.result.weak      .result-val { color:#f87171; }
+.result-msg { font-size:.95rem; font-weight:600; color:var(--muted); }
+
+/* ── STATS GRID ── */
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px; }
+@media(max-width:500px) { .stats { grid-template-columns:1fr; } }
+
+.stat-card {
+  background:var(--ink3); border:1px solid var(--border);
+  border-radius:14px; padding:20px; text-align:center;
+}
+.stat-label { font-size:.75rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+.stat-val {
+  font-size:1.8rem; font-weight:900;
+  background:linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+/* ── GUEST NOTICE ── */
+.guest-notice {
+  display:none;
+  background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.2);
+  border-radius:12px; padding:12px 16px; text-align:center;
+  font-size:.85rem; color:var(--gold); margin:14px 0;
+}
+.guest-notice.show { display:block; }
+.disabled { opacity:.4; cursor:not-allowed !important; pointer-events:none; }
+
+/* ── TOAST ── */
+#toast {
+  position:fixed; top:16px; left:50%;
+  transform:translateX(-50%) translateY(-100px);
+  background:var(--ink2); border:1px solid var(--border);
+  color:var(--surface); padding:12px 24px; border-radius:30px;
+  font-weight:700; font-size:.88rem; z-index:99999;
+  box-shadow:0 8px 30px rgba(0,0,0,.4);
+  transition:transform .4s cubic-bezier(.68,-.55,.265,1.55);
+  white-space:nowrap;
+}
+#toast.show { transform:translateX(-50%) translateY(0); }
+#toast.ok  { border-color:rgba(34,197,94,.4); color:#4ade80; }
+#toast.err { border-color:rgba(239,68,68,.4); color:#f87171; }
+
+/* ── AI MODAL ── */
+#aiModal {
+  position:fixed; inset:0; z-index:9990;
+  background:rgba(0,0,0,.85); backdrop-filter:blur(14px);
+  display:flex; align-items:center; justify-content:center; padding:16px;
+  opacity:0; pointer-events:none; transition:opacity .3s;
+}
+#aiModal.open { opacity:1; pointer-events:all; }
+
+.ai-box {
+  background:var(--ink2); border:1px solid rgba(124,58,237,.3);
+  border-radius:24px; padding:28px 22px; max-width:500px; width:100%;
+  max-height:90vh; overflow-y:auto;
+  box-shadow:0 40px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(124,58,237,.15);
+  animation:slideUp .4s cubic-bezier(.16,1,.3,1);
+}
+
+.ai-head {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;
+}
+
+.ai-title {
+  font-size:1.15rem; font-weight:900;
+  background:linear-gradient(135deg,#a855f7,#ec4899);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+.ai-close {
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  color:var(--muted); cursor:pointer; font-size:1rem;
+  display:flex; align-items:center; justify-content:center; transition:all .3s;
+}
+.ai-close:hover { transform:rotate(90deg); color:var(--surface); }
+
+/* Upload Zone */
+.upload-zone {
+  border:2px dashed rgba(168,85,247,.35); border-radius:16px; padding:40px 20px;
+  text-align:center; cursor:pointer; transition:all .3s; position:relative; overflow:hidden;
+  background:linear-gradient(135deg,rgba(124,58,237,.04),rgba(219,39,119,.04));
+}
+.upload-zone:hover, .upload-zone.drag { border-color:#a855f7; background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(219,39,119,.08)); }
+.upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.upload-icon { font-size:3rem; margin-bottom:10px; }
+.upload-txt { font-weight:800; color:#a855f7; font-size:.95rem; margin-bottom:6px; }
+.upload-hint { font-size:.78rem; color:var(--muted); }
+
+/* Preview */
+.img-preview { display:none; margin:16px 0; text-align:center; }
+.img-preview.show { display:block; }
+.img-preview img { max-width:100%; max-height:220px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.3); object-fit:contain; }
+.btn-change { display:inline-block; margin-top:8px; padding:5px 14px;
+  background:var(--ink3); border:1px solid rgba(255,255,255,.08); border-radius:20px;
+  font-size:.78rem; color:var(--muted); cursor:pointer; transition:all .3s; }
+.btn-change:hover { color:var(--surface); border-color:rgba(255,255,255,.2); }
+
+/* AI Loading */
+.ai-loading { display:none; text-align:center; padding:30px 20px; }
+.ai-loading.show { display:block; }
+
+.spinner {
+  width:56px; height:56px; margin:0 auto 16px; position:relative;
+}
+.spinner::before, .spinner::after {
+  content:''; position:absolute; inset:0; border-radius:50%; border:4px solid transparent;
+}
+.spinner::before { border-top-color:#7c3aed; border-right-color:#db2777; animation:spin .8s linear infinite; }
+.spinner::after { border-bottom-color:#ea580c; border-left-color:#7c3aed; animation:spin .6s linear infinite reverse; inset:8px; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+.ai-load-txt {
+  font-weight:800; font-size:1rem;
+  background:linear-gradient(135deg,#a855f7,#ec4899);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:6px;
+}
+.ai-load-sub { font-size:.8rem; color:var(--muted); }
+
+.ai-steps { display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+.ai-step {
+  display:flex; align-items:center; gap:10px; padding:8px 14px;
+  border-radius:10px; background:var(--ink3); font-size:.8rem; color:var(--muted);
+  opacity:.4; transition:all .4s;
+}
+.ai-step.active { opacity:1; background:rgba(124,58,237,.15); color:#a855f7; }
+.ai-step.done   { opacity:1; background:rgba(34,197,94,.1); color:#4ade80; }
+
+/* AI Results */
+.ai-results { display:none; margin-top:16px; }
+.ai-results.show { display:block; }
+
+.ai-result-item {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 14px; margin-bottom:8px; background:var(--ink3);
+  border-radius:10px; border-right:3px solid #7c3aed; font-size:.83rem;
+}
+.ai-subj { font-weight:700; color:var(--surface); }
+.ai-grades { display:flex; gap:6px; flex-wrap:wrap; }
+.ai-chip {
+  background:linear-gradient(135deg,#7c3aed,#db2777);
+  color:white; padding:2px 8px; border-radius:6px; font-size:.72rem; font-weight:700;
+}
+
+.ai-warn {
+  background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2);
+  border-radius:10px; padding:10px 14px; font-size:.78rem; color:#fbbf24;
+  display:flex; gap:8px; margin-top:12px;
+}
+
+.btn-confirm {
+  width:100%; padding:14px; border:none; border-radius:12px; cursor:pointer;
+  font-family:var(--ff); font-size:1rem; font-weight:800;
+  background:linear-gradient(135deg,#7c3aed,#db2777,#ea580c);
+  background-size:200%; animation:gradShift 3s ease infinite;
+  color:white; box-shadow:0 6px 20px rgba(124,58,237,.4);
+  transition:all .3s; margin-top:16px;
+}
+.btn-confirm:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(124,58,237,.6); }
+
+/* ── ADMIN PANEL ── */
+#adminPanel {
+  display:none; margin-bottom:20px;
+}
+#adminPanel.show { display:block; }
+.admin-title {
+  font-size:1.4rem; font-weight:900; text-align:center; margin-bottom:16px;
+  background:linear-gradient(135deg, var(--gold), var(--crimson));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+/* ── SIGNUP TOAST ── */
+#signupPop {
+  position:fixed; bottom:20px; right:20px; left:20px; max-width:380px; margin:auto;
+  background:var(--ink2); border:1px solid var(--border);
+  border-radius:16px; padding:20px 22px; z-index:9980;
+  transform:translateY(120%); transition:transform .5s cubic-bezier(.68,-.55,.265,1.55);
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+#signupPop.show { transform:translateY(0); }
+.pop-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.pop-title { font-weight:900; font-size:1rem; color:var(--gold); }
+.pop-close { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; transition:all .3s; }
+.pop-close:hover { color:var(--surface); transform:rotate(90deg); }
+.pop-txt { font-size:.85rem; color:var(--muted); margin-bottom:14px; line-height:1.5; }
+.pop-btns { display:flex; gap:8px; }
+.pop-btn-p {
+  flex:1; padding:10px; border:none; border-radius:10px; cursor:pointer;
+  font-family:var(--ff); font-weight:800; font-size:.85rem;
+  background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--ink);
+}
+.pop-btn-s {
+  flex:1; padding:10px; border:1px solid rgba(255,255,255,.1); border-radius:10px; cursor:pointer;
+  font-family:var(--ff); font-weight:700; font-size:.85rem;
+  background:transparent; color:var(--muted);
+}
+.pop-btn-s:hover { color:var(--surface); }
+
+/* ── LIGHT MODE ── */
+body.light {
+  background:var(--surface);
+  color:var(--ink);
+}
+body.light .login-box,
+body.light .card,
+body.light #userBar,
+body.light .nav-tabs,
+body.light .site-header { background:white; }
+body.light .ai-box { background:white; }
+body.light .ai-step { background:#f1f5f9; }
+body.light .ai-step.active { background:rgba(124,58,237,.08); }
+body.light tbody tr { background:white; }
+body.light tbody tr:nth-child(even) { background:#f8fafc; }
+body.light select, body.light input[type=number], body.light input[type=text] { background:#f8fafc; color:var(--ink); }
+body.light .stat-card { background:#f8fafc; }
+body.light .upload-zone { background:rgba(124,58,237,.03); }
+body.light #signupPop, body.light #adminPanel .card { background:white; }
+body.light .ai-result-item { background:#f1f5f9; }
+body.light .field input { background:#f8fafc; color:var(--ink); border-color:#e2e8f0; }
+body.light .auth-tab { color:#64748b; }
+body.light .field label, body.light .ctrl-label, body.light .stat-label { color:#64748b; }
+
+@media(max-width:480px) {
+  .site-title { font-size:1.6rem; }
+  .card { padding:20px 14px; }
+  .btn { min-width:110px; padding:10px 14px; font-size:.8rem; }
+  .stats { grid-template-columns:1fr 1fr; }
+}
+</style>
 </head>
 <body>
-    <div class="login-overlay" id="loginOverlay">
-        <div class="login-container">
-            <div class="login-header">
-                <div class="login-logo">🎓</div>
-                <h2 class="login-title">HMD - BAC 2026</h2>
-                <p class="login-subtitle">نظام حساب المعدلات المتكامل</p>
-            </div>
 
-            <div class="login-tabs">
-                <button class="tab-btn active" onclick="switchAuthTab('login')">تسجيل الدخول</button>
-                <button class="tab-btn" onclick="switchAuthTab('register')">إنشاء حساب</button>
-            </div>
-
-            <div id="loginForm" class="tab-content active">
-                <form class="login-form" onsubmit="handleLogin(event)">
-                    <div class="error-message" id="loginError"></div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">البريد الإلكتروني</label>
-                        <input type="email" class="form-input" id="loginEmail" required placeholder="example@email.com">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">كلمة المرور</label>
-                        <input type="password" class="form-input" id="loginPassword" required placeholder="••••••••">
-                    </div>
-
-                    <button type="submit" class="login-btn" id="loginBtn">
-                        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
-                    </button>
-                </form>
-
-                <div style="text-align: center; margin: 16px 0; color: var(--gray-600); font-size: 0.85rem;">
-                    أو
-                </div>
-
-                <div id="googleLoginSection">
-                    <button type="button" class="login-btn" onclick="loginWithGoogle()" id="googleLoginBtn" style="background: white; color: #333; border: 2px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        <svg width="18" height="18" viewBox="0 0 18 18" style="margin-left: 8px;">
-                            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
-                            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
-                            <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
-                            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-                        </svg>
-                        تسجيل الدخول بـ Google
-                    </button>
-                </div>
-
-                <div style="text-align: center; margin-top: 16px;">
-                    <button type="button" class="login-btn" onclick="continueAsGuest()" style="background: var(--gray-600);">
-                        <i class="fas fa-user"></i> المتابعة كضيف
-                    </button>
-                </div>
-            </div>
-
-            <div id="registerForm" class="tab-content">
-                <form class="login-form" onsubmit="handleRegister(event)">
-                    <div class="error-message" id="registerError"></div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">الاسم الكامل</label>
-                        <input type="text" class="form-input" id="registerName" required placeholder="أدخل اسمك الكامل">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">البريد الإلكتروني</label>
-                        <input type="email" class="form-input" id="registerEmail" required placeholder="example@email.com">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">كلمة المرور</label>
-                        <input type="password" class="form-input" id="registerPassword" required placeholder="••••••••" minlength="8">
-                    </div>
-
-                    <button type="submit" class="login-btn" id="registerBtn">
-                        <i class="fas fa-user-plus"></i> إنشاء حساب
-                    </button>
-                </form>
-            </div>
-        </div>
+<!-- ═══ LOGIN OVERLAY ═══ -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <div class="login-brand">
+      <div class="login-logo">🎓</div>
+      <div class="login-title">HMD — BAC 2026</div>
+      <div class="login-sub">نظام حساب المعدلات المتكامل</div>
     </div>
 
-    <div class="success-message" id="successMsg"></div>
-
-    <div class="signup-notification" id="signupNotification">
-        <div class="signup-notification-header">
-            <div class="signup-notification-icon">🎓</div>
-            <button class="signup-notification-close" onclick="closeSignupNotification()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="signup-notification-title">احفظ تقدمك!</div>
-        <div class="signup-notification-text">
-            سجل حسابًا مجانيًا لحفظ معدلاتك، استرجاع بياناتك، وحفظ النتائج كصور 📊
-        </div>
-        <div class="signup-notification-buttons">
-            <button class="signup-notification-btn primary" onclick="showRegisterFromNotification()">
-                <i class="fas fa-user-plus"></i> إنشاء حساب
-            </button>
-            <button class="signup-notification-btn secondary" onclick="closeSignupNotification()">
-                لاحقاً
-            </button>
-        </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="authTab('login')">تسجيل الدخول</button>
+      <button class="auth-tab" onclick="authTab('register')">إنشاء حساب</button>
     </div>
 
-    <div class="user-info-wrapper" id="userInfoWrapper">
-        <div class="user-info" id="userInfo">
-            <div class="user-avatar" id="userAvatar">U</div>
-            <span id="userName">مستخدم</span>
-            <button class="admin-btn" id="adminPanelBtn" onclick="toggleAdminPanel()" style="display: none;">
-                <i class="fas fa-user-shield"></i> لوحة التحكم
-            </button>
-            <button class="logout-btn" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> خروج
-            </button>
-        </div>
+    <!-- Login -->
+    <div class="form-tab active" id="ftLogin">
+      <div class="err-msg" id="loginErr"></div>
+      <div class="field">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="loginEmail" placeholder="example@email.com">
+      </div>
+      <div class="field">
+        <label>كلمة المرور</label>
+        <input type="password" id="loginPass" placeholder="••••••••">
+      </div>
+      <button class="btn-gold" id="loginBtn" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+      </button>
+
+      <div class="divider">أو</div>
+
+      <button class="btn-outline" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18">
+          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+          <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
+          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+        </svg>
+        تسجيل الدخول بـ Google
+      </button>
+      <button class="btn-ghost" onclick="doGuest()">
+        <i class="fas fa-user"></i> متابعة كضيف
+      </button>
     </div>
 
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">🎓</div>
-            <h1 class="title">HMD - BAC 2026</h1>
-            <p class="subtitle">نظام حساب المعدلات المتقدم</p>
-        </div>
-        <button class="theme-toggle" id="themeToggleBtn" onclick="toggleDarkMode()">
-            <i class="fas fa-moon" id="themeIcon"></i>
-        </button>
-    </header>
+    <!-- Register -->
+    <div class="form-tab" id="ftRegister">
+      <div class="err-msg" id="registerErr"></div>
+      <div class="field">
+        <label>الاسم الكامل</label>
+        <input type="text" id="regName" placeholder="أدخل اسمك الكامل">
+      </div>
+      <div class="field">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="regEmail" placeholder="example@email.com">
+      </div>
+      <div class="field">
+        <label>كلمة المرور (8 أحرف كحد أدنى)</label>
+        <input type="password" id="regPass" placeholder="••••••••" minlength="8">
+      </div>
+      <button class="btn-gold" id="regBtn" onclick="doRegister()">
+        <i class="fas fa-user-plus"></i> إنشاء حساب
+      </button>
+    </div>
+  </div>
+</div>
 
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab(0)">
-            <i class="fas fa-calculator"></i> حساب المعدل
-        </div>
-        <div class="tab" onclick="switchTab(1)">
-            <i class="fas fa-calendar-alt"></i> المعدل السنوي
-        </div>
-        <div class="tab" onclick="switchTab(2)">
-            <i class="fas fa-bullseye"></i> العلامة المطلوبة
-        </div>
-        <div class="tab" onclick="switchTab(3)">
-            <i class="fas fa-graduation-cap"></i> معدل BAC
-        </div>
+<!-- ═══ AI MODAL ═══ -->
+<div id="aiModal">
+  <div class="ai-box">
+    <div class="ai-head">
+      <div class="ai-title">✨ قراءة كشف النقاط — AI</div>
+      <button class="ai-close" onclick="closeAI()"><i class="fas fa-times"></i></button>
     </div>
 
-    <div class="content">
-        <div class="admin-panel" id="adminPanel">
-            <div class="admin-header">
-                <h2 class="admin-title">
-                    <i class="fas fa-user-shield"></i> لوحة التحكم
-                </h2>
-                <p class="panel-subtitle">إدارة النظام</p>
-            </div>
-
-            <div class="students-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>الاسم</th>
-                            <th>البريد</th>
-                            <th>كلمة المرور</th>
-                            <th>التاريخ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentsTableBody">
-                        <tr>
-                            <td colspan="5">جاري تحميل البيانات...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="loadAllStudents()">
-                    <i class="fas fa-sync"></i> تحديث
-                </button>
-                <button class="btn btn-secondary" onclick="exportToCSV()">
-                    <i class="fas fa-download"></i> تصدير
-                </button>
-            </div>
-        </div>
-
-        <div class="panel active" id="panel-0">
-            <div class="panel-header">
-                <div class="panel-icon">📊</div>
-                <h2 class="panel-title">حساب معدل الفصل</h2>
-                <p class="panel-subtitle">احسب معدلك الفصلي بدقة عالية</p>
-            </div>
-
-            <div class="form-row cols-2">
-                <div>
-                    <label>اختر السنة الدراسية:</label>
-                    <select id="year-sel" onchange="loadStreams()">
-                        <option value="1">السنة الأولى ثانوي</option>
-                        <option value="2">السنة الثانية ثانوي</option>
-                        <option value="3">السنة الثالثة ثانوي</option>
-                    </select>
-                </div>
-                <div>
-                    <label>اختر الشعبة:</label>
-                    <select id="stream-sel" onchange="loadGPATable()"></select>
-                </div>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="tam-chk" onchange="loadGPATable()">
-                <label for="tam-chk">أدرس الأمازيغية</label>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="art-chk" onchange="loadGPATable()">
-                <label for="art-chk">أدرس التربية الفنية</label>
-            </div>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>المادة</th>
-                            <th>تقويم مستمر</th>
-                            <th>أعمال تطبيقية</th>
-                            <th>فروض 1</th>
-                            <th>فروض 2</th>
-                            <th>اختبار 20/</th>
-                            <th>معامل</th>
-                            <th>معدل المادة</th>
-                            <th>المجموع</th>
-                        </tr>
-                    </thead>
-                    <tbody id="gpa-body"></tbody>
-                </table>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="calculateGPA()">
-                    <i class="fas fa-calculator"></i> احسب
-                </button>
-                <button class="btn btn-success" onclick="saveDataToCloud()">
-                    <i class="fas fa-cloud-upload-alt"></i> حفظ
-                </button>
-                <button class="btn btn-secondary" onclick="loadDataFromCloud()">
-                    <i class="fas fa-cloud-download-alt"></i> استرجاع
-                </button>
-                <button class="btn btn-secondary" onclick="captureResult()">
-                    <i class="fas fa-camera"></i> صورة
-                </button>
-            </div>
-
-            <div id="guestNotice" style="display: none; background: linear-gradient(135deg, #64748b, #475569); color: white; padding: 12px 16px; border-radius: 12px; text-align: center; margin: 16px 0; font-size: 0.85rem;">
-                <i class="fas fa-info-circle"></i> أنت في وضع الضيف - سجل الدخول للحصول على جميع الميزات (حفظ، استرجاع، صور)
-            </div>
-
-            <div class="result-box" id="final-res">
-                <span class="result-icon">📊</span>
-                <div class="result-text">المعدل النهائي: 0.00</div>
-                <div class="result-message">أدخل العلامات وانقر على احسب المعدل</div>
-            </div>
-        </div>
-
-        <div class="panel" id="panel-1">
-            <div class="panel-header">
-                <div class="panel-icon">📅</div>
-                <h2 class="panel-title">حساب المعدل السنوي</h2>
-                <p class="panel-subtitle">احسب معدلك السنوي من معدلات الفصول الثلاثة</p>
-            </div>
-
-            <div class="form-row cols-3">
-                <div>
-                    <label>معدل الفصل الأول:</label>
-                    <input type="number" id="t1-avg" min="0" max="20" step="0.01" placeholder="0.00">
-                </div>
-                <div>
-                    <label>معدل الفصل الثاني:</label>
-                    <input type="number" id="t2-avg" min="0" max="20" step="0.01" placeholder="0.00">
-                </div>
-                <div>
-                    <label>معدل الفصل الثالث:</label>
-                    <input type="number" id="t3-avg" min="0" max="20" step="0.01" placeholder="0.00">
-                </div>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="calcYearly()">
-                    <i class="fas fa-calculator"></i> احسب المعدل السنوي
-                </button>
-            </div>
-
-            <div class="result-box" id="yearly-result">
-                <span class="result-icon">📊</span>
-                <div class="result-text">المعدل السنوي: 0.00</div>
-                <div class="result-message">أدخل معدلات الفصول الثلاثة</div>
-            </div>
-        </div>
-
-        <div class="panel" id="panel-2">
-            <div class="panel-header">
-                <div class="panel-icon">🎯</div>
-                <h2 class="panel-title">حساب العلامة المطلوبة</h2>
-                <p class="panel-subtitle">اعرف العلامة التي تحتاجها في الاختبار</p>
-            </div>
-
-            <div class="form-row cols-4">
-                <div>
-                    <label>المعدل المطلوب:</label>
-                    <input type="number" id="target-avg" min="0" max="20" step="0.01" placeholder="0.00">
-                </div>
-                <div>
-                    <label>علامة التقويم:</label>
-                    <input type="number" id="eval-mark" min="0" max="20" step="0.25" placeholder="0.00">
-                </div>
-                <div>
-                    <label>علامة الفرض 1:</label>
-                    <input type="number" id="test1-mark" min="0" max="20" step="0.25" placeholder="0.00">
-                </div>
-                <div>
-                    <label>علامة الفرض 2:</label>
-                    <input type="number" id="test2-mark" min="0" max="20" step="0.25" placeholder="0.00">
-                </div>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="calcNeeded()">
-                    <i class="fas fa-bullseye"></i> احسب العلامة المطلوبة
-                </button>
-            </div>
-
-            <div class="result-box" id="needed-result">
-                <span class="result-icon">🎯</span>
-                <div class="result-text">العلامة المطلوبة: 0.00</div>
-                <div class="result-message">أدخل البيانات المطلوبة</div>
-            </div>
-        </div>
-
-        <div class="panel" id="panel-3">
-            <div class="panel-header">
-                <div class="panel-icon">🎓</div>
-                <h2 class="panel-title">حساب معدل شهادة البكالوريا</h2>
-                <p class="panel-subtitle">احسب معدلك في امتحان البكالوريا</p>
-            </div>
-
-            <div class="form-row cols-2">
-                <div>
-                    <label>اختر الشعبة:</label>
-                    <select id="bac-strm" onchange="loadBacTable()"></select>
-                </div>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="tam-bac" onchange="loadBacTable()">
-                <label for="tam-bac">أدرس الأمازيغية</label>
-            </div>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>المادة</th>
-                            <th>العلامة</th>
-                            <th>المعامل</th>
-                            <th>المجموع</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bac-body"></tbody>
-                </table>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="calcBac()">
-                    <i class="fas fa-calculator"></i> احسب معدل BAC
-                </button>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">مجموع النقاط</div>
-                    <div class="stat-value" id="res-pts">0.00</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">مجموع المعاملات</div>
-                    <div class="stat-value" id="res-coef">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">المعدل النهائي</div>
-                    <div class="stat-value" id="res-avg">0.00</div>
-                </div>
-            </div>
-        </div>
+    <!-- Upload -->
+    <div id="aiUpload">
+      <div class="upload-zone" id="dropZone">
+        <input type="file" id="imgFile" accept="image/*" onchange="onImgSelect(event)">
+        <div class="upload-icon">📸</div>
+        <div class="upload-txt">اسحب الصورة هنا أو اضغط للرفع</div>
+        <div class="upload-hint">كشف نقاط رسمي • ورقة مكتوبة • لقطة شاشة</div>
+      </div>
+      <div class="img-preview" id="imgPreview">
+        <img id="previewImg" src="" alt="معاينة">
+        <div><span class="btn-change" onclick="resetImg()"><i class="fas fa-redo"></i> تغيير الصورة</span></div>
+      </div>
+      <button class="btn-confirm" id="analyzeBtn" onclick="runAI()" style="display:none; margin-top:12px;">
+        ✨ تحليل بالذكاء الاصطناعي
+      </button>
     </div>
 
-    <script>
-        const { Client, Account, Databases, ID, Query } = Appwrite;
-        const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('6988df30002f5dcb4f7d');
-        const account = new Account(client);
-        const databases = new Databases(client);
-        const DATABASE_ID = '6988df7f0000d935ff6b';
-        const STUDENTS_COLLECTION_ID = 'students';
-        const GRADES_COLLECTION_ID = 'grades';
-        const ADMIN_EMAIL = atob('YWRtaW5AaG1kLmNvbQ==');
-        let currentUser = null;
-        let isAdmin = false;
-        let isGuest = false;
-        let guestActionCount = 0;
-        let notificationShownCount = 0;
-        
-        // تعطيل/تفعيل تسجيل الدخول بـ Google
-        const ENABLE_GOOGLE_LOGIN = true;
+    <!-- Loading -->
+    <div class="ai-loading" id="aiLoading">
+      <div class="spinner"></div>
+      <div class="ai-load-txt">جاري تحليل كشف نقاطك...</div>
+      <div class="ai-load-sub">يرجى الانتظار بضع ثوانٍ</div>
+      <div class="ai-steps">
+        <div class="ai-step" id="s1"><span>🔍</span><span>تحليل الصورة واكتشاف الجدول</span></div>
+        <div class="ai-step" id="s2"><span>📚</span><span>قراءة أسماء المواد</span></div>
+        <div class="ai-step" id="s3"><span>🔢</span><span>استخراج العلامات والنقاط</span></div>
+        <div class="ai-step" id="s4"><span>✅</span><span>مطابقة البيانات مع الجدول</span></div>
+      </div>
+    </div>
 
-        const db = {
-            "1": {
-                "جذع مشترك علوم وتكنولوجيا": [
-                    ["رياضيات", 5],
-                    ["علوم طبيعية", 4],
-                    ["علوم فيزيائية", 4],
-                    ["لغة عربية", 3],
-                    ["لغة فرنسية", 2],
-                    ["لغة إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["علوم إسلامية", 2],
-                    ["تكنولوجيا", 2],
-                    ["معلوماتية", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "جذع مشترك آداب": [
-                    ["لغة عربية", 5],
-                    ["فلسفة", 5],
-                    ["تاريخ وجغرافيا", 4],
-                    ["لغة فرنسية", 3],
-                    ["لغة إنجليزية", 2],
-                    ["رياضيات", 2],
-                    ["علوم إسلامية", 2],
-                    ["علوم طبيعية", 2],
-                    ["علوم فيزيائية", 2],
-                    ["تربية بدنية", 1]
-                ]
-            },
-            "2": {
-                "علوم تجريبية": [
-                    ["علوم طبيعية", 6],
-                    ["رياضيات", 5],
-                    ["علوم فيزيائية", 5],
-                    ["لغة عربية", 2],
-                    ["لغة فرنسية", 2],
-                    ["لغة إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["علوم إسلامية", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "رياضيات": [
-                    ["رياضيات", 7],
-                    ["علوم فيزيائية", 6],
-                    ["علوم طبيعية", 2],
-                    ["لغة عربية", 2],
-                    ["لغة فرنسية", 2],
-                    ["لغة إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["علوم إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "تقني رياضي": [
-                    ["تكنولوجيا", 6],
-                    ["رياضيات", 6],
-                    ["علوم فيزيائية", 5],
-                    ["لغة عربية", 2],
-                    ["لغة فرنسية", 2],
-                    ["لغة إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 1],
-                    ["علوم إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "تسيير واقتصاد": [
-                    ["تسيير محاسبي ومالي", 5],
-                    ["اقتصاد ومناجمنت", 4],
-                    ["قانون", 2],
-                    ["رياضيات", 3],
-                    ["تاريخ وجغرافيا", 3],
-                    ["لغة عربية", 2],
-                    ["لغة فرنسية", 2],
-                    ["لغة إنجليزية", 2],
-                    ["علوم إسلامية", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "آداب وفلسفة": [
-                    ["لغة عربية", 5],
-                    ["فلسفة", 5],
-                    ["تاريخ وجغرافيا", 4],
-                    ["لغة فرنسية", 3],
-                    ["لغة إنجليزية", 2],
-                    ["رياضيات", 2],
-                    ["علوم إسلامية", 2],
-                    ["علوم طبيعية", 2],
-                    ["علوم فيزيائية", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "لغات أجنبية": [
-                    ["لغة عربية", 4],
-                    ["لغة فرنسية", 4],
-                    ["لغة إنجليزية", 4],
-                    ["لغة أجنبية ثالثة", 4],
-                    ["تاريخ وجغرافيا", 4],
-                    ["رياضيات", 2],
-                    ["علوم إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ]
-            },
-            "3": {
-                "علوم تجريبية": [
-                    ["رياضيات", 4],
-                    ["علوم طبيعية", 5],
-                    ["فيزياء", 5],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 1],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "رياضيات": [
-                    ["رياضيات", 7],
-                    ["فيزياء", 6],
-                    ["علوم طبيعية", 2],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 1],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "تقني رياضي": [
-                    ["رياضيات", 5],
-                    ["فيزياء", 5],
-                    ["تكنولوجيا", 7],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 1],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "تسيير واقتصاد": [
-                    ["رياضيات", 3],
-                    ["اقتصاد وتسيير", 5],
-                    ["قانون", 3],
-                    ["محاسبة ومالية", 4],
-                    ["عربية", 2],
-                    ["فرنسية", 2],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["تربية بدنية", 1]
-                ],
-                "آداب وفلسفة": [
-                    ["فلسفة", 7],
-                    ["عربية", 5],
-                    ["فرنسية", 3],
-                    ["إنجليزية", 2],
-                    ["تاريخ وجغرافيا", 3],
-                    ["تربية إسلامية", 2],
-                    ["رياضيات", 2],
-                    ["علوم طبيعية", 1],
-                    ["تربية بدنية", 1]
-                ],
-                "لغات أجنبية": [
-                    ["فرنسية", 5],
-                    ["إنجليزية", 4],
-                    ["عربية", 4],
-                    ["إسبانية/ألمانية", 4],
-                    ["تاريخ وجغرافيا", 2],
-                    ["تربية إسلامية", 2],
-                    ["فلسفة", 2],
-                    ["رياضيات", 2],
-                    ["تربية بدنية", 1]
-                ]
-            }
-        };
+    <!-- Results -->
+    <div class="ai-results" id="aiRes">
+      <div style="text-align:center;margin-bottom:14px;">
+        <div style="font-size:2rem;margin-bottom:6px;">🎉</div>
+        <div style="font-weight:900;font-size:1.05rem;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">تم التحليل بنجاح!</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:4px;">راجع النتائج قبل التأكيد</div>
+      </div>
+      <div id="aiResList"></div>
+      <div class="ai-warn"><span>⚠️</span><span>تحقق من الأرقام قبل الحساب — قد يخطئ الذكاء الاصطناعي أحياناً.</span></div>
+      <button class="btn-confirm" onclick="applyAI()">
+        <i class="fas fa-check-circle"></i> تأكيد وملء الجدول تلقائياً
+      </button>
+      <div style="text-align:center;margin-top:10px;">
+        <span class="btn-change" onclick="resetAI()"><i class="fas fa-redo"></i> إعادة المحاولة</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-        function switchAuthTab(tab) {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            const loginTab = document.querySelectorAll('.tab-btn')[0];
-            const registerTab = document.querySelectorAll('.tab-btn')[1];
-            if (tab === 'login') {
-                loginForm.classList.add('active'); registerForm.classList.remove('active');
-                loginTab.classList.add('active'); registerTab.classList.remove('active');
-            } else {
-                loginForm.classList.remove('active'); registerForm.classList.add('active');
-                loginTab.classList.remove('active'); registerTab.classList.add('active');
-            }
-        }
+<!-- ═══ TOAST ═══ -->
+<div id="toast"></div>
 
-        async function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const errorEl = document.getElementById('loginError');
-            try {
-                loginBtn.disabled = true;
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
-                errorEl.classList.remove('show');
-                await account.createEmailPasswordSession(email, password);
-                currentUser = await account.get();
-                isAdmin = (currentUser.email === ADMIN_EMAIL);
-                isGuest = false;
-                hideLoginPanel();
-                await loadUserData();
-                showSuccessMessage('🎉 تم تسجيل الدخول بنجاح!');
-            } catch (error) {
-                errorEl.textContent = '⚠️ البريد الإلكتروني أو كلمة المرور غير صحيحة';
-                errorEl.classList.add('show');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
-            }
-        }
+<!-- ═══ SIGNUP POP ═══ -->
+<div id="signupPop">
+  <div class="pop-head">
+    <div class="pop-title">🎓 احفظ تقدمك!</div>
+    <button class="pop-close" onclick="closePop()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="pop-txt">سجل حسابًا مجانيًا لحفظ معدلاتك واسترجاعها من أي جهاز 📊</div>
+  <div class="pop-btns">
+    <button class="pop-btn-p" onclick="showRegPop()"><i class="fas fa-user-plus"></i> إنشاء حساب</button>
+    <button class="pop-btn-s" onclick="closePop()">لاحقاً</button>
+  </div>
+</div>
 
-        async function loginWithGoogle() {
-            try {
-                showSuccessMessage('⏳ جاري تحويلك إلى Google...');
-                
-                // استخدام الرابط الصحيح لموقعك
-                account.createOAuth2Session(
-                    'google',
-                    'https://houssislam-collab.github.io/HMD_Calcu',
-                    'https://houssislam-collab.github.io/HMD_Calcu'
-                );
-            } catch (error) {
-                console.error('Google login error:', error);
-                
-                const errorEl = document.getElementById('loginError');
-                errorEl.innerHTML = `
-                    <strong>⚠️ تسجيل الدخول بـ Google غير متاح حالياً</strong><br>
-                    <small>يرجى استخدام البريد الإلكتروني وكلمة المرور، أو المتابعة كضيف</small>
-                `;
-                errorEl.classList.add('show');
-                
-                setTimeout(() => {
-                    errorEl.classList.remove('show');
-                }, 5000);
-            }
-        }
+<!-- ═══ USER BAR ═══ -->
+<div id="userBar">
+  <div class="u-avatar" id="uAvatar">U</div>
+  <span class="u-name" id="uName">مستخدم</span>
+  <button class="btn-sm btn-teal" id="adminBtn" onclick="toggleAdmin()" style="display:none;">
+    <i class="fas fa-shield-alt"></i> الإدارة
+  </button>
+  <button class="btn-sm btn-danger" onclick="doLogout()">
+    <i class="fas fa-sign-out-alt"></i> خروج
+  </button>
+</div>
 
-        async function handleOAuthCallback() {
-            try {
-                // التحقق من وجود جلسة Google نشطة
-                currentUser = await account.get();
-                
-                if (currentUser) {
-                    isAdmin = (currentUser.email === ADMIN_EMAIL);
-                    isGuest = false;
-                    
-                    // البحث عن الطالب في قاعدة البيانات
-                    const response = await databases.listDocuments(
-                        DATABASE_ID, 
-                        STUDENTS_COLLECTION_ID, 
-                        [Query.equal('userId', currentUser.$id)]
-                    );
-                    
-                    // إذا لم يكن موجوداً، أنشئ سجل جديد له
-                    if (response.documents.length === 0) {
-                        await databases.createDocument(
-                            DATABASE_ID, 
-                            STUDENTS_COLLECTION_ID, 
-                            ID.unique(), 
-                            {
-                                userId: currentUser.$id,
-                                fullName: currentUser.name || 'مستخدم Google',
-                                email: currentUser.email,
-                                password: 'Google-OAuth',
-                                avatar: (currentUser.name || 'G').charAt(0).toUpperCase()
-                            }
-                        );
-                    }
-                    
-                    hideLoginPanel();
-                    await loadUserData();
-                    showSuccessMessage('🎉 تم تسجيل الدخول بنجاح عبر Google!');
-                    
-                    // مسح معاملات URL
-                    if (window.location.search) {
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    }
-                }
-            } catch (error) {
-                console.error('OAuth callback error:', error);
-                // لا نفعل شيء - سيظهر شاشة تسجيل الدخول العادية
-            }
-        }
+<!-- ═══ HEADER ═══ -->
+<header class="site-header">
+  <div class="header-emblem">🎓</div>
+  <h1 class="site-title">HMD — BAC 2026</h1>
+  <p class="site-sub">نظام حساب المعدلات المتقدم</p>
+  <button class="theme-btn" onclick="toggleTheme()" title="تغيير المظهر">
+    <i class="fas fa-moon" id="themeIco"></i>
+  </button>
+</header>
 
-        function continueAsGuest() {
-            isGuest = true;
-            currentUser = {
-                $id: 'guest',
-                name: 'ضيف',
-                email: 'guest@local'
-            };
-            hideLoginPanel();
-            document.getElementById('userName').innerHTML = '<span class="guest-badge">ضيف</span>ضيف';
-            document.getElementById('userAvatar').textContent = '👤';
-            document.getElementById('userAvatar').style.background = 'linear-gradient(135deg, #64748b, #475569)';
-            
-            const saveBtn = document.querySelector('button[onclick="saveDataToCloud()"]');
-            const loadBtn = document.querySelector('button[onclick="loadDataFromCloud()"]');
-            const captureBtn = document.querySelector('button[onclick="captureResult()"]');
-            
-            if (saveBtn) saveBtn.classList.add('guest-disabled');
-            if (loadBtn) loadBtn.classList.add('guest-disabled');
-            if (captureBtn) captureBtn.classList.add('guest-disabled');
-            
-            const guestNotice = document.getElementById('guestNotice');
-            if (guestNotice) guestNotice.style.display = 'block';
-            
-            showSuccessMessage('👋 مرحباً! أنت الآن في وضع الضيف (محدود)');
-        }
+<!-- ═══ NAV TABS ═══ -->
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="showTab(0)"><i class="fas fa-calculator"></i> حساب المعدل</button>
+  <button class="nav-tab" onclick="showTab(1)"><i class="fas fa-calendar-alt"></i> المعدل السنوي</button>
+  <button class="nav-tab" onclick="showTab(2)"><i class="fas fa-bullseye"></i> العلامة المطلوبة</button>
+  <button class="nav-tab" onclick="showTab(3)"><i class="fas fa-graduation-cap"></i> معدل BAC</button>
+</nav>
 
-        async function handleRegister(event) {
-            event.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const registerBtn = document.getElementById('registerBtn');
-            const errorEl = document.getElementById('registerError');
-            try {
-                registerBtn.disabled = true;
-                registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...';
-                errorEl.classList.remove('show');
-                await account.create(ID.unique(), email, password, name);
-                await account.createEmailPasswordSession(email, password);
-                currentUser = await account.get();
-                isAdmin = (currentUser.email === ADMIN_EMAIL);
-                isGuest = false;
-                await databases.createDocument(DATABASE_ID, STUDENTS_COLLECTION_ID, ID.unique(), {
-                    userId: currentUser.$id, fullName: name, email: email, password: password,
-                    avatar: name.charAt(0).toUpperCase()
-                });
-                hideLoginPanel();
-                await loadUserData();
-                showSuccessMessage('🎉 تم إنشاء الحساب بنجاح!');
-            } catch (error) {
-                let errorMessage = 'خطأ في إنشاء الحساب';
-                if (error.code === 409) errorMessage = 'البريد الإلكتروني مُستخدم بالفعل';
-                else if (error.type === 'user_invalid_credentials') errorMessage = 'كلمة المرور ضعيفة (8 أحرف على الأقل)';
-                errorEl.textContent = '⚠️ ' + errorMessage;
-                errorEl.classList.add('show');
-            } finally {
-                registerBtn.disabled = false;
-                registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> إنشاء حساب';
-            }
-        }
+<!-- ═══ MAIN ═══ -->
+<main class="main">
 
-        async function logout() {
-            try {
-                if (!isGuest) {
-                    await account.deleteSession('current');
-                }
-                currentUser = null; 
-                isAdmin = false; 
-                isGuest = false;
-                showLoginPanel();
-                document.getElementById('adminPanel').classList.remove('show');
-                document.getElementById('adminPanelBtn').style.display = 'none';
-                showSuccessMessage('تم تسجيل الخروج بنجاح!');
-            } catch (error) { console.error('Logout error:', error); }
-        }
+  <!-- Admin Panel -->
+  <div id="adminPanel">
+    <div class="card">
+      <div class="admin-title"><i class="fas fa-shield-alt"></i> لوحة التحكم — إدارة الطلاب</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>الاسم</th><th>البريد</th><th>كلمة المرور</th><th>التاريخ</th></tr></thead>
+          <tbody id="adminBody"><tr><td colspan="5" style="padding:20px;color:var(--muted);">جاري التحميل...</td></tr></tbody>
+        </table>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="loadStudents()"><i class="fas fa-sync"></i> تحديث</button>
+        <button class="btn btn-save" onclick="exportCSV()"><i class="fas fa-download"></i> تصدير CSV</button>
+      </div>
+    </div>
+  </div>
 
-        function showLoginPanel() {
-            document.getElementById('loginOverlay').classList.remove('hidden');
-            document.getElementById('userInfoWrapper').classList.remove('show');
-            document.getElementById('userInfo').classList.remove('show');
-        }
+  <!-- ── PANEL 0: GPA ── -->
+  <div class="panel active" id="p0">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📊</div>
+        <div class="card-title">حساب معدل الفصل</div>
+        <div class="card-sub">احسب معدلك الفصلي بدقة عالية</div>
+      </div>
 
-        function hideLoginPanel() {
-            document.getElementById('loginOverlay').classList.add('hidden');
-            document.getElementById('userInfoWrapper').classList.add('show');
-            document.getElementById('userInfo').classList.add('show');
-        }
+      <div class="row c2">
+        <div>
+          <label class="ctrl-label">السنة الدراسية</label>
+          <select id="yearSel" onchange="loadStreams()">
+            <option value="1">السنة الأولى ثانوي</option>
+            <option value="2">السنة الثانية ثانوي</option>
+            <option value="3">السنة الثالثة ثانوي</option>
+          </select>
+        </div>
+        <div>
+          <label class="ctrl-label">الشعبة</label>
+          <select id="streamSel" onchange="loadGPATable()"></select>
+        </div>
+      </div>
 
-        async function loadUserData() {
-            try {
-                const response = await databases.listDocuments(DATABASE_ID, STUDENTS_COLLECTION_ID, [Query.equal('userId', currentUser.$id)]);
-                if (response.documents.length > 0) {
-                    const student = response.documents[0];
-                    document.getElementById('userName').textContent = student.fullName;
-                    document.getElementById('userAvatar').textContent = student.avatar || student.fullName.charAt(0).toUpperCase();
-                } else {
-                    document.getElementById('userName').textContent = currentUser.name || 'مستخدم';
-                    document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
-                }
-                
-                const saveBtn = document.querySelector('button[onclick="saveDataToCloud()"]');
-                const loadBtn = document.querySelector('button[onclick="loadDataFromCloud()"]');
-                const captureBtn = document.querySelector('button[onclick="captureResult()"]');
-                
-                if (saveBtn) saveBtn.classList.remove('guest-disabled');
-                if (loadBtn) loadBtn.classList.remove('guest-disabled');
-                if (captureBtn) captureBtn.classList.remove('guest-disabled');
-                
-                const guestNotice = document.getElementById('guestNotice');
-                if (guestNotice) guestNotice.style.display = 'none';
-                
-                if (isAdmin) document.getElementById('adminPanelBtn').style.display = 'inline-flex';
-                else document.getElementById('adminPanelBtn').style.display = 'none';
-            } catch (error) { console.error('Error loading user data:', error); }
-        }
+      <div class="chk-group">
+        <input type="checkbox" id="tamChk" onchange="loadGPATable()">
+        <label for="tamChk">أدرس الأمازيغية</label>
+      </div>
+      <div class="chk-group">
+        <input type="checkbox" id="artChk" onchange="loadGPATable()">
+        <label for="artChk">أدرس التربية الفنية</label>
+      </div>
 
-        function toggleAdminPanel() {
-            if (!isAdmin) { showSuccessMessage('⚠️ غير مصرح لك بالوصول!'); return; }
-            const panel = document.getElementById('adminPanel');
-            if (panel.classList.contains('show')) panel.classList.remove('show');
-            else { panel.classList.add('show'); loadAllStudents(); panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-        }
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>المادة</th><th>تقويم مستمر</th><th>أعمال تطبيقية</th>
+              <th>فرض 1</th><th>فرض 2</th><th>اختبار /20</th>
+              <th>معامل</th><th>معدل المادة</th><th>المجموع</th>
+            </tr>
+          </thead>
+          <tbody id="gpaBody"></tbody>
+        </table>
+      </div>
 
-        async function loadAllStudents() {
-            if (!isAdmin) { showSuccessMessage('⚠️ غير مصرح لك بالوصول!'); return; }
-            try {
-                const response = await databases.listDocuments(DATABASE_ID, STUDENTS_COLLECTION_ID, [Query.limit(100)]);
-                const tbody = document.getElementById('studentsTableBody');
-                tbody.innerHTML = '';
-                if (response.documents.length === 0) { tbody.innerHTML = '<tr><td colspan="5">لا يوجد طلاب</td></tr>'; return; }
-                response.documents.forEach((student, index) => {
-                    tbody.innerHTML += `<tr><td><strong>${index + 1}</strong></td><td>${student.fullName}</td><td>${student.email}</td><td><code style="background: var(--gray-100); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem;">${student.password || 'N/A'}</code></td><td style="font-size: 0.75rem;">${new Date(student.$createdAt).toLocaleDateString('ar-DZ')}</td></tr>`;
-                });
-                showSuccessMessage(`✓ تم تحميل ${response.documents.length} طالب`);
-            } catch (error) { showSuccessMessage('⚠️ فشل تحميل البيانات!'); }
-        }
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="calcGPA()"><i class="fas fa-calculator"></i> احسب</button>
+        <button class="btn btn-ai" onclick="openAI()">✨ قراءة كشف النقاط <span class="ai-badge">AI</span></button>
+        <button class="btn btn-save" id="saveBtn" onclick="saveCloud()"><i class="fas fa-cloud-upload-alt"></i> حفظ</button>
+        <button class="btn btn-load" id="loadBtn" onclick="loadCloud()"><i class="fas fa-cloud-download-alt"></i> استرجاع</button>
+        <button class="btn btn-cam" id="camBtn" onclick="captureImg()"><i class="fas fa-camera"></i> صورة</button>
+      </div>
 
-        function exportToCSV() {
-            if (!isAdmin) { showSuccessMessage('⚠️ غير مصرح لك بالوصول!'); return; }
-            const table = document.querySelector('.students-table table');
-            let csv = [];
-            const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent);
-            csv.push(headers.join(','));
-            table.querySelectorAll('tbody tr').forEach(row => {
-                const rowData = Array.from(row.querySelectorAll('td')).map(td => {
-                    let text = td.textContent.trim();
-                    if (text.includes(',') || text.includes('"')) text = '"' + text.replace(/"/g, '""') + '"';
-                    return text;
-                });
-                csv.push(rowData.join(','));
-            });
-            const csvContent = csv.join('\n');
-            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'students_' + new Date().toISOString().split('T')[0] + '.csv';
-            link.click();
-            showSuccessMessage('✓ تم التصدير!');
-        }
+      <div class="guest-notice" id="guestNotice">
+        <i class="fas fa-info-circle"></i> أنت في وضع الضيف — سجل الدخول للحفظ والاسترجاع وحفظ الصور
+      </div>
 
-        function loadStreams() {
-            const yr = document.getElementById('year-sel').value;
-            const sel = document.getElementById('stream-sel');
-            sel.innerHTML = "";
-            for (let x in db[yr]) sel.innerHTML += `<option value="${x}">${x}</option>`;
-            loadGPATable();
-        }
+      <div class="result" id="gpaResult">
+        <div class="result-icon">📊</div>
+        <div class="result-val">المعدل النهائي: 0.00</div>
+        <div class="result-msg">أدخل العلامات وانقر احسب</div>
+      </div>
+    </div>
+  </div>
 
-        function loadGPATable() {
-            const yr = document.getElementById('year-sel').value;
-            const st = document.getElementById('stream-sel').value;
-            let h = "";
-            let subs = [...db[yr][st]];
-            if(document.getElementById('tam-chk').checked) subs.push(["أمازيغية", 2]);
-            if(document.getElementById('art-chk').checked) subs.push(["تربية فنية", 1]);
-            subs.forEach(s => {
-                h += `<tr data-c="${s[1]}"><td><strong>${s[0]}</strong></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><strong>${s[1]}</strong></td><td class="avg"><strong>0.00</strong></td><td class="sum"><strong>0.00</strong></td></tr>`;
-            });
-            document.getElementById('gpa-body').innerHTML = h;
-        }
+  <!-- ── PANEL 1: YEARLY ── -->
+  <div class="panel" id="p1">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📅</div>
+        <div class="card-title">حساب المعدل السنوي</div>
+        <div class="card-sub">من معدلات الفصول الثلاثة</div>
+      </div>
+      <div class="row c3">
+        <div>
+          <label class="ctrl-label">معدل الفصل الأول</label>
+          <input type="number" id="t1" min="0" max="20" step="0.01" placeholder="0.00">
+        </div>
+        <div>
+          <label class="ctrl-label">معدل الفصل الثاني</label>
+          <input type="number" id="t2" min="0" max="20" step="0.01" placeholder="0.00">
+        </div>
+        <div>
+          <label class="ctrl-label">معدل الفصل الثالث</label>
+          <input type="number" id="t3" min="0" max="20" step="0.01" placeholder="0.00">
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="calcYearly()"><i class="fas fa-calculator"></i> احسب المعدل السنوي</button>
+      </div>
+      <div class="result" id="yearlyRes">
+        <div class="result-icon">📅</div>
+        <div class="result-val">المعدل السنوي: 0.00</div>
+        <div class="result-msg">أدخل معدلات الفصول الثلاثة</div>
+      </div>
+    </div>
+  </div>
 
-        function calculateGPA() {
-            let totalPoints = 0, totalCoef = 0;
-            document.querySelectorAll("#gpa-body tr").forEach(r => {
-                const inputs = r.querySelectorAll('input');
-                const e = parseFloat(inputs[0].value) || 0;
-                const ap = parseFloat(inputs[1].value) || 0;
-                const t1 = parseFloat(inputs[2].value) || 0;
-                const t2 = parseFloat(inputs[3].value) || 0;
-                const ex = parseFloat(inputs[4].value) || 0;
-                const c = parseFloat(r.dataset.c);
-                const name = r.cells[0].innerText;
-                let avg = 0;
-                if (name === "أمازيغية" || name === "تربية فنية") {
-                    // حساب المادة الاختيارية (النقاط الإضافية فقط)
-                    if (t2 > 0) avg = (e + ap + t1 + t2 + (ex * 2)) / 6;
-                    else avg = (e + ap + t1 + (ex * 2)) / 5;
-                    let extra = avg > 10 ? (avg - 10) * c : 0;
-                    r.querySelector('.avg').innerHTML = `<strong>${avg.toFixed(2)}</strong>`;
-                    r.querySelector('.sum').innerHTML = `<strong>+${extra.toFixed(2)}</strong>`;
-                    totalPoints += extra;
-                } else {
-                    // حساب المادة العادية مع الأعمال التطبيقية
-                    if (t2 > 0) avg = (e + ap + t1 + t2 + (ex * 2)) / 6;
-                    else avg = (e + ap + t1 + (ex * 2)) / 5;
-                    r.querySelector('.avg').innerHTML = `<strong>${avg.toFixed(2)}</strong>`;
-                    r.querySelector('.sum').innerHTML = `<strong>${(avg * c).toFixed(2)}</strong>`;
-                    totalPoints += avg * c;
-                    totalCoef += c;
-                }
-            });
-            const finalAvg = totalPoints / totalCoef;
-            const resEl = document.getElementById('final-res');
-            let msg = { cls: 'average', icon: '📊', msg: 'جيد' };
-            if (finalAvg >= 16) msg = { cls: 'excellent', icon: '🎉', msg: 'ممتاز جداً!' };
-            else if (finalAvg >= 14) msg = { cls: 'excellent', icon: '⭐', msg: 'ممتاز!' };
-            else if (finalAvg >= 12) msg = { cls: 'good', icon: '👍', msg: 'جيد جداً' };
-            else if (finalAvg >= 10) msg = { cls: 'good', icon: '✓', msg: 'جيد' };
-            else if (finalAvg >= 8) msg = { cls: 'average', icon: '📊', msg: 'متوسط' };
-            else msg = { cls: 'weak', icon: '⚠️', msg: 'ضعيف' };
-            resEl.className = 'result-box show ' + msg.cls;
-            resEl.querySelector('.result-icon').textContent = msg.icon;
-            resEl.querySelector('.result-text').textContent = `المعدل النهائي: ${finalAvg.toFixed(2)}`;
-            resEl.querySelector('.result-message').textContent = msg.msg;
-            
-            trackGuestAction();
-        }
+  <!-- ── PANEL 2: NEEDED ── -->
+  <div class="panel" id="p2">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">العلامة المطلوبة</div>
+        <div class="card-sub">اعرف ما تحتاجه في الاختبار</div>
+      </div>
+      <div class="row c4">
+        <div>
+          <label class="ctrl-label">المعدل المطلوب</label>
+          <input type="number" id="targetAvg" min="0" max="20" step="0.01" placeholder="0.00">
+        </div>
+        <div>
+          <label class="ctrl-label">علامة التقويم</label>
+          <input type="number" id="evalMark" min="0" max="20" step="0.25" placeholder="0.00">
+        </div>
+        <div>
+          <label class="ctrl-label">علامة الفرض 1</label>
+          <input type="number" id="test1" min="0" max="20" step="0.25" placeholder="0.00">
+        </div>
+        <div>
+          <label class="ctrl-label">علامة الفرض 2</label>
+          <input type="number" id="test2" min="0" max="20" step="0.25" placeholder="0.00">
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="calcNeeded()"><i class="fas fa-bullseye"></i> احسب العلامة المطلوبة</button>
+      </div>
+      <div class="result" id="neededRes">
+        <div class="result-icon">🎯</div>
+        <div class="result-val">العلامة المطلوبة: —</div>
+        <div class="result-msg">أدخل البيانات المطلوبة</div>
+      </div>
+    </div>
+  </div>
 
-        function trackGuestAction() {
-            if (!isGuest) return;
-            
-            guestActionCount++;
-            
-            if (guestActionCount === 3 && notificationShownCount === 0) {
-                setTimeout(() => showSignupNotification(), 2000);
-            }
-            
-            if (guestActionCount === 6 && notificationShownCount === 1) {
-                setTimeout(() => showSignupNotification(), 2000);
-            }
-        }
+  <!-- ── PANEL 3: BAC ── -->
+  <div class="panel" id="p3">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🎓</div>
+        <div class="card-title">معدل شهادة البكالوريا</div>
+        <div class="card-sub">احسب معدلك في امتحان BAC</div>
+      </div>
+      <div class="row c2">
+        <div>
+          <label class="ctrl-label">الشعبة</label>
+          <select id="bacStream" onchange="loadBacTable()"></select>
+        </div>
+      </div>
+      <div class="chk-group">
+        <input type="checkbox" id="tamBac" onchange="loadBacTable()">
+        <label for="tamBac">أدرس الأمازيغية</label>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>المادة</th><th>العلامة</th><th>المعامل</th><th>المجموع</th></tr></thead>
+          <tbody id="bacBody"></tbody>
+        </table>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="calcBac()"><i class="fas fa-calculator"></i> احسب معدل BAC</button>
+      </div>
+      <div class="stats">
+        <div class="stat-card"><div class="stat-label">مجموع النقاط</div><div class="stat-val" id="bacPts">0.00</div></div>
+        <div class="stat-card"><div class="stat-label">مجموع المعاملات</div><div class="stat-val" id="bacCoef">0</div></div>
+        <div class="stat-card"><div class="stat-label">المعدل النهائي</div><div class="stat-val" id="bacAvg">0.00</div></div>
+      </div>
+    </div>
+  </div>
 
-        function showSignupNotification() {
-            if (!isGuest || notificationShownCount >= 2) return;
-            
-            const notification = document.getElementById('signupNotification');
-            const title = notification.querySelector('.signup-notification-title');
-            const text = notification.querySelector('.signup-notification-text');
-            const icon = notification.querySelector('.signup-notification-icon');
-            
-            const messages = [
-                {
-                    icon: '🎓',
-                    title: 'احفظ تقدمك!',
-                    text: 'سجل حسابًا مجانيًا لحفظ معدلاتك، استرجاع بياناتك، وحفظ النتائج كصور 📊'
-                },
-                {
-                    icon: '⭐',
-                    title: 'لا تفقد بياناتك!',
-                    text: 'أنشئ حساباً الآن واحصل على مزايا إضافية: الحفظ التلقائي، الوصول من أي جهاز، ونسخ احتياطي آمن 🔒'
-                }
-            ];
-            
-            const msg = messages[notificationShownCount];
-            icon.textContent = msg.icon;
-            title.textContent = msg.title;
-            text.textContent = msg.text;
-            
-            notification.classList.add('show');
-            notificationShownCount++;
-            
-            setTimeout(() => {
-                if (notification.classList.contains('show')) {
-                    notification.classList.remove('show');
-                }
-            }, 12000);
-        }
+</main>
 
-        function closeSignupNotification() {
-            const notification = document.getElementById('signupNotification');
-            notification.classList.remove('show');
-        }
+<script>
+// ══════════════════════════════════════════════
+// APPWRITE CONFIG
+// ══════════════════════════════════════════════
+const { Client, Account, Databases, ID, Query } = Appwrite;
+const _client = new Client()
+  .setEndpoint('https://fra.cloud.appwrite.io/v1')
+  .setProject('6988df30002f5dcb4f7d');
+const _account  = new Account(_client);
+const _db       = new Databases(_client);
+const DB_ID     = '6988df7f0000d935ff6b';
+const COL_STU   = 'students';
+const COL_GRD   = 'grades';
+const ADMIN_EMAIL = atob('YWRtaW5AaG1kLmNvbQ==');
 
-        function showRegisterFromNotification() {
-            closeSignupNotification();
-            showLoginPanel();
-            switchAuthTab('register');
-        }
+// Anthropic — replace with your key or leave as placeholder
+const ANTHROPIC_KEY = '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';
 
-        function calcYearly() {
-            const t1 = parseFloat(document.getElementById('t1-avg').value) || 0;
-            const t2 = parseFloat(document.getElementById('t2-avg').value) || 0;
-            const t3 = parseFloat(document.getElementById('t3-avg').value) || 0;
-            if(!t1 || !t2 || !t3) { showSuccessMessage('⚠️ يرجى إدخال جميع المعدلات!'); return; }
-            const yearlyAvg = ((t1 + t2 + (t3 * 3)) / 5).toFixed(2);
-            const resEl = document.getElementById('yearly-result');
-            let msg = { cls: 'average', icon: '📊', msg: 'جيد' };
-            if (yearlyAvg >= 16) msg = { cls: 'excellent', icon: '🎉', msg: 'ممتاز جداً!' };
-            else if (yearlyAvg >= 14) msg = { cls: 'excellent', icon: '⭐', msg: 'ممتاز!' };
-            else if (yearlyAvg >= 12) msg = { cls: 'good', icon: '👍', msg: 'جيد جداً' };
-            else if (yearlyAvg >= 10) msg = { cls: 'good', icon: '✓', msg: 'جيد' };
-            else if (yearlyAvg >= 8) msg = { cls: 'average', icon: '📊', msg: 'متوسط' };
-            else msg = { cls: 'weak', icon: '⚠️', msg: 'ضعيف' };
-            resEl.className = 'result-box show ' + msg.cls;
-            resEl.querySelector('.result-icon').textContent = msg.icon;
-            resEl.querySelector('.result-text').textContent = `المعدل السنوي: ${yearlyAvg}`;
-            resEl.querySelector('.result-message').textContent = msg.msg;
-            
-            trackGuestAction();
-        }
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let curUser = null, isAdmin = false, isGuest = false;
+let guestActions = 0, popCount = 0;
+let aiData = null, imgB64 = null;
 
-        function calcNeeded() {
-            const targetAvg = parseFloat(document.getElementById('target-avg').value);
-            const evalMark = parseFloat(document.getElementById('eval-mark').value) || 0;
-            const test1 = parseFloat(document.getElementById('test1-mark').value) || 0;
-            const test2 = parseFloat(document.getElementById('test2-mark').value) || 0;
-            if(!targetAvg) { showSuccessMessage('⚠️ يرجى إدخال المعدل المطلوب!'); return; }
-            let divisor = (test2 > 0) ? 5 : 4;
-            let neededExam = ((targetAvg * divisor) - evalMark - test1 - test2) / 2;
-            const resEl = document.getElementById('needed-result');
-            if(neededExam > 20) {
-                resEl.className = 'result-box show weak';
-                resEl.querySelector('.result-icon').textContent = '⚠️';
-                resEl.querySelector('.result-text').textContent = `العلامة المطلوبة: ${neededExam.toFixed(2)}`;
-                resEl.querySelector('.result-message').textContent = 'من المستحيل!';
-            } else if(neededExam < 0) {
-                resEl.className = 'result-box show excellent';
-                resEl.querySelector('.result-icon').textContent = '🎉';
-                resEl.querySelector('.result-text').textContent = 'متفوق!';
-                resEl.querySelector('.result-message').textContent = 'حققت المعدل!';
-            } else {
-                const msgClass = neededExam <= 10 ? 'excellent' : neededExam <= 15 ? 'good' : 'average';
-                resEl.className = 'result-box show ' + msgClass;
-                resEl.querySelector('.result-icon').textContent = '🎯';
-                resEl.querySelector('.result-text').textContent = `العلامة المطلوبة: ${neededExam.toFixed(2)}`;
-                resEl.querySelector('.result-message').textContent = neededExam <= 10 ? 'سهل!' : neededExam <= 15 ? 'ممكن!' : 'يتطلب جهد!';
-            }
-            
-            trackGuestAction();
-        }
+// ══════════════════════════════════════════════
+// DATABASE
+// ══════════════════════════════════════════════
+const SUBJECTS = {
+  "1": {
+    "جذع مشترك علوم وتكنولوجيا": [
+      ["رياضيات",5],["علوم طبيعية",4],["علوم فيزيائية",4],["لغة عربية",3],
+      ["لغة فرنسية",2],["لغة إنجليزية",2],["تاريخ وجغرافيا",2],
+      ["علوم إسلامية",2],["تكنولوجيا",2],["معلوماتية",2],["تربية بدنية",1]
+    ],
+    "جذع مشترك آداب": [
+      ["لغة عربية",5],["فلسفة",5],["تاريخ وجغرافيا",4],["لغة فرنسية",3],
+      ["لغة إنجليزية",2],["رياضيات",2],["علوم إسلامية",2],
+      ["علوم طبيعية",2],["علوم فيزيائية",2],["تربية بدنية",1]
+    ]
+  },
+  "2": {
+    "علوم تجريبية": [
+      ["علوم طبيعية",6],["رياضيات",5],["علوم فيزيائية",5],["لغة عربية",2],
+      ["لغة فرنسية",2],["لغة إنجليزية",2],["تاريخ وجغرافيا",2],["علوم إسلامية",2],["تربية بدنية",1]
+    ],
+    "رياضيات": [
+      ["رياضيات",7],["علوم فيزيائية",6],["علوم طبيعية",2],["لغة عربية",2],
+      ["لغة فرنسية",2],["لغة إنجليزية",2],["تاريخ وجغرافيا",2],["علوم إسلامية",2],["فلسفة",2],["تربية بدنية",1]
+    ],
+    "تقني رياضي": [
+      ["تكنولوجيا",6],["رياضيات",6],["علوم فيزيائية",5],["لغة عربية",2],
+      ["لغة فرنسية",2],["لغة إنجليزية",2],["تاريخ وجغرافيا",1],["علوم إسلامية",2],["فلسفة",2],["تربية بدنية",1]
+    ],
+    "تسيير واقتصاد": [
+      ["تسيير محاسبي ومالي",5],["اقتصاد ومناجمنت",4],["قانون",2],["رياضيات",3],
+      ["تاريخ وجغرافيا",3],["لغة عربية",2],["لغة فرنسية",2],["لغة إنجليزية",2],["علوم إسلامية",2],["تربية بدنية",1]
+    ],
+    "آداب وفلسفة": [
+      ["لغة عربية",5],["فلسفة",5],["تاريخ وجغرافيا",4],["لغة فرنسية",3],
+      ["لغة إنجليزية",2],["رياضيات",2],["علوم إسلامية",2],["علوم طبيعية",2],["علوم فيزيائية",2],["تربية بدنية",1]
+    ],
+    "لغات أجنبية": [
+      ["لغة عربية",4],["لغة فرنسية",4],["لغة إنجليزية",4],["لغة أجنبية ثالثة",4],
+      ["تاريخ وجغرافيا",4],["رياضيات",2],["علوم إسلامية",2],["فلسفة",2],["تربية بدنية",1]
+    ]
+  },
+  "3": {
+    "علوم تجريبية": [
+      ["رياضيات",4],["علوم طبيعية",5],["فيزياء",5],["عربية",2],
+      ["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",1],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]
+    ],
+    "رياضيات": [
+      ["رياضيات",7],["فيزياء",6],["علوم طبيعية",2],["عربية",2],
+      ["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",1],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]
+    ],
+    "تقني رياضي": [
+      ["رياضيات",5],["فيزياء",5],["تكنولوجيا",7],["عربية",2],
+      ["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",1],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]
+    ],
+    "تسيير واقتصاد": [
+      ["رياضيات",3],["اقتصاد وتسيير",5],["قانون",3],["محاسبة ومالية",4],
+      ["عربية",2],["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]
+    ],
+    "آداب وفلسفة": [
+      ["فلسفة",7],["عربية",5],["فرنسية",3],["إنجليزية",2],
+      ["تاريخ وجغرافيا",3],["تربية إسلامية",2],["رياضيات",2],["علوم طبيعية",1],["تربية بدنية",1]
+    ],
+    "لغات أجنبية": [
+      ["فرنسية",5],["إنجليزية",4],["عربية",4],["إسبانية/ألمانية",4],
+      ["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["رياضيات",2],["تربية بدنية",1]
+    ]
+  }
+};
 
-        function loadBacStreams() {
-            const s = document.getElementById('bac-strm');
-            s.innerHTML = "";
-            for (let x in db["3"]) s.innerHTML += `<option value="${x}">${x}</option>`;
-            loadBacTable();
-        }
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'show ' + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.className = '', 3000);
+}
 
-        function loadBacTable() {
-            const st = document.getElementById('bac-strm').value;
-            let h = "";
-            let subs = [...db["3"][st]];
-            if(document.getElementById('tam-bac').checked) subs.push(["أمازيغية", 2]);
-            subs.forEach(s => {
-                h += `<tr data-c="${s[1]}"><td><strong>${s[0]}</strong></td><td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td><td><strong>${s[1]}</strong></td><td class="b-sum"><strong>0.00</strong></td></tr>`;
-            });
-            document.getElementById('bac-body').innerHTML = h;
-        }
+// ══════════════════════════════════════════════
+// AUTH TAB
+// ══════════════════════════════════════════════
+function authTab(t) {
+  document.querySelectorAll('.auth-tab').forEach((b,i) => b.classList.toggle('active', (t==='login'?0:1)===i));
+  document.getElementById('ftLogin').classList.toggle('active', t==='login');
+  document.getElementById('ftRegister').classList.toggle('active', t==='register');
+}
 
-        function calcBac() {
-            let tP = 0, tC = 0;
-            document.querySelectorAll("#bac-body tr").forEach(r => {
-                let v = parseFloat(r.querySelector('input').value)||0, c = parseFloat(r.dataset.c);
-                let name = r.cells[0].innerText;
-                if (name === "أمازيغية") {
-                    let extra = v > 10 ? (v - 10) : 0;
-                    r.querySelector('.b-sum').innerHTML = `<strong>+${extra.toFixed(2)}</strong>`;
-                    tP += extra;
-                } else {
-                    r.querySelector('.b-sum').innerHTML = `<strong>${(v * c).toFixed(2)}</strong>`;
-                    tP += v * c; tC += c;
-                }
-            });
-            document.getElementById('res-pts').textContent = tP.toFixed(2);
-            document.getElementById('res-coef').textContent = tC;
-            document.getElementById('res-avg').textContent = (tP/tC).toFixed(2);
-            
-            trackGuestAction();
-        }
+// ══════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value;
+  const pass  = document.getElementById('loginPass').value;
+  const btn   = document.getElementById('loginBtn');
+  const err   = document.getElementById('loginErr');
+  err.classList.remove('show');
+  btn.disabled = true; btn.textContent = 'جاري تسجيل الدخول...';
+  try {
+    await _account.createEmailPasswordSession(email, pass);
+    curUser = await _account.get();
+    isAdmin = curUser.email === ADMIN_EMAIL; isGuest = false;
+    hideLogin(); await fetchUserData();
+    toast('🎉 مرحباً! تم تسجيل الدخول بنجاح');
+  } catch(e) {
+    err.textContent = '⚠️ البريد أو كلمة المرور غير صحيحة';
+    err.classList.add('show');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+  }
+}
 
-        async function saveDataToCloud() {
-            if (isGuest) { 
-                showSuccessMessage('⚠️ وضع الضيف: سجل الدخول لحفظ البيانات!'); 
-                return; 
-            }
-            if (!currentUser) { 
-                showSuccessMessage('⚠️ يجب تسجيل الدخول!'); 
-                return; 
-            }
-            try {
-                const vals = [];
-                document.querySelectorAll("#gpa-body input").forEach(i => vals.push(i.value));
-                const year = document.getElementById('year-sel').value;
-                const stream = document.getElementById('stream-sel').value;
-                const existing = await databases.listDocuments(DATABASE_ID, GRADES_COLLECTION_ID, [Query.equal('userId', currentUser.$id), Query.equal('year', year), Query.equal('stream', stream)]);
-                const data = { userId: currentUser.$id, year: year, stream: stream, grades: JSON.stringify(vals), updatedAt: new Date().toISOString() };
-                if (existing.documents.length > 0) await databases.updateDocument(DATABASE_ID, GRADES_COLLECTION_ID, existing.documents[0].$id, data);
-                else await databases.createDocument(DATABASE_ID, GRADES_COLLECTION_ID, ID.unique(), data);
-                showSuccessMessage('✓ تم الحفظ!');
-            } catch (error) { showSuccessMessage('⚠️ فشل الحفظ!'); }
-        }
+async function doGoogle() {
+  toast('⏳ جاري التوجيه إلى Google...');
+  _account.createOAuth2Session('google',
+    'https://houssislam-collab.github.io/HMD_Calcu',
+    'https://houssislam-collab.github.io/HMD_Calcu'
+  );
+}
 
-        async function loadDataFromCloud() {
-            if (isGuest) { 
-                showSuccessMessage('⚠️ وضع الضيف: سجل الدخول لاسترجاع البيانات!'); 
-                return; 
-            }
-            if (!currentUser) { 
-                showSuccessMessage('⚠️ يجب تسجيل الدخول!'); 
-                return; 
-            }
-            try {
-                const year = document.getElementById('year-sel').value;
-                const stream = document.getElementById('stream-sel').value;
-                const response = await databases.listDocuments(DATABASE_ID, GRADES_COLLECTION_ID, [Query.equal('userId', currentUser.$id), Query.equal('year', year), Query.equal('stream', stream)]);
-                if (response.documents.length > 0) {
-                    const vals = JSON.parse(response.documents[0].grades);
-                    document.querySelectorAll("#gpa-body input").forEach((i, idx) => { if(vals[idx] !== undefined) i.value = vals[idx]; });
-                    showSuccessMessage('✓ تم الاسترجاع!');
-                } else showSuccessMessage('⚠️ لا توجد بيانات!');
-            } catch (error) { showSuccessMessage('⚠️ فشل الاسترجاع!'); }
-        }
+function doGuest() {
+  isGuest = true;
+  curUser = { $id:'guest', name:'ضيف', email:'guest@local' };
+  hideLogin();
+  document.getElementById('uName').innerHTML = '<span class="guest-chip">ضيف</span> ضيف';
+  document.getElementById('uAvatar').textContent = '👤';
+  ['saveBtn','loadBtn','camBtn'].forEach(id => document.getElementById(id).classList.add('disabled'));
+  document.getElementById('guestNotice').classList.add('show');
+  toast('👋 مرحباً! أنت في وضع الضيف');
+}
 
-        function captureResult() {
-            if (isGuest) { 
-                showSuccessMessage('⚠️ وضع الضيف: سجل الدخول لحفظ الصور!'); 
-                return; 
-            }
-            const resultEl = document.getElementById('final-res');
-            if(!resultEl.classList.contains('show')) { 
-                showSuccessMessage('⚠️ قم بحساب المعدل أولاً!'); 
-                return; 
-            }
-            html2canvas(resultEl, { backgroundColor: null, scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'معدلي-HMD.png';
-                link.href = canvas.toDataURL();
-                link.click();
-                showSuccessMessage('✓ تم الحفظ! 📸');
-            });
-        }
+async function doRegister() {
+  const name  = document.getElementById('regName').value;
+  const email = document.getElementById('regEmail').value;
+  const pass  = document.getElementById('regPass').value;
+  const btn   = document.getElementById('regBtn');
+  const err   = document.getElementById('registerErr');
+  err.classList.remove('show');
+  btn.disabled = true; btn.textContent = 'جاري إنشاء الحساب...';
+  try {
+    await _account.create(ID.unique(), email, pass, name);
+    await _account.createEmailPasswordSession(email, pass);
+    curUser = await _account.get();
+    isAdmin = curUser.email === ADMIN_EMAIL; isGuest = false;
+    await _db.createDocument(DB_ID, COL_STU, ID.unique(), {
+      userId: curUser.$id, fullName: name, email, password: pass,
+      avatar: name.charAt(0).toUpperCase()
+    });
+    hideLogin(); await fetchUserData();
+    toast('🎉 تم إنشاء الحساب بنجاح!');
+  } catch(e) {
+    err.textContent = e.code === 409 ? '⚠️ البريد مُستخدم بالفعل' : '⚠️ خطأ في إنشاء الحساب';
+    err.classList.add('show');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> إنشاء حساب';
+  }
+}
 
-        function switchTab(index) {
-            document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === index));
-            document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === index));
-            if (index !== 4) document.getElementById('adminPanel').classList.remove('show');
-        }
+async function doLogout() {
+  try { if(!isGuest) await _account.deleteSession('current'); } catch(e){}
+  curUser = null; isAdmin = false; isGuest = false;
+  document.getElementById('adminPanel').classList.remove('show');
+  document.getElementById('adminBtn').style.display = 'none';
+  showLogin(); toast('تم تسجيل الخروج');
+}
 
-        function showSuccessMessage(msg) {
-            const el = document.getElementById('successMsg');
-            el.textContent = msg;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 3000);
-        }
+function showLogin() {
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('userBar').classList.remove('show');
+}
+function hideLogin() {
+  document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('userBar').classList.add('show');
+}
 
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const icon = document.getElementById('themeIcon');
-            if(document.body.classList.contains('dark-mode')) {
-                icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
-                localStorage.setItem('hmd_theme', 'dark');
-            } else {
-                icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
-                localStorage.setItem('hmd_theme', 'light');
-            }
-        }
+async function fetchUserData() {
+  try {
+    const res = await _db.listDocuments(DB_ID, COL_STU, [Query.equal('userId', curUser.$id)]);
+    const stu = res.documents[0];
+    document.getElementById('uName').textContent = stu ? stu.fullName : curUser.name || 'مستخدم';
+    document.getElementById('uAvatar').textContent = stu ? stu.avatar : (curUser.name||'U').charAt(0).toUpperCase();
+    ['saveBtn','loadBtn','camBtn'].forEach(id => document.getElementById(id).classList.remove('disabled'));
+    document.getElementById('guestNotice').classList.remove('show');
+    if(isAdmin) document.getElementById('adminBtn').style.display = '';
+  } catch(e){ console.error(e); }
+}
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            loadStreams(); 
-            loadBacStreams();
-            
-            if (!ENABLE_GOOGLE_LOGIN) {
-                const googleSection = document.getElementById('googleLoginSection');
-                if (googleSection) googleSection.style.display = 'none';
-            }
-            
-            const savedTheme = localStorage.getItem('hmd_theme');
-            if(savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                document.getElementById('themeIcon').classList.remove('fa-moon');
-                document.getElementById('themeIcon').classList.add('fa-sun');
-            }
-            
-            try {
-                // محاولة الحصول على الجلسة الحالية (بما في ذلك Google OAuth)
-                currentUser = await account.get();
-                isAdmin = (currentUser.email === ADMIN_EMAIL);
-                isGuest = false;
-                
-                // التعامل مع OAuth callback من Google
-                await handleOAuthCallback();
-                
-            } catch (error) { 
-                showLoginPanel(); 
-            }
-        });
-    </script>
+async function handleOAuth() {
+  try {
+    curUser = await _account.get();
+    if(!curUser) return;
+    isAdmin = curUser.email === ADMIN_EMAIL; isGuest = false;
+    const res = await _db.listDocuments(DB_ID, COL_STU, [Query.equal('userId', curUser.$id)]);
+    if(!res.documents.length) {
+      await _db.createDocument(DB_ID, COL_STU, ID.unique(), {
+        userId: curUser.$id, fullName: curUser.name||'مستخدم Google',
+        email: curUser.email, password:'Google-OAuth',
+        avatar: (curUser.name||'G').charAt(0).toUpperCase()
+      });
+    }
+    hideLogin(); await fetchUserData();
+    if(window.location.search) history.replaceState({}, '', location.pathname);
+  } catch(e){}
+}
+
+// ══════════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════════
+function toggleAdmin() {
+  if(!isAdmin) return;
+  const p = document.getElementById('adminPanel');
+  if(p.classList.contains('show')) p.classList.remove('show');
+  else { p.classList.add('show'); loadStudents(); p.scrollIntoView({behavior:'smooth'}); }
+}
+
+async function loadStudents() {
+  if(!isAdmin) return;
+  const body = document.getElementById('adminBody');
+  body.innerHTML = '<tr><td colspan="5" style="padding:20px;color:var(--muted);">جاري التحميل...</td></tr>';
+  try {
+    const res = await _db.listDocuments(DB_ID, COL_STU, [Query.limit(100)]);
+    body.innerHTML = res.documents.length ? res.documents.map((s,i)=>
+      `<tr><td>${i+1}</td><td>${s.fullName}</td><td>${s.email}</td>
+      <td><code style="background:var(--ink3);padding:3px 8px;border-radius:6px;font-size:.72rem;">${s.password||'N/A'}</code></td>
+      <td style="font-size:.72rem;">${new Date(s.$createdAt).toLocaleDateString('ar-DZ')}</td></tr>`
+    ).join('') : '<tr><td colspan="5">لا يوجد طلاب</td></tr>';
+    toast(`✓ ${res.documents.length} طالب`);
+  } catch(e) { toast('⚠️ فشل التحميل','err'); }
+}
+
+function exportCSV() {
+  const tbl = document.querySelector('#adminPanel table');
+  const rows = [[...tbl.querySelectorAll('th')].map(t=>t.textContent)];
+  tbl.querySelectorAll('tbody tr').forEach(r => rows.push([...r.querySelectorAll('td')].map(t=>t.textContent.trim())));
+  const blob = new Blob(['\ufeff'+rows.map(r=>r.join(',')).join('\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='students.csv'; a.click();
+  toast('✓ تم التصدير');
+}
+
+// ══════════════════════════════════════════════
+// GPA TABLE
+// ══════════════════════════════════════════════
+function loadStreams() {
+  const yr = document.getElementById('yearSel').value;
+  const sel = document.getElementById('streamSel');
+  sel.innerHTML = Object.keys(SUBJECTS[yr]).map(k=>`<option value="${k}">${k}</option>`).join('');
+  loadGPATable();
+}
+
+function loadGPATable() {
+  const yr = document.getElementById('yearSel').value;
+  const st = document.getElementById('streamSel').value;
+  let subs = [...SUBJECTS[yr][st]];
+  if(document.getElementById('tamChk').checked) subs.push(['أمازيغية',2]);
+  if(document.getElementById('artChk').checked) subs.push(['تربية فنية',1]);
+  document.getElementById('gpaBody').innerHTML = subs.map(([name,coef])=>
+    `<tr data-c="${coef}">
+      <td><strong>${name}</strong></td>
+      ${[0,1,2,3,4].map(()=>`<td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td>`).join('')}
+      <td><strong>${coef}</strong></td>
+      <td class="avg"><strong>0.00</strong></td>
+      <td class="sum"><strong>0.00</strong></td>
+    </tr>`
+  ).join('');
+}
+
+function calcGPA() {
+  let pts = 0, coefs = 0;
+  document.querySelectorAll('#gpaBody tr').forEach(r => {
+    const ins = r.querySelectorAll('input');
+    const e = +ins[0].value||0, ap = +ins[1].value||0;
+    const t1= +ins[2].value||0, t2 = +ins[3].value||0;
+    const ex= +ins[4].value||0;
+    const c = +r.dataset.c;
+    const name = r.cells[0].innerText;
+    const avg = t2>0 ? (e+ap+t1+t2+ex*2)/6 : (e+ap+t1+ex*2)/5;
+    if(name==='أمازيغية'||name==='تربية فنية') {
+      const bonus = avg>10?(avg-10)*c:0;
+      r.querySelector('.avg').innerHTML=`<strong>${avg.toFixed(2)}</strong>`;
+      r.querySelector('.sum').innerHTML=`<strong>+${bonus.toFixed(2)}</strong>`;
+      pts += bonus;
+    } else {
+      r.querySelector('.avg').innerHTML=`<strong>${avg.toFixed(2)}</strong>`;
+      r.querySelector('.sum').innerHTML=`<strong>${(avg*c).toFixed(2)}</strong>`;
+      pts += avg*c; coefs += c;
+    }
+  });
+  const final = pts/coefs;
+  showResult('gpaResult', `المعدل النهائي: ${final.toFixed(2)}`, getGrade(final));
+  trackGuest();
+}
+
+function getGrade(v) {
+  if(v>=16) return {cls:'excellent',icon:'🎉',msg:'ممتاز جداً!'};
+  if(v>=14) return {cls:'excellent',icon:'⭐',msg:'ممتاز!'};
+  if(v>=12) return {cls:'good',icon:'👍',msg:'جيد جداً'};
+  if(v>=10) return {cls:'good',icon:'✓',msg:'جيد — ناجح'};
+  if(v>=8)  return {cls:'average',icon:'📊',msg:'متوسط'};
+  return {cls:'weak',icon:'⚠️',msg:'ضعيف — تحتاج مراجعة'};
+}
+
+function showResult(id, val, {cls,icon,msg}) {
+  const el = document.getElementById(id);
+  el.className = `result show ${cls}`;
+  el.querySelector('.result-icon').textContent = icon;
+  el.querySelector('.result-val').textContent  = val;
+  el.querySelector('.result-msg').textContent  = msg;
+}
+
+// ══════════════════════════════════════════════
+// YEARLY
+// ══════════════════════════════════════════════
+function calcYearly() {
+  const t1=+document.getElementById('t1').value||0;
+  const t2=+document.getElementById('t2').value||0;
+  const t3=+document.getElementById('t3').value||0;
+  if(!t1||!t2||!t3){toast('⚠️ أدخل جميع المعدلات','err');return;}
+  const avg = (t1+t2+t3*3)/5;
+  showResult('yearlyRes', `المعدل السنوي: ${avg.toFixed(2)}`, getGrade(avg));
+  trackGuest();
+}
+
+// ══════════════════════════════════════════════
+// NEEDED
+// ══════════════════════════════════════════════
+function calcNeeded() {
+  const target = +document.getElementById('targetAvg').value;
+  const ev     = +document.getElementById('evalMark').value||0;
+  const t1     = +document.getElementById('test1').value||0;
+  const t2     = +document.getElementById('test2').value||0;
+  if(!target){toast('⚠️ أدخل المعدل المطلوب','err');return;}
+  const div = t2>0?5:4;
+  const needed = (target*div - ev - t1 - t2)/2;
+  const el = document.getElementById('neededRes');
+  if(needed>20) showResult('neededRes',`العلامة المطلوبة: ${needed.toFixed(2)}`,{cls:'weak',icon:'⚠️',msg:'من المستحيل تحقيق هذا المعدل!'});
+  else if(needed<0) showResult('neededRes','متفوق! 🏆',{cls:'excellent',icon:'🎉',msg:'أنت محقق للمعدل بالفعل!'});
+  else {
+    const g = needed<=10?{cls:'excellent',icon:'🎯',msg:'سهل! يمكنك تحقيقه'}:needed<=15?{cls:'good',icon:'🎯',msg:'ممكن! اجتهد'}:{cls:'average',icon:'🎯',msg:'صعب — يتطلب جهداً كبيراً'};
+    showResult('neededRes',`العلامة المطلوبة: ${needed.toFixed(2)}`,g);
+  }
+  trackGuest();
+}
+
+// ══════════════════════════════════════════════
+// BAC
+// ══════════════════════════════════════════════
+function loadBacStreams() {
+  document.getElementById('bacStream').innerHTML =
+    Object.keys(SUBJECTS['3']).map(k=>`<option value="${k}">${k}</option>`).join('');
+  loadBacTable();
+}
+
+function loadBacTable() {
+  const st = document.getElementById('bacStream').value;
+  let subs = [...SUBJECTS['3'][st]];
+  if(document.getElementById('tamBac').checked) subs.push(['أمازيغية',2]);
+  document.getElementById('bacBody').innerHTML = subs.map(([name,coef])=>
+    `<tr data-c="${coef}">
+      <td><strong>${name}</strong></td>
+      <td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td>
+      <td><strong>${coef}</strong></td>
+      <td class="bsum"><strong>0.00</strong></td>
+    </tr>`
+  ).join('');
+}
+
+function calcBac() {
+  let pts=0, coefs=0;
+  document.querySelectorAll('#bacBody tr').forEach(r=>{
+    const v=+r.querySelector('input').value||0, c=+r.dataset.c;
+    const name=r.cells[0].innerText;
+    if(name==='أمازيغية'){
+      const bonus=v>10?v-10:0;
+      r.querySelector('.bsum').innerHTML=`<strong>+${bonus.toFixed(2)}</strong>`;
+      pts+=bonus;
+    } else {
+      r.querySelector('.bsum').innerHTML=`<strong>${(v*c).toFixed(2)}</strong>`;
+      pts+=v*c; coefs+=c;
+    }
+  });
+  document.getElementById('bacPts').textContent=(pts).toFixed(2);
+  document.getElementById('bacCoef').textContent=coefs;
+  document.getElementById('bacAvg').textContent=(pts/coefs).toFixed(2);
+  trackGuest();
+}
+
+// ══════════════════════════════════════════════
+// CLOUD SAVE / LOAD
+// ══════════════════════════════════════════════
+async function saveCloud() {
+  if(isGuest){toast('⚠️ وضع الضيف — سجل الدخول للحفظ','err');return;}
+  try {
+    const vals=[]; document.querySelectorAll('#gpaBody input').forEach(i=>vals.push(i.value));
+    const yr=document.getElementById('yearSel').value, st=document.getElementById('streamSel').value;
+    const ex=await _db.listDocuments(DB_ID,COL_GRD,[Query.equal('userId',curUser.$id),Query.equal('year',yr),Query.equal('stream',st)]);
+    const data={userId:curUser.$id,year:yr,stream:st,grades:JSON.stringify(vals),updatedAt:new Date().toISOString()};
+    if(ex.documents.length) await _db.updateDocument(DB_ID,COL_GRD,ex.documents[0].$id,data);
+    else await _db.createDocument(DB_ID,COL_GRD,ID.unique(),data);
+    toast('✓ تم الحفظ في السحابة!');
+  } catch(e){toast('⚠️ فشل الحفظ','err');}
+}
+
+async function loadCloud() {
+  if(isGuest){toast('⚠️ وضع الضيف — سجل الدخول للاسترجاع','err');return;}
+  try {
+    const yr=document.getElementById('yearSel').value, st=document.getElementById('streamSel').value;
+    const res=await _db.listDocuments(DB_ID,COL_GRD,[Query.equal('userId',curUser.$id),Query.equal('year',yr),Query.equal('stream',st)]);
+    if(!res.documents.length){toast('⚠️ لا توجد بيانات محفوظة','err');return;}
+    const vals=JSON.parse(res.documents[0].grades);
+    document.querySelectorAll('#gpaBody input').forEach((i,idx)=>{if(vals[idx]!==undefined)i.value=vals[idx];});
+    toast('✓ تم الاسترجاع!');
+  } catch(e){toast('⚠️ فشل الاسترجاع','err');}
+}
+
+function captureImg() {
+  if(isGuest){toast('⚠️ وضع الضيف — سجل الدخول','err');return;}
+  const el=document.getElementById('gpaResult');
+  if(!el.classList.contains('show')){toast('⚠️ احسب المعدل أولاً','err');return;}
+  html2canvas(el,{backgroundColor:null,scale:2}).then(c=>{
+    const a=document.createElement('a'); a.download='معدلي-HMD.png'; a.href=c.toDataURL(); a.click();
+    toast('✓ تم حفظ الصورة 📸');
+  });
+}
+
+// ══════════════════════════════════════════════
+// AI IMAGE SCANNING
+// ══════════════════════════════════════════════
+function openAI() {
+  document.getElementById('aiModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeAI() {
+  document.getElementById('aiModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function onImgSelect(e) {
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    imgB64=ev.target.result.split(',')[1];
+    document.getElementById('previewImg').src=ev.target.result;
+    document.getElementById('imgPreview').classList.add('show');
+    document.getElementById('analyzeBtn').style.display='block';
+    document.getElementById('dropZone').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetImg() {
+  imgB64=null;
+  document.getElementById('imgFile').value='';
+  document.getElementById('imgPreview').classList.remove('show');
+  document.getElementById('analyzeBtn').style.display='none';
+  document.getElementById('dropZone').style.display='block';
+}
+
+function resetAI() {
+  resetImg();
+  document.getElementById('aiLoading').classList.remove('show');
+  document.getElementById('aiRes').classList.remove('show');
+  document.getElementById('aiUpload').style.display='block';
+  aiData=null;
+}
+
+async function runAI() {
+  if(!imgB64){toast('⚠️ اختر صورة أولاً','err');return;}
+  if(!ANTHROPIC_KEY || ANTHROPIC_KEY.length < 20){
+    toast('⚠️ يرجى إضافة Anthropic API Key في الكود','err');
+    return;
+  }
+
+  const yr=document.getElementById('yearSel').value, st=document.getElementById('streamSel').value;
+  let subs=[...SUBJECTS[yr][st]];
+  if(document.getElementById('tamChk').checked) subs.push(['أمازيغية',2]);
+  if(document.getElementById('artChk').checked) subs.push(['تربية فنية',1]);
+  const subNames=subs.map(s=>s[0]).join('، ');
+
+  document.getElementById('aiUpload').style.display='none';
+  document.getElementById('aiLoading').classList.add('show');
+
+  const steps=['s1','s2','s3','s4'];
+  for(let i=0;i<steps.length;i++){
+    await new Promise(r=>setTimeout(r,650));
+    if(i>0) document.getElementById(steps[i-1]).className='ai-step done';
+    document.getElementById(steps[i]).className='ai-step active';
+  }
+
+  try {
+    const prompt=`أنت نظام متخصص في قراءة كشوف النقاط الجزائرية.
+
+حلل هذه الصورة واستخرج العلامات.
+
+المواد: ${subNames}
+
+أجب فقط بـ JSON بهذا الشكل بدون أي نص إضافي:
+{
+  "subjects": [
+    {
+      "name": "اسم المادة",
+      "taqdim": رقم أو null,
+      "amal": رقم أو null,
+      "farod1": رقم أو null,
+      "farod2": رقم أو null,
+      "ikhtibار": رقم أو null
+    }
+  ],
+  "confidence": "high|medium|low"
+}
+
+قواعد: الأرقام 0-20، إذا لم تجد العلامة ضع null`;
+
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},
+          {type:'text',text:prompt}
+        ]}]
+      })
+    });
+
+    const data=await resp.json();
+    document.getElementById(steps[3]).className='ai-step done';
+    await new Promise(r=>setTimeout(r,400));
+
+    let txt=data.content?.map(c=>c.text||'').join('')||'';
+    txt=txt.replace(/```json|```/g,'').trim();
+    aiData=JSON.parse(txt);
+    renderAIResults(aiData);
+
+  } catch(e) {
+    console.error(e);
+    document.getElementById('aiLoading').classList.remove('show');
+    document.getElementById('aiUpload').style.display='block';
+    resetImg();
+    toast('⚠️ فشل التحليل — تأكد من وضوح الصورة','err');
+  }
+}
+
+function renderAIResults(parsed) {
+  document.getElementById('aiLoading').classList.remove('show');
+  const list=document.getElementById('aiResList');
+  list.innerHTML='';
+  if(!parsed.subjects?.length){
+    list.innerHTML='<p style="text-align:center;color:#f87171;padding:12px;">⚠️ لم يتم العثور على علامات</p>';
+  } else {
+    parsed.subjects.forEach(s=>{
+      if(!s.name) return;
+      const grades=[];
+      if(s.taqdim!=null) grades.push(`ت.م: ${s.taqdim}`);
+      if(s.amal!=null)   grades.push(`أ.ت: ${s.amal}`);
+      if(s.farod1!=null) grades.push(`ف1: ${s.farod1}`);
+      if(s.farod2!=null&&s.farod2>0) grades.push(`ف2: ${s.farod2}`);
+      if(s['ikhtibار']!=null) grades.push(`اختبار: ${s['ikhtibار']}`);
+      if(!grades.length) return;
+      list.innerHTML+=`<div class="ai-result-item">
+        <span class="ai-subj">${s.name}</span>
+        <div class="ai-grades">${grades.map(g=>`<span class="ai-chip">${g}</span>`).join('')}</div>
+      </div>`;
+    });
+  }
+  document.getElementById('aiRes').classList.add('show');
+}
+
+function applyAI() {
+  if(!aiData?.subjects){toast('⚠️ لا توجد بيانات','err');return;}
+  let filled=0;
+  document.querySelectorAll('#gpaBody tr').forEach(row=>{
+    const subj=row.cells[0].innerText.trim();
+    const ins=row.querySelectorAll('input');
+    const match=aiData.subjects.find(s=>{
+      if(!s.name) return false;
+      const n=s.name.trim();
+      return n===subj||subj.includes(n)||n.includes(subj)||
+             subj.replace(/\s/g,'').includes(n.replace(/\s/g,''));
+    });
+    if(match){
+      if(match.taqdim!=null&&ins[0]){ins[0].value=match.taqdim;filled++;}
+      if(match.amal!=null&&ins[1]) ins[1].value=match.amal;
+      if(match.farod1!=null&&ins[2]) ins[2].value=match.farod1;
+      if(match.farod2!=null&&match.farod2>0&&ins[3]) ins[3].value=match.farod2;
+      if(match['ikhtibار']!=null&&ins[4]) ins[4].value=match['ikhtibار'];
+    }
+  });
+  closeAI(); resetAI();
+  filled>0
+    ? toast(`✨ تم ملء ${filled} مادة — تحقق وانقر احسب`)
+    : toast('⚠️ لم يتطابق أي مادة — تحقق من الشعبة','err');
+  if(filled>0) document.getElementById('gpaBody').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+// Drag & Drop
+const dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault(); dz.classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/')){
+    const dt=new DataTransfer(); dt.items.add(f);
+    document.getElementById('imgFile').files=dt.files;
+    onImgSelect({target:{files:[f]}});
+  }
+});
+document.getElementById('aiModal').addEventListener('click',e=>{
+  if(e.target===e.currentTarget) closeAI();
+});
+
+// ══════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════
+function showTab(i) {
+  document.querySelectorAll('.nav-tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));
+  if(i!==99) document.getElementById('adminPanel').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════════
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const ico=document.getElementById('themeIco');
+  const light=document.body.classList.contains('light');
+  ico.className=light?'fas fa-moon':'fas fa-sun';
+  localStorage.setItem('hmd_theme', light?'light':'dark');
+}
+
+// ══════════════════════════════════════════════
+// GUEST POPUP
+// ══════════════════════════════════════════════
+function trackGuest() {
+  if(!isGuest) return;
+  guestActions++;
+  if((guestActions===3&&popCount===0)||(guestActions===7&&popCount===1))
+    setTimeout(showPop, 1500);
+}
+function showPop() {
+  if(!isGuest||popCount>=2) return;
+  document.getElementById('signupPop').classList.add('show');
+  popCount++;
+  setTimeout(()=>document.getElementById('signupPop').classList.remove('show'), 12000);
+}
+function closePop() { document.getElementById('signupPop').classList.remove('show'); }
+function showRegPop() { closePop(); showLogin(); authTab('register'); }
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async () => {
+  loadStreams();
+  loadBacStreams();
+
+  const theme=localStorage.getItem('hmd_theme')||'dark';
+  if(theme==='light'){
+    document.body.classList.add('light');
+    document.getElementById('themeIco').className='fas fa-moon';
+  }
+
+  // Login with Enter key
+  document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+  try {
+    curUser = await _account.get();
+    isAdmin = curUser.email===ADMIN_EMAIL; isGuest=false;
+    await handleOAuth();
+  } catch(e) { showLogin(); }
+});
+</script>
 </body>
 </html>
