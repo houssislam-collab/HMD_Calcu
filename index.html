@@ -1,1689 +1,1266 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>HMD - BAC 2026</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المصلّي الذهبي — عبد القادر قصورة</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
+/* ════════════════════════════════════════
+   GOLD LUXURY DESIGN SYSTEM
+════════════════════════════════════════ */
 :root {
-  --ink: #0a0a0f;
-  --ink2: #16161f;
-  --ink3: #1e1e2a;
-  --surface: #f5f3ee;
-  --surface2: #ede9e0;
-  --gold: #c9a84c;
-  --gold2: #e8c56a;
-  --crimson: #c0392b;
-  --teal: #1a7a6e;
-  --teal2: #22a090;
-  --muted: #6b6878;
-  --border: rgba(201,168,76,0.25);
-  --radius: 16px;
-  --ff: 'Tajawal', sans-serif;
+  --g1: #C9A84C;
+  --g2: #E8C97A;
+  --g3: #F5E4A8;
+  --g4: #A07830;
+  --night: #06090F;
+  --night2: #0C1220;
+  --night3: #111B35;
+  --night4: #192548;
+  --teal: #0D7377;
+  --teal2: #14ACAF;
+  --green: #27AE60;
+  --red: #C0392B;
+  --text: #EEE8D8;
+  --text2: rgba(238,232,216,0.6);
+  --text3: rgba(238,232,216,0.3);
+  --card: rgba(255,255,255,0.03);
+  --card2: rgba(255,255,255,0.06);
+  --border: rgba(201,168,76,0.2);
+  --border2: rgba(201,168,76,0.4);
 }
 
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-body {
-  font-family: var(--ff);
-  background: var(--ink);
-  color: var(--surface);
-  min-height: 100vh;
-  overflow-x: hidden;
-  line-height: 1.6;
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Cairo',sans-serif;
+  background:var(--night);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  cursor:default;
 }
 
-/* ── NOISE TEXTURE ── */
-body::before {
-  content:'';
-  position:fixed; inset:0; z-index:0; pointer-events:none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity:.4;
+/* Gold grain texture overlay */
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:999;opacity:0.4;
 }
 
-/* ── LOGIN OVERLAY ── */
-#loginOverlay {
-  position:fixed; inset:0; z-index:9999;
-  background: linear-gradient(135deg, #0a0a0f 0%, #16161f 100%);
-  display:flex; align-items:center; justify-content:center; padding:16px;
-  transition: opacity .4s ease;
-}
-#loginOverlay.hidden { opacity:0; pointer-events:none; }
+/* ── CANVAS STARS ── */
+#canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
 
-.login-box {
-  background: var(--ink2);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 40px 32px;
-  width: 100%; max-width: 440px;
-  box-shadow: 0 40px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(201,168,76,.15);
-  animation: slideUp .5s cubic-bezier(.16,1,.3,1);
-}
-
-@keyframes slideUp {
-  from { opacity:0; transform:translateY(40px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-
-.login-brand {
-  text-align:center; margin-bottom:32px;
-}
-
-.login-logo {
-  width:64px; height:64px; margin:0 auto 16px;
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  border-radius:18px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.8rem;
-  box-shadow: 0 12px 30px rgba(201,168,76,.3);
-}
-
-.login-title {
-  font-size:1.7rem; font-weight:900; letter-spacing:-0.5px;
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-}
-
-.login-sub { color:var(--muted); font-size:.85rem; margin-top:4px; }
-
-.auth-tabs {
-  display:flex; background:var(--ink3); border-radius:12px; padding:4px;
-  margin-bottom:24px;
-}
-
-.auth-tab {
-  flex:1; padding:10px; border:none; background:transparent;
-  border-radius:9px; font-family:var(--ff); font-weight:700; font-size:.9rem;
-  color:var(--muted); cursor:pointer; transition:all .3s;
-}
-
-.auth-tab.active {
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: var(--ink); box-shadow:0 4px 12px rgba(201,168,76,.3);
-}
-
-.form-tab { display:none; }
-.form-tab.active { display:block; }
-
-.field { margin-bottom:16px; }
-.field label { display:block; font-weight:700; font-size:.82rem; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
-
-.field input {
-  width:100%; padding:12px 16px;
-  background:var(--ink3); border:1.5px solid rgba(255,255,255,.08);
-  border-radius:12px; font-family:var(--ff); font-size:.95rem; color:var(--surface);
-  transition:all .3s;
-}
-
-.field input:focus {
-  outline:none; border-color: var(--gold);
-  box-shadow:0 0 0 4px rgba(201,168,76,.12);
-}
-
-.err-msg {
-  background:rgba(192,57,43,.15); border:1px solid rgba(192,57,43,.3);
-  color:#ff8a7a; padding:10px 14px; border-radius:10px;
-  font-size:.83rem; margin-bottom:14px; display:none;
-}
-.err-msg.show { display:block; }
-
-.btn-gold {
-  width:100%; padding:14px; border:none; border-radius:12px; cursor:pointer;
-  font-family:var(--ff); font-size:1rem; font-weight:800;
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color:var(--ink); transition:all .3s;
-  box-shadow: 0 4px 16px rgba(201,168,76,.3);
-}
-.btn-gold:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,168,76,.4); }
-.btn-gold:disabled { opacity:.5; cursor:not-allowed; }
-
-.divider { text-align:center; color:var(--muted); font-size:.8rem; margin:14px 0; position:relative; }
-.divider::before, .divider::after {
-  content:''; position:absolute; top:50%; width:40%; height:1px;
-  background:rgba(255,255,255,.08);
-}
-.divider::before { right:0; } .divider::after { left:0; }
-
-.btn-outline {
-  width:100%; padding:12px; border:1.5px solid rgba(255,255,255,.1);
-  border-radius:12px; background:transparent; cursor:pointer;
-  font-family:var(--ff); font-size:.9rem; font-weight:700; color:var(--surface);
-  transition:all .3s; display:flex; align-items:center; justify-content:center; gap:8px;
-}
-.btn-outline:hover { border-color:var(--gold); color:var(--gold); }
-
-.btn-ghost {
-  width:100%; padding:12px; border:none; background:rgba(255,255,255,.05);
-  border-radius:12px; cursor:pointer; font-family:var(--ff);
-  font-size:.9rem; font-weight:700; color:var(--muted); transition:all .3s; margin-top:8px;
-}
-.btn-ghost:hover { background:rgba(255,255,255,.08); color:var(--surface); }
-
-/* ── USER BAR ── */
-#userBar {
-  display:none; align-items:center; gap:10px;
-  padding:10px 16px; background:var(--ink2);
+/* ════════════════════════════════════════
+   LUXURY NAVBAR
+════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(6,9,15,0.92);
+  backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
+  padding:0 20px;
+  height:60px;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
 }
-#userBar.show { display:flex; }
-
-.u-avatar {
-  width:34px; height:34px; border-radius:50%;
-  background:linear-gradient(135deg, var(--gold), var(--gold2));
-  display:flex; align-items:center; justify-content:center;
-  font-weight:800; font-size:.9rem; color:var(--ink); flex-shrink:0;
+nav::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--g1),transparent);
 }
-
-.u-name { font-weight:700; font-size:.85rem; flex:1; }
-.guest-chip { background:var(--ink3); color:var(--muted); padding:2px 10px; border-radius:20px; font-size:.7rem; font-weight:700; }
-
-.btn-sm {
-  padding:6px 14px; border:none; border-radius:20px; cursor:pointer;
-  font-family:var(--ff); font-size:.75rem; font-weight:700; transition:all .3s;
-}
-.btn-danger { background:var(--crimson); color:white; }
-.btn-danger:hover { background:#e74c3c; }
-.btn-teal { background:var(--teal); color:white; }
-.btn-teal:hover { background:var(--teal2); }
-
-/* ── HEADER ── */
-.site-header {
-  position:relative; z-index:1;
-  background: linear-gradient(180deg, var(--ink2) 0%, transparent 100%);
-  padding:40px 20px 30px; text-align:center;
-  border-bottom:1px solid var(--border);
-}
-
-.header-emblem {
-  width:72px; height:72px; margin:0 auto 16px;
-  background:linear-gradient(135deg, var(--gold), var(--gold2));
-  border-radius:22px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:2.2rem;
-  box-shadow:0 16px 40px rgba(201,168,76,.25);
-  animation: float 4s ease-in-out infinite;
-}
-@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-
-.site-title {
-  font-size:2.2rem; font-weight:900; letter-spacing:-1px;
-  background:linear-gradient(135deg, var(--gold) 0%, var(--gold2) 50%, #fff 100%);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-}
-
-.site-sub { color:var(--muted); font-size:.9rem; margin-top:4px; }
-
-.theme-btn {
-  position:absolute; top:20px; right:16px;
-  width:42px; height:42px; border-radius:50%;
-  background:rgba(255,255,255,.06); border:1px solid var(--border);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; color:var(--gold); font-size:1.1rem; transition:all .3s;
-}
-.theme-btn:hover { background:rgba(201,168,76,.15); transform:rotate(20deg); }
-
-/* ── NAVIGATION TABS ── */
-.nav-tabs {
-  display:flex; gap:6px; padding:14px 12px;
-  background:var(--ink2); border-bottom:1px solid var(--border);
-  overflow-x:auto; -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-}
-.nav-tabs::-webkit-scrollbar { display:none; }
-
-.nav-tab {
-  display:flex; align-items:center; gap:6px;
-  padding:9px 18px; border:1.5px solid rgba(255,255,255,.07);
-  border-radius:30px; background:transparent; cursor:pointer;
-  font-family:var(--ff); font-size:.82rem; font-weight:700;
-  color:var(--muted); white-space:nowrap; flex-shrink:0; transition:all .3s;
-}
-.nav-tab:hover { border-color:var(--border); color:var(--gold); }
-.nav-tab.active {
-  background:linear-gradient(135deg, var(--gold), var(--gold2));
-  color:var(--ink); border-color:transparent;
-  box-shadow:0 4px 14px rgba(201,168,76,.3);
-}
-
-/* ── MAIN CONTENT ── */
-.main { max-width:1100px; margin:0 auto; padding:24px 14px; position:relative; z-index:1; }
-
-.panel { display:none; animation:fadeUp .4s ease; }
-.panel.active { display:block; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-
-/* ── CARD ── */
-.card {
-  background:var(--ink2); border:1px solid var(--border);
-  border-radius:var(--radius); padding:28px 20px; margin-bottom:20px;
-  box-shadow:0 8px 32px rgba(0,0,0,.3);
-}
-
-.card-header { text-align:center; margin-bottom:24px; }
-.card-icon { font-size:2.8rem; margin-bottom:10px; }
-.card-title {
-  font-size:1.5rem; font-weight:900; letter-spacing:-.5px;
-  background:linear-gradient(135deg, var(--gold), var(--gold2));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  margin-bottom:6px;
-}
-.card-sub { color:var(--muted); font-size:.85rem; }
-
-/* ── FORM CONTROLS ── */
-.row { display:grid; gap:12px; margin-bottom:16px; }
-.row.c2 { grid-template-columns:1fr 1fr; }
-.row.c3 { grid-template-columns:1fr 1fr 1fr; }
-.row.c4 { grid-template-columns:1fr 1fr 1fr 1fr; }
-
-@media(max-width:600px) {
-  .row.c2, .row.c3, .row.c4 { grid-template-columns:1fr; }
-}
-
-.ctrl-label { display:block; font-weight:700; font-size:.8rem; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
-
-select, input[type=number], input[type=text] {
-  width:100%; padding:10px 14px;
-  background:var(--ink3); border:1.5px solid rgba(255,255,255,.07);
-  border-radius:10px; font-family:var(--ff); font-size:.9rem; color:var(--surface);
-  transition:all .3s; -webkit-appearance:none;
-}
-select:focus, input:focus {
-  outline:none; border-color:var(--gold);
-  box-shadow:0 0 0 3px rgba(201,168,76,.1);
-}
-select option { background:var(--ink2); }
-
-.chk-group { display:flex; align-items:center; gap:10px; margin:10px 0; }
-.chk-group input[type=checkbox] { width:18px; height:18px; accent-color:var(--gold); cursor:pointer; }
-.chk-group label { font-size:.88rem; font-weight:600; color:var(--surface); cursor:pointer; }
-
-/* ── TABLE ── */
-.tbl-wrap { width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; margin:16px 0; border-radius:12px; border:1px solid var(--border); }
-
-table { width:100%; border-collapse:collapse; font-size:.75rem; }
-thead { background:linear-gradient(135deg, var(--gold), var(--gold2)); }
-th { padding:10px 6px; font-weight:800; color:var(--ink); font-size:.7rem; text-align:center; }
-td { padding:8px 4px; text-align:center; border-bottom:1px solid rgba(255,255,255,.04); }
-tbody tr { background:var(--ink2); transition:background .2s; }
-tbody tr:nth-child(even) { background:var(--ink3); }
-tbody tr:hover { background:rgba(201,168,76,.06); }
-
-tbody input[type=number] {
-  padding:5px 6px; font-size:.75rem; min-width:46px; text-align:center;
-  background:var(--ink); border-radius:8px;
-}
-
-/* ── BUTTONS ── */
-.btn-group { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
-
-.btn {
-  display:inline-flex; align-items:center; gap:6px;
-  padding:11px 22px; border:none; border-radius:12px; cursor:pointer;
-  font-family:var(--ff); font-size:.85rem; font-weight:800;
-  transition:all .3s; flex:1; min-width:130px; justify-content:center;
-}
-.btn:hover { transform:translateY(-2px); }
-
-.btn-primary {
-  background:linear-gradient(135deg, var(--gold), var(--gold2));
-  color:var(--ink); box-shadow:0 4px 14px rgba(201,168,76,.3);
-}
-.btn-primary:hover { box-shadow:0 8px 24px rgba(201,168,76,.4); }
-
-.btn-save {
-  background:linear-gradient(135deg, var(--teal), var(--teal2));
-  color:white; box-shadow:0 4px 14px rgba(26,122,110,.25);
-}
-
-.btn-load {
-  background:linear-gradient(135deg, #2d4a7a, #3a5fa0);
-  color:white; box-shadow:0 4px 14px rgba(45,74,122,.25);
-}
-
-.btn-cam {
-  background:linear-gradient(135deg, #6b21a8, #9333ea);
-  color:white; box-shadow:0 4px 14px rgba(107,33,168,.25);
-}
-
-/* ── AI BUTTON ── */
-.btn-ai {
-  background:linear-gradient(135deg, #7c3aed, #db2777, #ea580c);
-  background-size:200% 200%; animation:gradShift 3s ease infinite;
-  color:white; box-shadow:0 4px 20px rgba(124,58,237,.4);
-  position:relative; overflow:hidden;
-}
-.btn-ai:hover { box-shadow:0 8px 30px rgba(124,58,237,.6); }
-@keyframes gradShift {
-  0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%}
-}
-.ai-badge {
-  background:rgba(255,255,255,.2); padding:2px 6px;
-  border-radius:6px; font-size:.65rem; font-weight:900; letter-spacing:.5px;
-}
-
-/* ── RESULT BOX ── */
-.result {
-  display:none; text-align:center; padding:30px 20px;
-  border-radius:var(--radius); margin:20px 0;
-  border:1px solid var(--border);
-}
-.result.show { display:block; animation:bounceIn .6s cubic-bezier(.68,-.55,.265,1.55); }
-@keyframes bounceIn {
-  0%{opacity:0;transform:scale(.4)} 50%{transform:scale(1.05)} 70%{transform:scale(.95)} 100%{opacity:1;transform:scale(1)}
-}
-.result.excellent { background:linear-gradient(135deg,rgba(22,163,74,.2),rgba(34,197,94,.15)); border-color:rgba(34,197,94,.3); }
-.result.good      { background:linear-gradient(135deg,rgba(6,182,212,.2),rgba(8,145,178,.15)); border-color:rgba(6,182,212,.3); }
-.result.average   { background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(217,119,6,.15)); border-color:rgba(245,158,11,.3); }
-.result.weak      { background:linear-gradient(135deg,rgba(192,57,43,.2),rgba(239,68,68,.15)); border-color:rgba(192,57,43,.3); }
-
-.result-icon { font-size:2.8rem; margin-bottom:10px; }
-.result-val  { font-size:1.8rem; font-weight:900; margin-bottom:6px; }
-.result.excellent .result-val { color:#4ade80; }
-.result.good      .result-val { color:#38bdf8; }
-.result.average   .result-val { color:#fbbf24; }
-.result.weak      .result-val { color:#f87171; }
-.result-msg { font-size:.95rem; font-weight:600; color:var(--muted); }
-
-/* ── STATS GRID ── */
-.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px; }
-@media(max-width:500px) { .stats { grid-template-columns:1fr; } }
-
-.stat-card {
-  background:var(--ink3); border:1px solid var(--border);
-  border-radius:14px; padding:20px; text-align:center;
-}
-.stat-label { font-size:.75rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
-.stat-val {
-  font-size:1.8rem; font-weight:900;
-  background:linear-gradient(135deg, var(--gold), var(--gold2));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-}
-
-/* ── GUEST NOTICE ── */
-.guest-notice {
-  display:none;
-  background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.2);
-  border-radius:12px; padding:12px 16px; text-align:center;
-  font-size:.85rem; color:var(--gold); margin:14px 0;
-}
-.guest-notice.show { display:block; }
-.disabled { opacity:.4; cursor:not-allowed !important; pointer-events:none; }
-
-/* ── TOAST ── */
-#toast {
-  position:fixed; top:16px; left:50%;
-  transform:translateX(-50%) translateY(-100px);
-  background:var(--ink2); border:1px solid var(--border);
-  color:var(--surface); padding:12px 24px; border-radius:30px;
-  font-weight:700; font-size:.88rem; z-index:99999;
-  box-shadow:0 8px 30px rgba(0,0,0,.4);
-  transition:transform .4s cubic-bezier(.68,-.55,.265,1.55);
+.nav-brand{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Amiri',serif;font-size:1.25rem;color:var(--g2);
   white-space:nowrap;
 }
-#toast.show { transform:translateX(-50%) translateY(0); }
-#toast.ok  { border-color:rgba(34,197,94,.4); color:#4ade80; }
-#toast.err { border-color:rgba(239,68,68,.4); color:#f87171; }
-
-/* ── AI MODAL ── */
-#aiModal {
-  position:fixed; inset:0; z-index:9990;
-  background:rgba(0,0,0,.85); backdrop-filter:blur(14px);
-  display:flex; align-items:center; justify-content:center; padding:16px;
-  opacity:0; pointer-events:none; transition:opacity .3s;
+.nav-brand .crown{
+  width:32px;height:32px;background:linear-gradient(135deg,var(--g1),var(--g4));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;box-shadow:0 0 12px rgba(201,168,76,0.4);
 }
-#aiModal.open { opacity:1; pointer-events:all; }
-
-.ai-box {
-  background:var(--ink2); border:1px solid rgba(124,58,237,.3);
-  border-radius:24px; padding:28px 22px; max-width:500px; width:100%;
-  max-height:90vh; overflow-y:auto;
-  box-shadow:0 40px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(124,58,237,.15);
-  animation:slideUp .4s cubic-bezier(.16,1,.3,1);
+.lang-switcher{display:flex;gap:4px;}
+.lang-btn{
+  padding:4px 10px;border-radius:20px;font-size:0.7rem;cursor:pointer;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text2);font-family:'Cairo',sans-serif;transition:all 0.3s;
 }
-
-.ai-head {
-  display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;
+.lang-btn.active,.lang-btn:hover{background:rgba(201,168,76,0.15);color:var(--g2);border-color:var(--border2);}
+.nav-tabs{display:flex;gap:2px;}
+.ntab{
+  padding:6px 12px;border-radius:20px;font-size:0.75rem;cursor:pointer;
+  border:none;background:transparent;color:var(--text2);
+  font-family:'Cairo',sans-serif;transition:all 0.3s;
 }
-
-.ai-title {
-  font-size:1.15rem; font-weight:900;
-  background:linear-gradient(135deg,#a855f7,#ec4899);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+.ntab:hover,.ntab.active{background:rgba(201,168,76,0.12);color:var(--g2);}
+.nav-user{display:flex;align-items:center;gap:8px;}
+.uav{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g4),var(--night4));
+  border:2px solid var(--g1);display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:var(--g2);font-weight:700;flex-shrink:0;
+  box-shadow:0 0 14px rgba(201,168,76,0.3);
 }
+.utxt{font-size:0.7rem;color:var(--g2);line-height:1.3;}
+.uktxt{font-size:0.6rem;color:var(--text3);}
 
-.ai-close {
-  width:34px; height:34px; border-radius:50%;
-  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
-  color:var(--muted); cursor:pointer; font-size:1rem;
-  display:flex; align-items:center; justify-content:center; transition:all .3s;
-}
-.ai-close:hover { transform:rotate(90deg); color:var(--surface); }
-
-/* Upload Zone */
-.upload-zone {
-  border:2px dashed rgba(168,85,247,.35); border-radius:16px; padding:40px 20px;
-  text-align:center; cursor:pointer; transition:all .3s; position:relative; overflow:hidden;
-  background:linear-gradient(135deg,rgba(124,58,237,.04),rgba(219,39,119,.04));
-}
-.upload-zone:hover, .upload-zone.drag { border-color:#a855f7; background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(219,39,119,.08)); }
-.upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-.upload-icon { font-size:3rem; margin-bottom:10px; }
-.upload-txt { font-weight:800; color:#a855f7; font-size:.95rem; margin-bottom:6px; }
-.upload-hint { font-size:.78rem; color:var(--muted); }
-
-/* Preview */
-.img-preview { display:none; margin:16px 0; text-align:center; }
-.img-preview.show { display:block; }
-.img-preview img { max-width:100%; max-height:220px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.3); object-fit:contain; }
-.btn-change { display:inline-block; margin-top:8px; padding:5px 14px;
-  background:var(--ink3); border:1px solid rgba(255,255,255,.08); border-radius:20px;
-  font-size:.78rem; color:var(--muted); cursor:pointer; transition:all .3s; }
-.btn-change:hover { color:var(--surface); border-color:rgba(255,255,255,.2); }
-
-/* AI Loading */
-.ai-loading { display:none; text-align:center; padding:30px 20px; }
-.ai-loading.show { display:block; }
-
-.spinner {
-  width:56px; height:56px; margin:0 auto 16px; position:relative;
-}
-.spinner::before, .spinner::after {
-  content:''; position:absolute; inset:0; border-radius:50%; border:4px solid transparent;
-}
-.spinner::before { border-top-color:#7c3aed; border-right-color:#db2777; animation:spin .8s linear infinite; }
-.spinner::after { border-bottom-color:#ea580c; border-left-color:#7c3aed; animation:spin .6s linear infinite reverse; inset:8px; }
-@keyframes spin { to{transform:rotate(360deg)} }
-
-.ai-load-txt {
-  font-weight:800; font-size:1rem;
-  background:linear-gradient(135deg,#a855f7,#ec4899);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  margin-bottom:6px;
-}
-.ai-load-sub { font-size:.8rem; color:var(--muted); }
-
-.ai-steps { display:flex; flex-direction:column; gap:8px; margin-top:16px; }
-.ai-step {
-  display:flex; align-items:center; gap:10px; padding:8px 14px;
-  border-radius:10px; background:var(--ink3); font-size:.8rem; color:var(--muted);
-  opacity:.4; transition:all .4s;
-}
-.ai-step.active { opacity:1; background:rgba(124,58,237,.15); color:#a855f7; }
-.ai-step.done   { opacity:1; background:rgba(34,197,94,.1); color:#4ade80; }
-
-/* AI Results */
-.ai-results { display:none; margin-top:16px; }
-.ai-results.show { display:block; }
-
-.ai-result-item {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:10px 14px; margin-bottom:8px; background:var(--ink3);
-  border-radius:10px; border-right:3px solid #7c3aed; font-size:.83rem;
-}
-.ai-subj { font-weight:700; color:var(--surface); }
-.ai-grades { display:flex; gap:6px; flex-wrap:wrap; }
-.ai-chip {
-  background:linear-gradient(135deg,#7c3aed,#db2777);
-  color:white; padding:2px 8px; border-radius:6px; font-size:.72rem; font-weight:700;
+/* ════════════════════════════════════════
+   HERO — LUXURY GOLD SKY
+════════════════════════════════════════ */
+.hero{
+  position:relative;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:80px 20px 220px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 0%,#1a2a5a 0%,#0c1220 40%,#06090F 100%);
 }
 
-.ai-warn {
-  background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2);
-  border-radius:10px; padding:10px 14px; font-size:.78rem; color:#fbbf24;
-  display:flex; gap:8px; margin-top:12px;
+/* Animated gold aurora */
+.aurora{
+  position:absolute;top:-20%;left:-20%;right:-20%;bottom:0;
+  background:
+    radial-gradient(ellipse 80% 40% at 20% 30%,rgba(201,168,76,0.06) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 20%,rgba(13,115,119,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 100% 30% at 50% 60%,rgba(201,168,76,0.04) 0%,transparent 60%);
+  animation:auroraMove 12s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes auroraMove{
+  from{transform:translateX(-3%) translateY(-3%) rotate(-1deg);}
+  to{transform:translateX(3%) translateY(3%) rotate(1deg);}
 }
 
-.btn-confirm {
-  width:100%; padding:14px; border:none; border-radius:12px; cursor:pointer;
-  font-family:var(--ff); font-size:1rem; font-weight:800;
-  background:linear-gradient(135deg,#7c3aed,#db2777,#ea580c);
-  background-size:200%; animation:gradShift 3s ease infinite;
-  color:white; box-shadow:0 6px 20px rgba(124,58,237,.4);
-  transition:all .3s; margin-top:16px;
+/* Glowing moon */
+.moon-glow{position:absolute;top:70px;right:8%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(245,224,96,0.18),transparent 70%);animation:mglow 5s ease-in-out infinite alternate;pointer-events:none;}
+@keyframes mglow{from{transform:scale(1);opacity:0.7;}to{transform:scale(1.4);opacity:1;}}
+.moon{
+  position:absolute;top:90px;right:calc(8% + 50px);
+  width:90px;height:90px;border-radius:50%;
+  background:radial-gradient(circle at 28% 28%,#FFFDE7,#F5D060 55%,#B8860B);
+  box-shadow:0 0 50px 15px rgba(245,208,96,0.45),0 0 100px 40px rgba(245,208,96,0.15);
+  animation:mfloat 7s ease-in-out infinite alternate;
 }
-.btn-confirm:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(124,58,237,.6); }
+.moon::after{content:'';position:absolute;top:12px;right:12px;width:64px;height:64px;border-radius:50%;box-shadow:-16px -7px 0 4px rgba(0,0,0,0.12);}
+@keyframes mfloat{from{transform:translateY(0);}to{transform:translateY(-15px);}}
 
-/* ── ADMIN PANEL ── */
-#adminPanel {
-  display:none; margin-bottom:20px;
+/* Greeting */
+.hero-greet{position:relative;z-index:10;text-align:center;margin-bottom:8px;animation:fadeUp 0.9s ease both;}
+.greet-ramadan{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(201,168,76,0.1);border:1px solid var(--border2);
+  padding:4px 16px;border-radius:30px;
+  font-size:0.8rem;color:var(--g2);margin-bottom:8px;
 }
-#adminPanel.show { display:block; }
-.admin-title {
-  font-size:1.4rem; font-weight:900; text-align:center; margin-bottom:16px;
-  background:linear-gradient(135deg, var(--gold), var(--crimson));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+.hero-name{font-family:'Amiri',serif;font-size:2rem;color:var(--g2);text-shadow:0 0 30px rgba(201,168,76,0.4);line-height:1.2;}
+.hero-kunya{font-size:0.85rem;color:var(--text3);margin-top:3px;}
+
+/* App badge */
+.app-badge{
+  position:relative;z-index:10;
+  display:inline-flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(6,9,15,0.9));
+  border:1px solid var(--border2);padding:10px 28px;border-radius:60px;
+  margin:14px 0 28px;animation:fadeUp 0.9s 0.1s ease both;
+  box-shadow:0 0 30px rgba(201,168,76,0.1),inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.app-badge h1{font-family:'Amiri',serif;font-size:1.6rem;color:var(--g2);}
+
+/* Countdown */
+.cd-wrap{position:relative;z-index:10;text-align:center;animation:fadeUp 0.9s 0.2s ease both;}
+.cd-label{font-size:0.85rem;color:var(--g2);opacity:0.8;margin-bottom:4px;letter-spacing:1px;}
+.cd-prayer{font-family:'Amiri',serif;font-size:2.2rem;color:white;margin-bottom:6px;text-shadow:0 2px 20px rgba(255,255,255,0.2);}
+
+/* SVG Ring */
+.ring-svg{display:block;margin:0 auto 8px;transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:3;}
+.ring-fill{fill:none;stroke:url(#goldGrad);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset 1s linear;}
+
+.cd-time{
+  font-family:'Playfair Display',serif;
+  font-size:5rem;font-weight:700;color:white;
+  letter-spacing:6px;line-height:1;
+  text-shadow:0 0 50px rgba(201,168,76,0.5),0 4px 30px rgba(0,0,0,0.5);
+  margin-bottom:22px;
+  animation:timePulse 1s ease-in-out infinite alternate;
+}
+@keyframes timePulse{
+  from{text-shadow:0 0 50px rgba(201,168,76,0.5),0 4px 30px rgba(0,0,0,0.5);}
+  to{text-shadow:0 0 80px rgba(201,168,76,0.9),0 4px 30px rgba(0,0,0,0.5);}
 }
 
-/* ── SIGNUP TOAST ── */
-#signupPop {
-  position:fixed; bottom:20px; right:20px; left:20px; max-width:380px; margin:auto;
-  background:var(--ink2); border:1px solid var(--border);
-  border-radius:16px; padding:20px 22px; z-index:9980;
-  transform:translateY(120%); transition:transform .5s cubic-bezier(.68,-.55,.265,1.55);
-  box-shadow:0 20px 60px rgba(0,0,0,.5);
+.loc-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,rgba(13,115,119,0.5),rgba(13,115,119,0.3));
+  border:1px solid var(--teal);padding:10px 24px;border-radius:40px;
+  font-size:0.88rem;cursor:pointer;transition:all 0.3s;
+  font-family:'Cairo',sans-serif;color:white;
+  box-shadow:0 0 20px rgba(13,115,119,0.2);
 }
-#signupPop.show { transform:translateY(0); }
-.pop-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.pop-title { font-weight:900; font-size:1rem; color:var(--gold); }
-.pop-close { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; transition:all .3s; }
-.pop-close:hover { color:var(--surface); transform:rotate(90deg); }
-.pop-txt { font-size:.85rem; color:var(--muted); margin-bottom:14px; line-height:1.5; }
-.pop-btns { display:flex; gap:8px; }
-.pop-btn-p {
-  flex:1; padding:10px; border:none; border-radius:10px; cursor:pointer;
-  font-family:var(--ff); font-weight:800; font-size:.85rem;
-  background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--ink);
-}
-.pop-btn-s {
-  flex:1; padding:10px; border:1px solid rgba(255,255,255,.1); border-radius:10px; cursor:pointer;
-  font-family:var(--ff); font-weight:700; font-size:.85rem;
-  background:transparent; color:var(--muted);
-}
-.pop-btn-s:hover { color:var(--surface); }
+.loc-btn:hover{background:var(--teal);transform:scale(1.04);box-shadow:0 0 30px rgba(13,115,119,0.4);}
 
-/* ── LIGHT MODE ── */
-body.light {
-  background:var(--surface);
-  color:var(--ink);
-}
-body.light .login-box,
-body.light .card,
-body.light #userBar,
-body.light .nav-tabs,
-body.light .site-header { background:white; }
-body.light .ai-box { background:white; }
-body.light .ai-step { background:#f1f5f9; }
-body.light .ai-step.active { background:rgba(124,58,237,.08); }
-body.light tbody tr { background:white; }
-body.light tbody tr:nth-child(even) { background:#f8fafc; }
-body.light select, body.light input[type=number], body.light input[type=text] { background:#f8fafc; color:var(--ink); }
-body.light .stat-card { background:#f8fafc; }
-body.light .upload-zone { background:rgba(124,58,237,.03); }
-body.light #signupPop, body.light #adminPanel .card { background:white; }
-body.light .ai-result-item { background:#f1f5f9; }
-body.light .field input { background:#f8fafc; color:var(--ink); border-color:#e2e8f0; }
-body.light .auth-tab { color:#64748b; }
-body.light .field label, body.light .ctrl-label, body.light .stat-label { color:#64748b; }
+/* Mosque */
+.mosque-wrap{position:absolute;bottom:0;left:0;right:0;height:220px;pointer-events:none;}
+.mosque-wrap svg{width:100%;height:100%;}
 
-@media(max-width:480px) {
-  .site-title { font-size:1.6rem; }
-  .card { padding:20px 14px; }
-  .btn { min-width:110px; padding:10px 14px; font-size:.8rem; }
-  .stats { grid-template-columns:1fr 1fr; }
+/* Scroll hint */
+.scroll-hint{
+  position:absolute;bottom:228px;left:50%;transform:translateX(-50%);
+  z-index:10;color:var(--text3);font-size:0.7rem;
+  animation:sbounce 2s infinite;display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+@keyframes sbounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(8px);}}
+
+/* ════════════════════════════════════════
+   MAIN CONTENT
+════════════════════════════════════════ */
+.main{position:relative;z-index:5;max-width:1000px;margin:0 auto;padding:28px 14px 80px;}
+.sec{margin-bottom:32px;}
+.sec-hd{
+  font-family:'Amiri',serif;font-size:1.2rem;color:var(--g2);
+  margin-bottom:16px;display:flex;align-items:center;gap:12px;
+}
+.sec-hd::after{content:'';flex:1;height:1px;background:linear-gradient(to left,transparent,var(--border));}
+
+/* Gold divider */
+.gold-divider{height:1px;background:linear-gradient(90deg,transparent,var(--g1),transparent);margin:8px 0 24px;opacity:0.4;}
+
+/* ── PROFILE CARD ── */
+.profile-card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(6,9,15,0.95));
+  border:1px solid var(--border2);border-radius:24px;
+  padding:26px;display:flex;align-items:center;gap:20px;margin-bottom:24px;
+  box-shadow:0 4px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(201,168,76,0.05);
+  animation:fadeUp 0.6s ease both;
+}
+.profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g1),var(--g2),var(--g1),transparent);}
+.profile-card::after{content:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';position:absolute;bottom:10px;right:20px;font-family:'Amiri',serif;font-size:0.8rem;color:rgba(201,168,76,0.15);}
+.pav{
+  width:72px;height:72px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--g4),var(--night4));
+  border:3px solid var(--g1);display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;color:var(--g2);
+  box-shadow:0 0 24px rgba(201,168,76,0.35),0 0 0 6px rgba(201,168,76,0.06);
+}
+.pinfo .pg{font-size:0.73rem;color:var(--text3);margin-bottom:2px;}
+.pinfo .pn{font-family:'Amiri',serif;font-size:1.6rem;color:var(--g2);text-shadow:0 0 20px rgba(201,168,76,0.25);line-height:1.2;}
+.pinfo .pk{font-size:0.78rem;color:var(--text3);margin-bottom:10px;}
+.pstats{display:flex;gap:20px;}
+.ps-num{font-size:1.1rem;font-weight:700;color:var(--g2);}
+.ps-lbl{font-size:0.6rem;color:var(--text3);}
+
+/* ── DATE BAR ── */
+.date-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:14px 22px;margin-bottom:22px;
+  backdrop-filter:blur(8px);
+}
+.hijri{font-size:1rem;color:var(--g2);font-weight:700;font-family:'Amiri',serif;}
+.greg{font-size:0.82rem;color:var(--text2);}
+
+/* ── PRAYER PROGRESS ── */
+.pp-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 22px;margin-bottom:22px;}
+.pp-top{display:flex;justify-content:space-between;margin-bottom:10px;}
+.pp-lbl{font-size:0.72rem;color:var(--text2);}
+.pp-track{height:8px;background:rgba(255,255,255,0.05);border-radius:4px;position:relative;margin-bottom:8px;overflow:hidden;}
+.pp-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--g1),var(--g2));border-radius:4px;transition:width 1s ease;}
+.pp-shine{position:absolute;top:0;right:0;width:30px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);animation:ppshine 2s infinite;}
+@keyframes ppshine{from{transform:translateX(100px);}to{transform:translateX(-200px);}}
+.pp-dot{width:14px;height:14px;border-radius:50%;background:var(--g2);border:2px solid var(--night);position:absolute;top:50%;transform:translateY(-50%);box-shadow:0 0 10px rgba(201,168,76,1);transition:left 1s ease;}
+.pp-names{display:flex;justify-content:space-between;font-size:0.63rem;color:var(--text3);}
+.pp-names span.done{color:var(--green);}
+
+/* ── PRAYER CARDS ── */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:0;}
+@media(min-width:600px){.pgrid{grid-template-columns:repeat(6,1fr);}}
+.pc{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:18px 8px 14px;text-align:center;
+  cursor:pointer;transition:all 0.35s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:transparent;transition:all 0.3s;border-radius:20px 20px 0 0;}
+.pc:hover{background:rgba(201,168,76,0.06);border-color:var(--border2);transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,0.4);}
+.pc.active{background:linear-gradient(135deg,rgba(13,115,119,0.3),rgba(6,9,15,0.9));border-color:var(--teal2);box-shadow:0 0 30px rgba(13,115,119,0.3);}
+.pc.active::before{background:linear-gradient(90deg,var(--teal),var(--g1));}
+.pc.passed{opacity:0.38;}
+.pc-icon{font-size:1.8rem;margin-bottom:7px;display:block;}
+.pc-name{font-size:0.8rem;font-weight:700;margin-bottom:5px;display:block;}
+.pc-time{font-size:0.88rem;color:var(--g2);font-weight:700;display:block;}
+.pc-badge{margin-top:6px;display:inline-flex;align-items:center;gap:3px;background:rgba(39,174,96,0.1);border:1px solid rgba(39,174,96,0.25);border-radius:20px;padding:2px 8px;font-size:0.58rem;color:var(--green);}
+.blink{width:5px;height:5px;border-radius:50%;background:var(--green);animation:bl 1.4s infinite;}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── RAMADAN CARD ── */
+.ramadan-card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#0d1540,#1a0d40,#0d1540);
+  border:1px solid rgba(201,168,76,0.35);border-radius:22px;
+  padding:22px 24px;margin-bottom:22px;
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  box-shadow:0 4px 40px rgba(0,0,0,0.5);
+}
+.ramadan-card::before{content:'🌙';position:absolute;font-size:8rem;opacity:0.05;right:-10px;top:-20px;pointer-events:none;}
+.ram-glow{position:absolute;top:0;right:0;width:200px;height:100%;background:radial-gradient(ellipse at right,rgba(201,168,76,0.08),transparent);pointer-events:none;}
+.ram-l h3{font-family:'Amiri',serif;font-size:1.2rem;color:var(--g2);margin-bottom:4px;}
+.ram-l p{font-size:0.78rem;color:var(--text2);}
+.ram-cd{display:flex;gap:8px;}
+.rb{background:rgba(0,0,0,0.4);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:10px 14px;text-align:center;min-width:52px;}
+.rb-n{display:block;font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--g2);line-height:1;}
+.rb-l{font-size:0.58rem;color:var(--text3);margin-top:3px;display:block;}
+
+/* ── INFO CARDS ── */
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px;}
+@media(max-width:500px){.info-grid{grid-template-columns:1fr 1fr;}}
+.ic{background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:16px;transition:all 0.3s;}
+.ic:hover{border-color:var(--border);background:var(--card2);}
+.ic-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+.ic-icon{font-size:1.5rem;}
+.ic-lbl{font-size:0.68rem;color:var(--text3);margin-bottom:3px;}
+.ic-val{font-size:1.1rem;font-weight:700;color:var(--g2);}
+
+/* ── RAMADAN CALENDAR ── */
+.ramadan-cal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:22px;overflow-x:auto;}
+.rcal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.rcal-title{font-family:'Amiri',serif;font-size:1rem;color:var(--g2);}
+.rcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;min-width:400px;}
+.rcal-day-hd{font-size:0.62rem;color:var(--text3);text-align:center;padding:4px 0;font-weight:600;}
+.rcal-day{
+  aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;cursor:pointer;
+  background:rgba(255,255,255,0.02);border:1px solid transparent;
+  transition:all 0.2s;font-size:0.75rem;color:var(--text2);
+  position:relative;
+}
+.rcal-day:hover{background:rgba(201,168,76,0.08);border-color:var(--border);}
+.rcal-day.today{background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(201,168,76,0.05));border-color:var(--g1);color:var(--g2);font-weight:700;}
+.rcal-day.friday{color:var(--teal2);}
+.rcal-day.special::after{content:'⭐';position:absolute;top:-2px;right:-2px;font-size:0.5rem;}
+.rcal-day-num{font-size:0.78rem;font-weight:600;}
+.rcal-day-hij{font-size:0.55rem;color:var(--text3);}
+
+/* ── QIBLA ── */
+.qibla-sec{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px;text-align:center;margin-bottom:22px;}
+.qibla-sec h3{font-family:'Amiri',serif;font-size:1.1rem;color:var(--g2);margin-bottom:20px;}
+.compass-outer{width:160px;height:160px;margin:0 auto;position:relative;cursor:pointer;}
+.compass-ring{
+  width:100%;height:100%;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#1a2e70,#06090F);
+  border:2px solid var(--g1);
+  box-shadow:0 0 30px rgba(201,168,76,0.2),inset 0 0 30px rgba(0,0,0,0.6),0 0 0 8px rgba(201,168,76,0.04);
+  animation:cspin 12s linear infinite;position:relative;
+}
+@keyframes cspin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.compass-ring.stopped{animation:none;}
+.cm{position:absolute;font-size:0.65rem;color:rgba(255,255,255,0.4);font-weight:700;}
+.cm-n{top:8px;left:50%;transform:translateX(-50%);color:var(--red)!important;}
+.cm-s{bottom:8px;left:50%;transform:translateX(-50%);}
+.cm-e{top:50%;left:8px;transform:translateY(-50%);}
+.cm-w{top:50%;right:8px;transform:translateY(-50%);}
+.cnw{position:absolute;top:50%;left:50%;transform:translate(-50%,-100%) rotate(45deg);transform-origin:center bottom;width:5px;height:58px;display:flex;flex-direction:column;transition:transform 0.3s;}
+.cn-n{flex:1;background:linear-gradient(to bottom,var(--red),rgba(255,0,0,0.5));border-radius:3px 3px 0 0;}
+.cn-s{flex:1;background:linear-gradient(to top,white,rgba(255,255,255,0.6));border-radius:0 0 3px 3px;}
+.cdot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:var(--g1);z-index:2;box-shadow:0 0 12px rgba(201,168,76,1);}
+.qhint{margin-top:14px;font-size:0.8rem;color:var(--text3);}
+
+/* ── QURAN PLAYER ── */
+.quran-player{
+  background:linear-gradient(135deg,rgba(13,115,119,0.12),rgba(6,9,15,0.95));
+  border:1px solid rgba(13,115,119,0.3);border-radius:22px;
+  padding:26px;margin-bottom:22px;
+}
+.surah-select{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--g2);padding:10px 18px;border-radius:12px;font-family:'Cairo',sans-serif;font-size:0.88rem;outline:none;cursor:pointer;width:100%;margin-bottom:18px;}
+.quran-display{
+  font-family:'Amiri Quran',serif;font-size:1.4rem;
+  line-height:2.4;color:var(--g2);text-align:center;
+  background:rgba(255,255,255,0.02);border-radius:14px;
+  padding:20px;margin-bottom:16px;min-height:80px;
+  border:1px solid rgba(255,255,255,0.04);
+}
+.ayah-nav-bar{display:flex;gap:10px;justify-content:center;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
+.qbtn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:white;padding:8px 18px;border-radius:20px;font-family:'Cairo',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.3s;}
+.qbtn:hover{background:rgba(201,168,76,0.12);border-color:var(--border2);}
+.qbtn.play{background:linear-gradient(135deg,var(--teal),var(--teal2));border-color:var(--teal2);padding:10px 24px;font-size:0.9rem;}
+.qbtn.play:hover{box-shadow:0 0 20px rgba(13,115,119,0.4);}
+.ayah-counter{font-size:0.78rem;color:var(--text2);}
+.audio-progress{margin-top:10px;}
+.audio-track{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;position:relative;cursor:pointer;margin-bottom:6px;}
+.audio-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--g1));border-radius:2px;width:0%;transition:width 0.3s;}
+.audio-info{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text3);}
+
+/* ── AYAH OF DAY ── */
+.ayah-card{
+  background:linear-gradient(135deg,rgba(13,115,119,0.1),rgba(6,9,15,0.92));
+  border:1px solid rgba(13,115,119,0.25);border-radius:22px;
+  padding:28px;text-align:center;margin-bottom:22px;position:relative;overflow:hidden;
+}
+.ayah-card::before{content:'﴾';position:absolute;right:8px;top:-10px;font-size:9rem;color:rgba(13,115,119,0.07);font-family:'Amiri Quran',serif;pointer-events:none;}
+.ayah-ar{font-family:'Amiri Quran',serif;font-size:1.5rem;line-height:2.3;color:var(--g2);margin-bottom:12px;}
+.ayah-tr{font-size:0.85rem;color:var(--text2);line-height:1.7;margin-bottom:10px;}
+.ayah-ref{display:inline-flex;align-items:center;gap:6px;font-size:0.72rem;color:var(--teal2);background:rgba(13,115,119,0.1);border:1px solid rgba(13,115,119,0.2);padding:4px 14px;border-radius:20px;}
+.ayah-btns{display:flex;gap:10px;justify-content:center;margin-top:16px;}
+.abtn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:white;padding:7px 18px;border-radius:20px;font-family:'Cairo',sans-serif;font-size:0.78rem;cursor:pointer;transition:all 0.3s;}
+.abtn:hover{background:rgba(201,168,76,0.1);border-color:var(--border);}
+
+/* ── DHIKR COUNTER ── */
+.dhikr-sec{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px;text-align:center;margin-bottom:22px;}
+.dhikr-sel{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--g2);padding:9px 20px;border-radius:30px;font-family:'Cairo',sans-serif;font-size:0.88rem;outline:none;cursor:pointer;width:100%;max-width:290px;margin-bottom:18px;}
+.dhikr-txt{font-family:'Amiri',serif;font-size:1.7rem;color:white;margin-bottom:22px;min-height:2.5rem;}
+.ctr{
+  width:150px;height:150px;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,#1e3580,#06090F);
+  border:3px solid var(--g1);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:3.2rem;font-weight:700;color:white;
+  cursor:pointer;margin:0 auto 22px;
+  box-shadow:0 0 30px rgba(201,168,76,0.15),0 10px 40px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.05);
+  transition:all 0.1s;user-select:none;position:relative;overflow:hidden;
+}
+.ctr:active{transform:scale(0.93);box-shadow:0 0 50px rgba(201,168,76,0.5);}
+.ctr.done{border-color:var(--green);box-shadow:0 0 40px rgba(39,174,96,0.4);}
+.ctr-prog{position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(var(--g1) 0deg,transparent 0);pointer-events:none;opacity:0.35;}
+.ctr-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.cbtn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:white;padding:8px 18px;border-radius:30px;font-family:'Cairo',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.3s;}
+.cbtn:hover{background:rgba(255,255,255,0.08);}
+.cbtn.danger{color:var(--red);border-color:rgba(192,57,43,0.3);}
+.ctr-total{margin-top:14px;font-size:0.76rem;color:var(--text3);}
+.ctr-total span{color:var(--g2);font-weight:700;}
+
+/* ── DUAS ── */
+.duas-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
+@media(max-width:500px){.duas-grid{grid-template-columns:1fr;}}
+.dua{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;cursor:pointer;transition:all 0.3s;}
+.dua:hover{background:rgba(201,168,76,0.05);border-color:var(--border2);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.dua-t{font-family:'Amiri',serif;font-size:1rem;color:var(--g2);margin-bottom:6px;}
+.dua-p{font-size:0.75rem;color:var(--text3);line-height:1.5;}
+
+/* ── NOTIFICATION SETTINGS ── */
+.notif-sec{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:22px;}
+.notif-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.notif-row:last-child{border-bottom:none;}
+.notif-info .ni-name{font-size:0.88rem;font-weight:600;color:var(--text);}
+.notif-info .ni-time{font-size:0.72rem;color:var(--text2);margin-top:2px;}
+.toggle{width:44px;height:24px;border-radius:12px;background:rgba(255,255,255,0.1);cursor:pointer;position:relative;transition:all 0.3s;flex-shrink:0;}
+.toggle.on{background:linear-gradient(135deg,var(--teal),var(--teal2));}
+.toggle::after{content:'';position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:white;transition:all 0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.toggle.on::after{right:22px;}
+
+/* ── MODAL ── */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.modal-ov.open{opacity:1;pointer-events:all;}
+.modal-box{background:linear-gradient(135deg,var(--night3),var(--night4));border:1px solid var(--border2);border-radius:26px;padding:32px;max-width:520px;width:100%;text-align:center;transform:scale(0.88) translateY(20px);transition:all 0.35s cubic-bezier(.4,0,.2,1);box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(201,168,76,0.08);}
+.modal-ov.open .modal-box{transform:scale(1) translateY(0);}
+.modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g1),transparent);border-radius:26px 26px 0 0;}
+.modal-t{font-family:'Amiri',serif;font-size:1.3rem;color:var(--g2);margin-bottom:16px;}
+.modal-ar{font-family:'Amiri Quran',serif;font-size:1.35rem;line-height:2.2;color:var(--g2);margin-bottom:14px;}
+.modal-tr{font-size:0.84rem;color:var(--text2);line-height:1.7;margin-bottom:22px;}
+.modal-close{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:white;padding:9px 30px;border-radius:30px;font-family:'Cairo',sans-serif;font-size:0.88rem;cursor:pointer;transition:all 0.3s;}
+.modal-close:hover{background:rgba(255,255,255,0.12);}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:26px 16px;border-top:1px solid rgba(255,255,255,0.04);font-size:0.72rem;color:var(--text3);line-height:2;}
+.ft-brand{font-family:'Amiri',serif;font-size:1rem;color:rgba(201,168,76,0.5);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--night);}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.25);border-radius:2px;}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+
+/* RESPONSIVE */
+@media(max-width:480px){
+  .cd-time{font-size:3.5rem;letter-spacing:3px;}
+  .hero-name{font-size:1.6rem;}
+  .nav-tabs{display:none;}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN OVERLAY ═══ -->
-<div id="loginOverlay">
-  <div class="login-box">
-    <div class="login-brand">
-      <div class="login-logo">🎓</div>
-      <div class="login-title">HMD — BAC 2026</div>
-      <div class="login-sub">نظام حساب المعدلات المتكامل</div>
-    </div>
+<canvas id="canvas"></canvas>
 
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="authTab('login')">تسجيل الدخول</button>
-      <button class="auth-tab" onclick="authTab('register')">إنشاء حساب</button>
-    </div>
-
-    <!-- Login -->
-    <div class="form-tab active" id="ftLogin">
-      <div class="err-msg" id="loginErr"></div>
-      <div class="field">
-        <label>البريد الإلكتروني</label>
-        <input type="email" id="loginEmail" placeholder="example@email.com">
-      </div>
-      <div class="field">
-        <label>كلمة المرور</label>
-        <input type="password" id="loginPass" placeholder="••••••••">
-      </div>
-      <button class="btn-gold" id="loginBtn" onclick="doLogin()">
-        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
-      </button>
-
-      <div class="divider">أو</div>
-
-      <button class="btn-outline" onclick="doGoogle()">
-        <svg width="18" height="18" viewBox="0 0 18 18">
-          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
-          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
-          <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
-          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-        </svg>
-        تسجيل الدخول بـ Google
-      </button>
-      <button class="btn-ghost" onclick="doGuest()">
-        <i class="fas fa-user"></i> متابعة كضيف
-      </button>
-    </div>
-
-    <!-- Register -->
-    <div class="form-tab" id="ftRegister">
-      <div class="err-msg" id="registerErr"></div>
-      <div class="field">
-        <label>الاسم الكامل</label>
-        <input type="text" id="regName" placeholder="أدخل اسمك الكامل">
-      </div>
-      <div class="field">
-        <label>البريد الإلكتروني</label>
-        <input type="email" id="regEmail" placeholder="example@email.com">
-      </div>
-      <div class="field">
-        <label>كلمة المرور (8 أحرف كحد أدنى)</label>
-        <input type="password" id="regPass" placeholder="••••••••" minlength="8">
-      </div>
-      <button class="btn-gold" id="regBtn" onclick="doRegister()">
-        <i class="fas fa-user-plus"></i> إنشاء حساب
-      </button>
+<!-- ════ NAVBAR ════ -->
+<nav>
+  <div class="nav-brand">
+    <div class="crown">👑</div>
+    <span data-i18n="appName">المصلّي الذهبي</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="ntab active" onclick="scrollToTop()" data-i18n="navHome">الرئيسية</button>
+    <button class="ntab" onclick="sc('pSec')" data-i18n="navTimes">المواقيت</button>
+    <button class="ntab" onclick="sc('quranSec')" data-i18n="navQuran">القرآن</button>
+    <button class="ntab" onclick="sc('dhikrSec')" data-i18n="navDhikr">الذكر</button>
+    <button class="ntab" onclick="sc('notifSec')" data-i18n="navNotif">الإشعارات</button>
+  </div>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('ar')">عربي</button>
+    <button class="lang-btn" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+  </div>
+  <div class="nav-user">
+    <div class="uav">ع</div>
+    <div class="utxt">
+      عبد القادر
+      <div class="uktxt">أبو مالك</div>
     </div>
   </div>
-</div>
-
-<!-- ═══ AI MODAL ═══ -->
-<div id="aiModal">
-  <div class="ai-box">
-    <div class="ai-head">
-      <div class="ai-title">✨ قراءة كشف النقاط — AI</div>
-      <button class="ai-close" onclick="closeAI()"><i class="fas fa-times"></i></button>
-    </div>
-
-    <!-- Upload -->
-    <div id="aiUpload">
-      <div class="upload-zone" id="dropZone">
-        <input type="file" id="imgFile" accept="image/*" onchange="onImgSelect(event)">
-        <div class="upload-icon">📸</div>
-        <div class="upload-txt">اسحب الصورة هنا أو اضغط للرفع</div>
-        <div class="upload-hint">كشف نقاط رسمي • ورقة مكتوبة • لقطة شاشة</div>
-      </div>
-      <div class="img-preview" id="imgPreview">
-        <img id="previewImg" src="" alt="معاينة">
-        <div><span class="btn-change" onclick="resetImg()"><i class="fas fa-redo"></i> تغيير الصورة</span></div>
-      </div>
-      <button class="btn-confirm" id="analyzeBtn" onclick="runAI()" style="display:none; margin-top:12px;">
-        ✨ تحليل بالذكاء الاصطناعي
-      </button>
-    </div>
-
-    <!-- Loading -->
-    <div class="ai-loading" id="aiLoading">
-      <div class="spinner"></div>
-      <div class="ai-load-txt">جاري تحليل كشف نقاطك...</div>
-      <div class="ai-load-sub">يرجى الانتظار بضع ثوانٍ</div>
-      <div class="ai-steps">
-        <div class="ai-step" id="s1"><span>🔍</span><span>تحليل الصورة واكتشاف الجدول</span></div>
-        <div class="ai-step" id="s2"><span>📚</span><span>قراءة أسماء المواد</span></div>
-        <div class="ai-step" id="s3"><span>🔢</span><span>استخراج العلامات والنقاط</span></div>
-        <div class="ai-step" id="s4"><span>✅</span><span>مطابقة البيانات مع الجدول</span></div>
-      </div>
-    </div>
-
-    <!-- Results -->
-    <div class="ai-results" id="aiRes">
-      <div style="text-align:center;margin-bottom:14px;">
-        <div style="font-size:2rem;margin-bottom:6px;">🎉</div>
-        <div style="font-weight:900;font-size:1.05rem;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">تم التحليل بنجاح!</div>
-        <div style="font-size:.78rem;color:var(--muted);margin-top:4px;">راجع النتائج قبل التأكيد</div>
-      </div>
-      <div id="aiResList"></div>
-      <div class="ai-warn"><span>⚠️</span><span>تحقق من الأرقام قبل الحساب — قد يخطئ الذكاء الاصطناعي أحياناً.</span></div>
-      <button class="btn-confirm" onclick="applyAI()">
-        <i class="fas fa-check-circle"></i> تأكيد وملء الجدول تلقائياً
-      </button>
-      <div style="text-align:center;margin-top:10px;">
-        <span class="btn-change" onclick="resetAI()"><i class="fas fa-redo"></i> إعادة المحاولة</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ TOAST ═══ -->
-<div id="toast"></div>
-
-<!-- ═══ SIGNUP POP ═══ -->
-<div id="signupPop">
-  <div class="pop-head">
-    <div class="pop-title">🎓 احفظ تقدمك!</div>
-    <button class="pop-close" onclick="closePop()"><i class="fas fa-times"></i></button>
-  </div>
-  <div class="pop-txt">سجل حسابًا مجانيًا لحفظ معدلاتك واسترجاعها من أي جهاز 📊</div>
-  <div class="pop-btns">
-    <button class="pop-btn-p" onclick="showRegPop()"><i class="fas fa-user-plus"></i> إنشاء حساب</button>
-    <button class="pop-btn-s" onclick="closePop()">لاحقاً</button>
-  </div>
-</div>
-
-<!-- ═══ USER BAR ═══ -->
-<div id="userBar">
-  <div class="u-avatar" id="uAvatar">U</div>
-  <span class="u-name" id="uName">مستخدم</span>
-  <button class="btn-sm btn-teal" id="adminBtn" onclick="toggleAdmin()" style="display:none;">
-    <i class="fas fa-shield-alt"></i> الإدارة
-  </button>
-  <button class="btn-sm btn-danger" onclick="doLogout()">
-    <i class="fas fa-sign-out-alt"></i> خروج
-  </button>
-</div>
-
-<!-- ═══ HEADER ═══ -->
-<header class="site-header">
-  <div class="header-emblem">🎓</div>
-  <h1 class="site-title">HMD — BAC 2026</h1>
-  <p class="site-sub">نظام حساب المعدلات المتقدم</p>
-  <button class="theme-btn" onclick="toggleTheme()" title="تغيير المظهر">
-    <i class="fas fa-moon" id="themeIco"></i>
-  </button>
-</header>
-
-<!-- ═══ NAV TABS ═══ -->
-<nav class="nav-tabs">
-  <button class="nav-tab active" onclick="showTab(0)"><i class="fas fa-calculator"></i> حساب المعدل</button>
-  <button class="nav-tab" onclick="showTab(1)"><i class="fas fa-calendar-alt"></i> المعدل السنوي</button>
-  <button class="nav-tab" onclick="showTab(2)"><i class="fas fa-bullseye"></i> العلامة المطلوبة</button>
-  <button class="nav-tab" onclick="showTab(3)"><i class="fas fa-graduation-cap"></i> معدل BAC</button>
 </nav>
 
-<!-- ═══ MAIN ═══ -->
-<main class="main">
+<!-- ════ HERO ════ -->
+<section class="hero">
+  <div class="aurora"></div>
+  <div class="moon-glow"></div>
+  <div class="moon"></div>
 
-  <!-- Admin Panel -->
-  <div id="adminPanel">
-    <div class="card">
-      <div class="admin-title"><i class="fas fa-shield-alt"></i> لوحة التحكم — إدارة الطلاب</div>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>#</th><th>الاسم</th><th>البريد</th><th>كلمة المرور</th><th>التاريخ</th></tr></thead>
-          <tbody id="adminBody"><tr><td colspan="5" style="padding:20px;color:var(--muted);">جاري التحميل...</td></tr></tbody>
-        </table>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="loadStudents()"><i class="fas fa-sync"></i> تحديث</button>
-        <button class="btn btn-save" onclick="exportCSV()"><i class="fas fa-download"></i> تصدير CSV</button>
+  <div class="hero-greet">
+    <div class="greet-ramadan">🌙 <span data-i18n="ramadanGreet">رمضان المبارك 1447</span></div>
+    <div class="hero-name">عبد القادر قصورة</div>
+    <div class="hero-kunya">أبو مالك — البليدة، الجزائر 🇩🇿</div>
+  </div>
+
+  <div class="app-badge">
+    <span style="font-size:1.4rem">👑</span>
+    <h1 data-i18n="appName">المصلّي الذهبي</h1>
+  </div>
+
+  <div class="cd-wrap">
+    <div class="cd-label" data-i18n="nextPrayer">الصلاة القادمة</div>
+    <div class="cd-prayer" id="nextName">—</div>
+    <svg class="ring-svg" width="110" height="110">
+      <defs>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#0D7377"/>
+          <stop offset="100%" stop-color="#C9A84C"/>
+        </linearGradient>
+      </defs>
+      <circle class="ring-bg" cx="55" cy="55" r="48"/>
+      <circle class="ring-fill" id="ringFill" cx="55" cy="55" r="48" stroke-dasharray="301" stroke-dashoffset="301"/>
+    </svg>
+    <div class="cd-time" id="cdTime">00:00:00</div>
+    <button class="loc-btn" onclick="getLocation()">📍 <span id="locTxt" data-i18n="locateMe">تحديد موقعك</span></button>
+  </div>
+
+  <div class="scroll-hint"><span>▼</span><span data-i18n="scrollDown">اسحب للأسفل</span></div>
+
+  <!-- Luxury Mosque SVG -->
+  <div class="mosque-wrap">
+    <svg viewBox="0 0 1400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+      <defs>
+        <linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="transparent"/><stop offset="100%" stop-color="#06090F" stop-opacity="0.98"/></linearGradient>
+        <linearGradient id="dg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#162060"/><stop offset="100%" stop-color="#0C1220"/></linearGradient>
+        <linearGradient id="goldL" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#C9A84C" stop-opacity="0"/><stop offset="50%" stop-color="#C9A84C" stop-opacity="0.5"/><stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/></linearGradient>
+      </defs>
+      <rect width="1400" height="220" fill="url(#sg2)"/>
+      <!-- Far city -->
+      <rect x="0" y="155" width="100" height="65" fill="#0a1020" opacity="0.5"/>
+      <rect x="110" y="135" width="70" height="85" fill="#0a1020" opacity="0.5"/>
+      <rect x="190" y="160" width="50" height="60" fill="#0a1020" opacity="0.5"/>
+      <rect x="1160" y="150" width="80" height="70" fill="#0a1020" opacity="0.5"/>
+      <rect x="1250" y="130" width="70" height="90" fill="#0a1020" opacity="0.5"/>
+      <rect x="1330" y="155" width="70" height="65" fill="#0a1020" opacity="0.5"/>
+      <!-- Left tall minaret -->
+      <rect x="280" y="10" width="26" height="210" fill="url(#dg2)"/>
+      <polygon points="280,10 293,-8 306,10" fill="#0C1220"/>
+      <ellipse cx="293" cy="10" rx="20" ry="5" fill="url(#goldL)" opacity="0.8"/>
+      <text x="285" y="7" font-size="14" fill="#C9A84C" opacity="0.9">☽</text>
+      <rect x="270" y="70" width="46" height="8" fill="#080f2e"/>
+      <rect x="270" y="120" width="46" height="8" fill="#080f2e"/>
+      <!-- Right tall minaret -->
+      <rect x="1094" y="10" width="26" height="210" fill="url(#dg2)"/>
+      <polygon points="1094,10 1107,-8 1120,10" fill="#0C1220"/>
+      <ellipse cx="1107" cy="10" rx="20" ry="5" fill="url(#goldL)" opacity="0.8"/>
+      <text x="1099" y="7" font-size="14" fill="#C9A84C" opacity="0.9">☽</text>
+      <rect x="1084" y="70" width="46" height="8" fill="#080f2e"/>
+      <rect x="1084" y="120" width="46" height="8" fill="#080f2e"/>
+      <!-- Left dome -->
+      <ellipse cx="430" cy="120" rx="80" ry="72" fill="url(#dg2)"/>
+      <rect x="350" y="120" width="160" height="100" fill="url(#dg2)"/>
+      <text x="413" y="105" font-size="20" fill="#C9A84C" opacity="0.7">☽</text>
+      <!-- Right dome -->
+      <ellipse cx="970" cy="120" rx="80" ry="72" fill="url(#dg2)"/>
+      <rect x="890" y="120" width="160" height="100" fill="url(#dg2)"/>
+      <text x="953" y="105" font-size="20" fill="#C9A84C" opacity="0.7">☽</text>
+      <!-- Main dome -->
+      <ellipse cx="700" cy="70" rx="140" ry="125" fill="url(#dg2)"/>
+      <rect x="560" y="70" width="280" height="150" fill="url(#dg2)"/>
+      <text x="681" y="50" font-size="34" fill="#C9A84C" opacity="0.9">☽</text>
+      <!-- Gold rim on main dome -->
+      <ellipse cx="700" cy="70" rx="140" ry="125" fill="none" stroke="url(#goldL)" stroke-width="1" opacity="0.4"/>
+      <!-- Windows -->
+      <rect x="580" y="108" width="26" height="34" rx="13" fill="#06090F" opacity="0.6"/>
+      <rect x="626" y="108" width="26" height="34" rx="13" fill="#06090F" opacity="0.6"/>
+      <rect x="748" y="108" width="26" height="34" rx="13" fill="#06090F" opacity="0.6"/>
+      <rect x="794" y="108" width="26" height="34" rx="13" fill="#06090F" opacity="0.6"/>
+      <rect x="672" y="100" width="56" height="44" rx="28" fill="#06090F" opacity="0.55"/>
+      <!-- Door -->
+      <rect x="660" y="155" width="80" height="65" rx="40" fill="#06090F" opacity="0.75"/>
+      <!-- Gold line accent -->
+      <rect x="0" y="214" width="1400" height="1" fill="url(#goldL)" opacity="0.6"/>
+      <!-- Ground -->
+      <rect x="0" y="215" width="1400" height="10" fill="#06090F"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ════ MAIN ════ -->
+<div class="main">
+
+  <!-- Profile -->
+  <div class="sec">
+    <div class="profile-card">
+      <div class="pav">ع</div>
+      <div class="pinfo">
+        <div class="pg" data-i18n="welcome">مرحباً بك يا أخي في رمضان المبارك</div>
+        <div class="pn">عبد القادر قصورة</div>
+        <div class="pk">أبو مالك — البليدة، الجزائر 🇩🇿</div>
+        <div class="pstats">
+          <div><div class="ps-num" id="prayedNum">0</div><div class="ps-lbl" data-i18n="prayedToday">صلوات اليوم</div></div>
+          <div><div class="ps-num" id="tasbeehNum">0</div><div class="ps-lbl" data-i18n="tasbeehStat">تسبيحات</div></div>
+          <div><div class="ps-num">12</div><div class="ps-lbl" data-i18n="ramadanDay">رمضان</div></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ── PANEL 0: GPA ── -->
-  <div class="panel active" id="p0">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon">📊</div>
-        <div class="card-title">حساب معدل الفصل</div>
-        <div class="card-sub">احسب معدلك الفصلي بدقة عالية</div>
-      </div>
+  <!-- Date -->
+  <div class="date-bar">
+    <div class="hijri">12 رمضان 1447</div>
+    <div class="greg" id="gregDate">—</div>
+  </div>
+  <div class="gold-divider"></div>
 
-      <div class="row c2">
-        <div>
-          <label class="ctrl-label">السنة الدراسية</label>
-          <select id="yearSel" onchange="loadStreams()">
-            <option value="1">السنة الأولى ثانوي</option>
-            <option value="2">السنة الثانية ثانوي</option>
-            <option value="3">السنة الثالثة ثانوي</option>
-          </select>
+  <!-- Prayer progress -->
+  <div class="pp-card" id="pSec">
+    <div class="pp-top">
+      <span class="pp-lbl" data-i18n="prayerProgress">تقدم الصلوات اليوم</span>
+      <span class="pp-lbl" id="ppCount">0 / 5</span>
+    </div>
+    <div class="pp-track">
+      <div class="pp-fill" id="ppFill" style="width:0%"></div>
+      <div class="pp-shine"></div>
+      <div class="pp-dot" id="ppDot" style="left:0%"></div>
+    </div>
+    <div class="pp-names" id="ppNames"></div>
+  </div>
+
+  <!-- Prayers -->
+  <div class="sec">
+    <div class="sec-hd">🕌 <span data-i18n="prayerTimes">مواقيت الصلاة</span></div>
+    <div class="pgrid" id="pgrid"></div>
+  </div>
+
+  <!-- Ramadan -->
+  <div class="ramadan-card">
+    <div class="ram-glow"></div>
+    <div class="ram-l">
+      <h3>🌙 <span data-i18n="ramadanTitle">رمضان المبارك 1447</span></h3>
+      <p id="iftarLbl" data-i18n="toIftar">حتى الإفطار (المغرب)</p>
+    </div>
+    <div class="ram-cd">
+      <div class="rb"><span class="rb-n" id="rh">00</span><span class="rb-l" data-i18n="hours">ساعة</span></div>
+      <div class="rb"><span class="rb-n" id="rm">00</span><span class="rb-l" data-i18n="minutes">دقيقة</span></div>
+      <div class="rb"><span class="rb-n" id="rs">00</span><span class="rb-l" data-i18n="seconds">ثانية</span></div>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="info-grid">
+    <div class="ic"><div class="ic-top"><div><div class="ic-lbl" data-i18n="sunrise">الشروق</div><div class="ic-val">07:20</div></div><div class="ic-icon">🌅</div></div></div>
+    <div class="ic"><div class="ic-top"><div><div class="ic-lbl" data-i18n="midnight">منتصف الليل</div><div class="ic-val">12:20</div></div><div class="ic-icon">🌃</div></div></div>
+    <div class="ic"><div class="ic-top"><div><div class="ic-lbl" data-i18n="lastThird">الثلث الأخير</div><div class="ic-val">02:11</div></div><div class="ic-icon">⭐</div></div></div>
+  </div>
+
+  <!-- Ramadan Calendar -->
+  <div class="sec">
+    <div class="sec-hd">📅 <span data-i18n="ramadanCalendar">تقويم رمضان 1447</span></div>
+    <div class="ramadan-cal">
+      <div class="rcal-header">
+        <div class="rcal-title" data-i18n="ramadanMonth">شهر رمضان المبارك 1447 هـ</div>
+        <div style="font-size:0.72rem;color:var(--text3)">مارس — أبريل 2026</div>
+      </div>
+      <div class="rcal-grid" id="rcalGrid"></div>
+    </div>
+  </div>
+
+  <!-- Qibla -->
+  <div class="sec">
+    <div class="sec-hd">🧭 <span data-i18n="qibla">اتجاه القبلة</span></div>
+    <div class="qibla-sec">
+      <h3 data-i18n="compassClick">البوصلة — اضغط للتفعيل</h3>
+      <div class="compass-outer" onclick="activateCompass()">
+        <div class="compass-ring" id="cRing">
+          <span class="cm cm-n">N</span><span class="cm cm-s">S</span>
+          <span class="cm cm-e">E</span><span class="cm cm-w">W</span>
         </div>
-        <div>
-          <label class="ctrl-label">الشعبة</label>
-          <select id="streamSel" onchange="loadGPATable()"></select>
+        <div class="cnw" id="cNeedle"><div class="cn-n"></div><div class="cn-s"></div></div>
+        <div class="cdot"></div>
+      </div>
+      <div class="qhint" id="qHint" data-i18n="compassHint">اضغط على البوصلة لتفعيلها على الهاتف</div>
+    </div>
+  </div>
+
+  <!-- Quran Player -->
+  <div class="sec" id="quranSec">
+    <div class="sec-hd">📖 <span data-i18n="quranPlayer">القرآن الكريم</span></div>
+    <div class="quran-player">
+      <select class="surah-select" id="surahSel" onchange="loadSurah()">
+        <option value="1">سورة الفاتحة</option>
+        <option value="2">سورة البقرة</option>
+        <option value="36">سورة يس</option>
+        <option value="55">سورة الرحمن</option>
+        <option value="67">سورة الملك</option>
+        <option value="78">سورة النبأ</option>
+        <option value="112">سورة الإخلاص</option>
+        <option value="113">سورة الفلق</option>
+        <option value="114">سورة الناس</option>
+      </select>
+      <div class="quran-display" id="quranDisplay">
+        ﴿ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴾
+      </div>
+      <div class="ayah-nav-bar">
+        <button class="qbtn" onclick="prevQAyah()">←</button>
+        <span class="ayah-counter" id="ayahCounter">1 / 7</span>
+        <button class="qbtn" onclick="nextQAyah()">→</button>
+        <button class="qbtn play" onclick="togglePlay()" id="playBtn">▶ <span data-i18n="listen">استماع</span></button>
+      </div>
+      <div class="audio-progress">
+        <div class="audio-track" onclick="seekAudio(event)">
+          <div class="audio-fill" id="audioFill"></div>
+        </div>
+        <div class="audio-info">
+          <span id="audioTime">0:00</span>
+          <span id="reciterName">عبد الباسط عبد الصمد</span>
+          <span id="audioDur">0:00</span>
         </div>
       </div>
+      <audio id="audioEl" onended="audioEnded()" ontimeupdate="updateAudioProgress()"></audio>
+    </div>
+  </div>
 
-      <div class="chk-group">
-        <input type="checkbox" id="tamChk" onchange="loadGPATable()">
-        <label for="tamChk">أدرس الأمازيغية</label>
-      </div>
-      <div class="chk-group">
-        <input type="checkbox" id="artChk" onchange="loadGPATable()">
-        <label for="artChk">أدرس التربية الفنية</label>
-      </div>
-
-      <div class="tbl-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>المادة</th><th>تقويم مستمر</th><th>أعمال تطبيقية</th>
-              <th>فرض 1</th><th>فرض 2</th><th>اختبار /20</th>
-              <th>معامل</th><th>معدل المادة</th><th>المجموع</th>
-            </tr>
-          </thead>
-          <tbody id="gpaBody"></tbody>
-        </table>
-      </div>
-
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="calcGPA()"><i class="fas fa-calculator"></i> احسب</button>
-        <button class="btn btn-ai" onclick="openAI()">✨ قراءة كشف النقاط <span class="ai-badge">AI</span></button>
-        <button class="btn btn-save" id="saveBtn" onclick="saveCloud()"><i class="fas fa-cloud-upload-alt"></i> حفظ</button>
-        <button class="btn btn-load" id="loadBtn" onclick="loadCloud()"><i class="fas fa-cloud-download-alt"></i> استرجاع</button>
-        <button class="btn btn-cam" id="camBtn" onclick="captureImg()"><i class="fas fa-camera"></i> صورة</button>
-      </div>
-
-      <div class="guest-notice" id="guestNotice">
-        <i class="fas fa-info-circle"></i> أنت في وضع الضيف — سجل الدخول للحفظ والاسترجاع وحفظ الصور
-      </div>
-
-      <div class="result" id="gpaResult">
-        <div class="result-icon">📊</div>
-        <div class="result-val">المعدل النهائي: 0.00</div>
-        <div class="result-msg">أدخل العلامات وانقر احسب</div>
+  <!-- Ayah of Day -->
+  <div class="sec">
+    <div class="sec-hd">✨ <span data-i18n="ayahDay">آية اليوم</span></div>
+    <div class="ayah-card">
+      <div class="ayah-ar" id="ayahAr"></div>
+      <div class="ayah-tr" id="ayahTr"></div>
+      <div class="ayah-ref" id="ayahRef"></div>
+      <div class="ayah-btns">
+        <button class="abtn" onclick="prevAyah()">← <span data-i18n="prev">السابقة</span></button>
+        <button class="abtn" onclick="nextAyah()"><span data-i18n="next">التالية</span> →</button>
       </div>
     </div>
   </div>
 
-  <!-- ── PANEL 1: YEARLY ── -->
-  <div class="panel" id="p1">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon">📅</div>
-        <div class="card-title">حساب المعدل السنوي</div>
-        <div class="card-sub">من معدلات الفصول الثلاثة</div>
+  <!-- Dhikr -->
+  <div class="sec" id="dhikrSec">
+    <div class="sec-hd">📿 <span data-i18n="dhikr">عداد الذكر والتسبيح</span></div>
+    <div class="dhikr-sec">
+      <select class="dhikr-sel" id="dhikrSel" onchange="changeDhikr()">
+        <option value="0">سبحان الله</option>
+        <option value="1">الحمد لله</option>
+        <option value="2">الله أكبر</option>
+        <option value="3">لا إله إلا الله</option>
+        <option value="4">اللهم صلِّ على محمد</option>
+        <option value="5">سبحان الله وبحمده</option>
+        <option value="6">أستغفر الله</option>
+      </select>
+      <div class="dhikr-txt" id="dhikrTxt">سبحان الله</div>
+      <div class="ctr" id="ctr" onclick="tap()">
+        <div class="ctr-prog" id="ctrProg"></div>
+        <span id="ctrNum">0</span>
       </div>
-      <div class="row c3">
-        <div>
-          <label class="ctrl-label">معدل الفصل الأول</label>
-          <input type="number" id="t1" min="0" max="20" step="0.01" placeholder="0.00">
-        </div>
-        <div>
-          <label class="ctrl-label">معدل الفصل الثاني</label>
-          <input type="number" id="t2" min="0" max="20" step="0.01" placeholder="0.00">
-        </div>
-        <div>
-          <label class="ctrl-label">معدل الفصل الثالث</label>
-          <input type="number" id="t3" min="0" max="20" step="0.01" placeholder="0.00">
-        </div>
+      <div class="ctr-btns">
+        <button class="cbtn danger" onclick="resetCtr()">↺ <span data-i18n="reset">إعادة</span></button>
+        <button class="cbtn" onclick="setTarget()" data-i18n="targetBtn">الهدف: <span id="targetNum" style="color:var(--g2);font-weight:700">33</span></button>
+        <button class="cbtn" onclick="customDhikr()">✏️ <span data-i18n="custom">مخصص</span></button>
       </div>
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="calcYearly()"><i class="fas fa-calculator"></i> احسب المعدل السنوي</button>
-      </div>
-      <div class="result" id="yearlyRes">
-        <div class="result-icon">📅</div>
-        <div class="result-val">المعدل السنوي: 0.00</div>
-        <div class="result-msg">أدخل معدلات الفصول الثلاثة</div>
-      </div>
+      <div class="ctr-total" data-i18n="totalDhikr">المجموع اليوم: <span id="todayTotal">0</span></div>
     </div>
   </div>
 
-  <!-- ── PANEL 2: NEEDED ── -->
-  <div class="panel" id="p2">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon">🎯</div>
-        <div class="card-title">العلامة المطلوبة</div>
-        <div class="card-sub">اعرف ما تحتاجه في الاختبار</div>
-      </div>
-      <div class="row c4">
-        <div>
-          <label class="ctrl-label">المعدل المطلوب</label>
-          <input type="number" id="targetAvg" min="0" max="20" step="0.01" placeholder="0.00">
-        </div>
-        <div>
-          <label class="ctrl-label">علامة التقويم</label>
-          <input type="number" id="evalMark" min="0" max="20" step="0.25" placeholder="0.00">
-        </div>
-        <div>
-          <label class="ctrl-label">علامة الفرض 1</label>
-          <input type="number" id="test1" min="0" max="20" step="0.25" placeholder="0.00">
-        </div>
-        <div>
-          <label class="ctrl-label">علامة الفرض 2</label>
-          <input type="number" id="test2" min="0" max="20" step="0.25" placeholder="0.00">
-        </div>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="calcNeeded()"><i class="fas fa-bullseye"></i> احسب العلامة المطلوبة</button>
-      </div>
-      <div class="result" id="neededRes">
-        <div class="result-icon">🎯</div>
-        <div class="result-val">العلامة المطلوبة: —</div>
-        <div class="result-msg">أدخل البيانات المطلوبة</div>
-      </div>
+  <!-- Duas -->
+  <div class="sec">
+    <div class="sec-hd">🤲 <span data-i18n="duas">الأدعية المأثورة</span></div>
+    <div class="duas-grid">
+      <div class="dua" onclick="openDua(0)"><div class="dua-t">🌙 <span data-i18n="dua0">دعاء الإفطار</span></div><div class="dua-p">اللهم لك صمت وعلى رزقك أفطرت...</div></div>
+      <div class="dua" onclick="openDua(1)"><div class="dua-t">🌅 <span data-i18n="dua1">دعاء السحور</span></div><div class="dua-p">وبصوم غد نويت من شهر رمضان...</div></div>
+      <div class="dua" onclick="openDua(2)"><div class="dua-t">☀️ <span data-i18n="dua2">دعاء الصباح</span></div><div class="dua-p">أصبحنا وأصبح الملك لله...</div></div>
+      <div class="dua" onclick="openDua(3)"><div class="dua-t">🌙 <span data-i18n="dua3">دعاء المساء</span></div><div class="dua-p">أمسينا وأمسى الملك لله...</div></div>
+      <div class="dua" onclick="openDua(4)"><div class="dua-t">🕌 <span data-i18n="dua4">دعاء دخول المسجد</span></div><div class="dua-p">اللهم افتح لي أبواب رحمتك...</div></div>
+      <div class="dua" onclick="openDua(5)"><div class="dua-t">⭐ <span data-i18n="dua5">دعاء ليلة القدر</span></div><div class="dua-p">اللهم إنك عفو تحب العفو...</div></div>
     </div>
   </div>
 
-  <!-- ── PANEL 3: BAC ── -->
-  <div class="panel" id="p3">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon">🎓</div>
-        <div class="card-title">معدل شهادة البكالوريا</div>
-        <div class="card-sub">احسب معدلك في امتحان BAC</div>
-      </div>
-      <div class="row c2">
-        <div>
-          <label class="ctrl-label">الشعبة</label>
-          <select id="bacStream" onchange="loadBacTable()"></select>
-        </div>
-      </div>
-      <div class="chk-group">
-        <input type="checkbox" id="tamBac" onchange="loadBacTable()">
-        <label for="tamBac">أدرس الأمازيغية</label>
-      </div>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>المادة</th><th>العلامة</th><th>المعامل</th><th>المجموع</th></tr></thead>
-          <tbody id="bacBody"></tbody>
-        </table>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="calcBac()"><i class="fas fa-calculator"></i> احسب معدل BAC</button>
-      </div>
-      <div class="stats">
-        <div class="stat-card"><div class="stat-label">مجموع النقاط</div><div class="stat-val" id="bacPts">0.00</div></div>
-        <div class="stat-card"><div class="stat-label">مجموع المعاملات</div><div class="stat-val" id="bacCoef">0</div></div>
-        <div class="stat-card"><div class="stat-label">المعدل النهائي</div><div class="stat-val" id="bacAvg">0.00</div></div>
-      </div>
-    </div>
+  <!-- Notifications -->
+  <div class="sec" id="notifSec">
+    <div class="sec-hd">🔔 <span data-i18n="notifications">إشعارات الصلاة</span></div>
+    <div class="notif-sec" id="notifList"></div>
   </div>
 
-</main>
+</div><!-- end .main -->
+
+<footer>
+  <div class="ft-brand">عبد القادر قصورة — أبو مالك</div>
+  <div>المصلّي الذهبي © 2026</div>
+  <div>البليدة، الجزائر 🇩🇿</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal" onclick="closeDuaEv(event)">
+  <div class="modal-box" style="position:relative">
+    <div class="modal-t" id="mTitle"></div>
+    <div class="modal-ar" id="mAr"></div>
+    <div class="modal-tr" id="mTr"></div>
+    <button class="modal-close" onclick="closeModal()">✕ إغلاق</button>
+  </div>
+</div>
 
 <script>
-// ══════════════════════════════════════════════
-// APPWRITE CONFIG
-// ══════════════════════════════════════════════
-const { Client, Account, Databases, ID, Query } = Appwrite;
-const _client = new Client()
-  .setEndpoint('https://fra.cloud.appwrite.io/v1')
-  .setProject('6988df30002f5dcb4f7d');
-const _account  = new Account(_client);
-const _db       = new Databases(_client);
-const DB_ID     = '6988df7f0000d935ff6b';
-const COL_STU   = 'students';
-const COL_GRD   = 'grades';
-const ADMIN_EMAIL = atob('YWRtaW5AaG1kLmNvbQ==');
+// ════════════════════════════════════════
+// CANVAS STARFIELD
+// ════════════════════════════════════════
+(()=>{
+  const c=document.getElementById('canvas'),ctx=c.getContext('2d');
+  let stars=[];
+  const resize=()=>{c.width=innerWidth;c.height=innerHeight;};
+  resize(); window.addEventListener('resize',resize);
+  for(let i=0;i<200;i++) stars.push({x:Math.random()*2000,y:Math.random()*2000,r:Math.random()*1.5+0.2,a:Math.random(),da:(Math.random()-0.5)*0.008});
+  const draw=()=>{
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{
+      s.a=Math.max(0.05,Math.min(0.9,s.a+s.da));
+      if(s.a<=0.05||s.a>=0.9) s.da*=-1;
+      ctx.beginPath();ctx.arc(s.x%c.width,s.y%c.height,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,255,255,${s.a})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  };
+  draw();
+})();
 
-// Anthropic — replace with your key or leave as placeholder
-const ANTHROPIC_KEY = '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';
-
-// ══════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════
-let curUser = null, isAdmin = false, isGuest = false;
-let guestActions = 0, popCount = 0;
-let aiData = null, imgB64 = null;
-
-// ══════════════════════════════════════════════
-// DATABASE
-// ══════════════════════════════════════════════
-const SUBJECTS = {
-  "1": {
-    "جذع مشترك علوم وتكنولوجيا": [
-      ["رياضيات",5],["علوم طبيعية",4],["علوم فيزيائية",4],["لغة عربية",3],
-      ["لغة فرنسية",2],["لغة إنجليزية",2],["تاريخ وجغرافيا",2],
-      ["علوم إسلامية",2],["تكنولوجيا",2],["معلوماتية",2],["تربية بدنية",1]
-    ],
-    "جذع مشترك آداب": [
-      ["لغة عربية",5],["فلسفة",5],["تاريخ وجغرافيا",4],["لغة فرنسية",3],
-      ["لغة إنجليزية",2],["رياضيات",2],["علوم إسلامية",2],
-      ["علوم طبيعية",2],["علوم فيزيائية",2],["تربية بدنية",1]
-    ]
+// ════════════════════════════════════════
+// TRANSLATIONS
+// ════════════════════════════════════════
+const i18n={
+  ar:{
+    appName:'المصلّي الذهبي',navHome:'الرئيسية',navTimes:'المواقيت',navQuran:'القرآن',navDhikr:'الذكر',navNotif:'الإشعارات',
+    ramadanGreet:'رمضان المبارك 1447',nextPrayer:'الصلاة القادمة',locateMe:'تحديد موقعك',scrollDown:'اسحب للأسفل',
+    welcome:'مرحباً بك يا أخي في رمضان المبارك',prayedToday:'صلوات اليوم',tasbeehStat:'تسبيحات',ramadanDay:'رمضان',
+    prayerProgress:'تقدم الصلوات اليوم',prayerTimes:'مواقيت الصلاة',ramadanTitle:'رمضان المبارك 1447',
+    toIftar:'حتى الإفطار (المغرب)',toSuhoor:'حتى السحور (الفجر)',
+    hours:'ساعة',minutes:'دقيقة',seconds:'ثانية',
+    sunrise:'الشروق',midnight:'منتصف الليل',lastThird:'الثلث الأخير',
+    ramadanCalendar:'تقويم رمضان 1447',ramadanMonth:'شهر رمضان المبارك 1447 هـ',
+    qibla:'اتجاه القبلة',compassClick:'البوصلة — اضغط للتفعيل',compassHint:'اضغط على البوصلة لتفعيلها',
+    quranPlayer:'القرآن الكريم',listen:'استماع',pause:'إيقاف',
+    ayahDay:'آية اليوم',prev:'السابقة',next:'التالية',
+    dhikr:'عداد الذكر والتسبيح',reset:'إعادة',targetBtn:'الهدف',custom:'مخصص',totalDhikr:'المجموع اليوم:',
+    duas:'الأدعية المأثورة',dua0:'دعاء الإفطار',dua1:'دعاء السحور',dua2:'دعاء الصباح',dua3:'دعاء المساء',dua4:'دعاء دخول المسجد',dua5:'دعاء ليلة القدر',
+    notifications:'إشعارات الصلاة',upcoming:'قادمة',done:'تمت',
   },
-  "2": {
-    "علوم تجريبية": [
-      ["علوم طبيعية",6],["رياضيات",5],["علوم فيزيائية",5],["لغة عربية",2],
-      ["لغة فرنسية",2],["لغة إنجليزية",2],["تاريخ وجغرافيا",2],["علوم إسلامية",2],["تربية بدنية",1]
-    ],
-    "رياضيات": [
-      ["رياضيات",7],["علوم فيزيائية",6],["علوم طبيعية",2],["لغة عربية",2],
-      ["لغة فرنسية",2],["لغة إنجليزية",2],["تاريخ وجغرافيا",2],["علوم إسلامية",2],["فلسفة",2],["تربية بدنية",1]
-    ],
-    "تقني رياضي": [
-      ["تكنولوجيا",6],["رياضيات",6],["علوم فيزيائية",5],["لغة عربية",2],
-      ["لغة فرنسية",2],["لغة إنجليزية",2],["تاريخ وجغرافيا",1],["علوم إسلامية",2],["فلسفة",2],["تربية بدنية",1]
-    ],
-    "تسيير واقتصاد": [
-      ["تسيير محاسبي ومالي",5],["اقتصاد ومناجمنت",4],["قانون",2],["رياضيات",3],
-      ["تاريخ وجغرافيا",3],["لغة عربية",2],["لغة فرنسية",2],["لغة إنجليزية",2],["علوم إسلامية",2],["تربية بدنية",1]
-    ],
-    "آداب وفلسفة": [
-      ["لغة عربية",5],["فلسفة",5],["تاريخ وجغرافيا",4],["لغة فرنسية",3],
-      ["لغة إنجليزية",2],["رياضيات",2],["علوم إسلامية",2],["علوم طبيعية",2],["علوم فيزيائية",2],["تربية بدنية",1]
-    ],
-    "لغات أجنبية": [
-      ["لغة عربية",4],["لغة فرنسية",4],["لغة إنجليزية",4],["لغة أجنبية ثالثة",4],
-      ["تاريخ وجغرافيا",4],["رياضيات",2],["علوم إسلامية",2],["فلسفة",2],["تربية بدنية",1]
-    ]
+  fr:{
+    appName:'Al-Moussali Doré',navHome:'Accueil',navTimes:'Horaires',navQuran:'Coran',navDhikr:'Dhikr',navNotif:'Alertes',
+    ramadanGreet:'Ramadan Moubarak 1447',nextPrayer:'Prochaine prière',locateMe:'Ma position',scrollDown:'Défiler',
+    welcome:'Bienvenue en ce Ramadan béni',prayedToday:'Prières du jour',tasbeehStat:'Dhikr',ramadanDay:'Ramadan',
+    prayerProgress:'Progression des prières',prayerTimes:'Horaires de prière',ramadanTitle:'Ramadan Moubarak 1447',
+    toIftar:"Jusqu'à l'Iftar (Maghrib)",toSuhoor:"Jusqu'au Suhoor (Fajr)",
+    hours:'h',minutes:'min',seconds:'sec',
+    sunrise:'Lever du soleil',midnight:'Minuit',lastThird:'Dernier tiers',
+    ramadanCalendar:'Calendrier Ramadan 1447',ramadanMonth:'Mois de Ramadan 1447 H',
+    qibla:'Direction de la Qibla',compassClick:'Boussole — Appuyer pour activer',compassHint:'Appuyez pour activer la boussole',
+    quranPlayer:'Saint Coran',listen:'Écouter',pause:'Pause',
+    ayahDay:"Verset du jour",prev:'Précédent',next:'Suivant',
+    dhikr:'Compteur de Dhikr',reset:'Réinitialiser',targetBtn:'Objectif',custom:'Personnalisé',totalDhikr:"Total aujourd'hui:",
+    duas:'Invocations',dua0:"Dua de l'Iftar",dua1:'Dua du Suhoor',dua2:'Dua du matin',dua3:'Dua du soir',dua4:'Dua de la mosquée',dua5:'Dua de Laylat al-Qadr',
+    notifications:'Alertes de prière',upcoming:'Prochaine',done:'Effectuée',
   },
-  "3": {
-    "علوم تجريبية": [
-      ["رياضيات",4],["علوم طبيعية",5],["فيزياء",5],["عربية",2],
-      ["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",1],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]
-    ],
-    "رياضيات": [
-      ["رياضيات",7],["فيزياء",6],["علوم طبيعية",2],["عربية",2],
-      ["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",1],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]
-    ],
-    "تقني رياضي": [
-      ["رياضيات",5],["فيزياء",5],["تكنولوجيا",7],["عربية",2],
-      ["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",1],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]
-    ],
-    "تسيير واقتصاد": [
-      ["رياضيات",3],["اقتصاد وتسيير",5],["قانون",3],["محاسبة ومالية",4],
-      ["عربية",2],["فرنسية",2],["إنجليزية",2],["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["تربية بدنية",1]
-    ],
-    "آداب وفلسفة": [
-      ["فلسفة",7],["عربية",5],["فرنسية",3],["إنجليزية",2],
-      ["تاريخ وجغرافيا",3],["تربية إسلامية",2],["رياضيات",2],["علوم طبيعية",1],["تربية بدنية",1]
-    ],
-    "لغات أجنبية": [
-      ["فرنسية",5],["إنجليزية",4],["عربية",4],["إسبانية/ألمانية",4],
-      ["تاريخ وجغرافيا",2],["تربية إسلامية",2],["فلسفة",2],["رياضيات",2],["تربية بدنية",1]
-    ]
+  en:{
+    appName:'Golden Al-Musalli',navHome:'Home',navTimes:'Times',navQuran:'Quran',navDhikr:'Dhikr',navNotif:'Alerts',
+    ramadanGreet:'Ramadan Mubarak 1447',nextPrayer:'Next Prayer',locateMe:'My Location',scrollDown:'Scroll down',
+    welcome:'Welcome in this blessed Ramadan',prayedToday:"Today's Prayers",tasbeehStat:'Dhikr',ramadanDay:'Ramadan',
+    prayerProgress:"Today's prayer progress",prayerTimes:'Prayer Times',ramadanTitle:'Ramadan Mubarak 1447',
+    toIftar:'Until Iftar (Maghrib)',toSuhoor:'Until Suhoor (Fajr)',
+    hours:'h',minutes:'min',seconds:'sec',
+    sunrise:'Sunrise',midnight:'Midnight',lastThird:'Last Third',
+    ramadanCalendar:'Ramadan Calendar 1447',ramadanMonth:'Ramadan 1447 H',
+    qibla:'Qibla Direction',compassClick:'Compass — Tap to activate',compassHint:'Tap the compass to activate',
+    quranPlayer:'Holy Quran',listen:'Listen',pause:'Pause',
+    ayahDay:'Verse of the Day',prev:'Previous',next:'Next',
+    dhikr:'Dhikr Counter',reset:'Reset',targetBtn:'Target',custom:'Custom',totalDhikr:'Total today:',
+    duas:'Duas & Supplications',dua0:'Dua of Iftar',dua1:'Dua of Suhoor',dua2:'Morning Dua',dua3:'Evening Dua',dua4:'Mosque Entrance Dua',dua5:"Laylat al-Qadr Dua",
+    notifications:'Prayer Notifications',upcoming:'Upcoming',done:'Done',
   }
 };
-
-// ══════════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════════
-function toast(msg, type='ok') {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.className = 'show ' + type;
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.className = '', 3000);
+let curLang='ar';
+function setLang(l){
+  curLang=l;
+  document.getElementById('htmlRoot').setAttribute('lang',l);
+  document.getElementById('htmlRoot').setAttribute('dir',l==='ar'?'rtl':'ltr');
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>{b.classList.toggle('active',['ar','fr','en'][i]===l);});
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(i18n[l]&&i18n[l][k]) el.textContent=i18n[l][k];
+  });
 }
 
-// ══════════════════════════════════════════════
-// AUTH TAB
-// ══════════════════════════════════════════════
-function authTab(t) {
-  document.querySelectorAll('.auth-tab').forEach((b,i) => b.classList.toggle('active', (t==='login'?0:1)===i));
-  document.getElementById('ftLogin').classList.toggle('active', t==='login');
-  document.getElementById('ftRegister').classList.toggle('active', t==='register');
+// ════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════
+const prayers=[
+  {name:{ar:'الفجر',fr:'Fajr',en:'Fajr'},icon:'🌙',time:'05:54',min:354},
+  {name:{ar:'الشروق',fr:'Lever',en:'Sunrise'},icon:'🌅',time:'07:20',min:440},
+  {name:{ar:'الظهر',fr:'Dhuhr',en:'Dhuhr'},icon:'☀️',time:'13:01',min:781},
+  {name:{ar:'العصر',fr:'Asr',en:'Asr'},icon:'🌤️',time:'16:15',min:975},
+  {name:{ar:'المغرب',fr:'Maghrib',en:'Maghrib'},icon:'🌆',time:'18:47',min:1127},
+  {name:{ar:'العشاء',fr:"Isha",en:'Isha'},icon:'🌙',time:'20:04',min:1204},
+];
+
+const dhikrs=['سبحان الله','الحمد لله','الله أكبر','لا إله إلا الله','اللهم صلِّ على محمد','سبحان الله وبحمده','أستغفر الله'];
+
+const ayahs=[
+  {ar:'﴿ وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ وَارْكَعُوا مَعَ الرَّاكِعِينَ ﴾',tr:'أقيموا الصلاة وأدّوا الزكاة وصلّوا مع المصلين',ref:'البقرة - 43'},
+  {ar:'﴿ إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ ﴾',tr:'إن الصلاة تنهى عن كل فعل قبيح وعمل منكر',ref:'العنكبوت - 45'},
+  {ar:'﴿ حَافِظُوا عَلَى الصَّلَوَاتِ وَالصَّلَاةِ الْوُسْطَىٰ ﴾',tr:'حافظوا على الصلوات الخمس وخاصةً صلاة العصر',ref:'البقرة - 238'},
+  {ar:'﴿ فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ ﴾',tr:'اذكروني بالطاعة أذكركم بالرحمة والمغفرة',ref:'البقرة - 152'},
+  {ar:'﴿ وَبِالْأَسْحَارِ هُمْ يَسْتَغْفِرُونَ ﴾',tr:'وفي أوقات السحر يستغفرون ربهم ويتوبون إليه',ref:'آل عمران - 17'},
+  {ar:'﴿ إِنَّ اللَّهَ مَعَ الصَّابِرِينَ ﴾',tr:'إن الله يُعين الصابرين ويثبّتهم على الحق',ref:'البقرة - 153'},
+  {ar:'﴿ وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا ﴾',tr:'ومن يخشى الله يجعل الله له مخرجاً من كل ضيق',ref:'الطلاق - 2'},
+  {ar:'﴿ شَهْرُ رَمَضَانَ الَّذِي أُنزِلَ فِيهِ الْقُرْآنُ ﴾',tr:'شهر رمضان هو الشهر الذي أنزل فيه القرآن الكريم',ref:'البقرة - 185'},
+];
+
+const duas=[
+  {t:'دعاء الإفطار',ar:'اللَّهُمَّ لَكَ صُمْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ وَعَلَيْكَ تَوَكَّلْتُ',tr:'اللهم لك صمت وعلى رزقك أفطرت وعليك توكلت يا رب العالمين'},
+  {t:'دعاء السحور',ar:'وَبِصَوْمِ غَدٍ نَوَيْتُ مِنْ شَهْرِ رَمَضَانَ الْمُبَارَكِ',tr:'نويت صيام يوم غد من شهر رمضان المبارك تقبّل منّي يا رب'},
+  {t:'دعاء الصباح',ar:'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ لَا شَرِيكَ لَهُ',tr:'أصبحنا وأصبح الملك كله لله والحمد لله على نعمه العظيمة'},
+  {t:'دعاء المساء',ar:'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ',tr:'أمسينا وأمسى الملك كله لله والحمد لله دائماً وأبداً'},
+  {t:'دعاء دخول المسجد',ar:'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',tr:'اللهم افتح لي أبواب رحمتك الواسعة واجعلني من المقبولين عندك'},
+  {t:'دعاء ليلة القدر',ar:'اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي',tr:'اللهم إنك عفو كريم تحب العفو فاعف عني واغفر لي جميع ذنوبي'},
+];
+
+// Quran surahs data (first few ayahs)
+const surahData={
+  1:[{ar:'﴿ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴾'},{ar:'﴿ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ﴾'},{ar:'﴿ الرَّحْمَٰنِ الرَّحِيمِ ﴾'},{ar:'﴿ مَالِكِ يَوْمِ الدِّينِ ﴾'},{ar:'﴿ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ﴾'},{ar:'﴿ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ﴾'},{ar:'﴿ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ ﴾'}],
+  36:[{ar:'﴿ يس ﴾'},{ar:'﴿ وَالْقُرْآنِ الْحَكِيمِ ﴾'},{ar:'﴿ إِنَّكَ لَمِنَ الْمُرْسَلِينَ ﴾'},{ar:'﴿ عَلَىٰ صِرَاطٍ مُّسْتَقِيمٍ ﴾'},{ar:'﴿ تَنزِيلَ الْعَزِيزِ الرَّحِيمِ ﴾'}],
+  112:[{ar:'﴿ قُلْ هُوَ اللَّهُ أَحَدٌ ﴾'},{ar:'﴿ اللَّهُ الصَّمَدُ ﴾'},{ar:'﴿ لَمْ يَلِدْ وَلَمْ يُولَدْ ﴾'},{ar:'﴿ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ ﴾'}],
+  113:[{ar:'﴿ قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ﴾'},{ar:'﴿ مِن شَرِّ مَا خَلَقَ ﴾'},{ar:'﴿ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ﴾'},{ar:'﴿ وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ﴾'},{ar:'﴿ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ ﴾'}],
+  114:[{ar:'﴿ قُلْ أَعُوذُ بِرَبِّ النَّاسِ ﴾'},{ar:'﴿ مَلِكِ النَّاسِ ﴾'},{ar:'﴿ إِلَٰهِ النَّاسِ ﴾'},{ar:'﴿ مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ﴾'},{ar:'﴿ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ﴾'},{ar:'﴿ مِنَ الْجِنَّةِ وَالنَّاسِ ﴾'}],
+};
+
+// Reciter URLs (Everyayah.com / mp3quran.net)
+function getAudioUrl(surah,ayah){
+  const s=String(surah).padStart(3,'0');
+  const a=String(ayah).padStart(3,'0');
+  return `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${(parseInt(s)-1)*286+parseInt(a)}.mp3`;
 }
 
-// ══════════════════════════════════════════════
-// LOGIN
-// ══════════════════════════════════════════════
-async function doLogin() {
-  const email = document.getElementById('loginEmail').value;
-  const pass  = document.getElementById('loginPass').value;
-  const btn   = document.getElementById('loginBtn');
-  const err   = document.getElementById('loginErr');
-  err.classList.remove('show');
-  btn.disabled = true; btn.textContent = 'جاري تسجيل الدخول...';
-  try {
-    await _account.createEmailPasswordSession(email, pass);
-    curUser = await _account.get();
-    isAdmin = curUser.email === ADMIN_EMAIL; isGuest = false;
-    hideLogin(); await fetchUserData();
-    toast('🎉 مرحباً! تم تسجيل الدخول بنجاح');
-  } catch(e) {
-    err.textContent = '⚠️ البريد أو كلمة المرور غير صحيحة';
-    err.classList.add('show');
-  } finally {
-    btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let count=0, target=33, totalToday=0, curDhikr=0;
+let ayahIdx=new Date().getDay()%ayahs.length;
+let compassOn=false, isPlaying=false;
+let curSurah=1, curQAyah=0, qAyahs=surahData[1]||[];
+let notifToggles={};
+
+// ════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════
+const pad=n=>String(n).padStart(2,'0');
+function nowMin(){const n=new Date();return n.getHours()*60+n.getMinutes()+n.getSeconds()/60;}
+function sc(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});}
+function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'});}
+
+// ════════════════════════════════════════
+// DATE
+// ════════════════════════════════════════
+function updateDate(){
+  const n=new Date();
+  const days={ar:['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],fr:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']};
+  const months={ar:['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],fr:['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']};
+  document.getElementById('gregDate').textContent=`${days[curLang][n.getDay()]}، ${n.getDate()} ${months[curLang][n.getMonth()]} ${n.getFullYear()}`;
+}
+
+// ════════════════════════════════════════
+// PRAYER CARDS
+// ════════════════════════════════════════
+function renderPrayers(){
+  const nm=nowMin();
+  let nxt=prayers.findIndex(p=>p.min>nm);
+  if(nxt===-1) nxt=0;
+  const g=document.getElementById('pgrid');
+  g.innerHTML='';
+  prayers.forEach((p,i)=>{
+    const isNxt=i===nxt,isPassed=p.min<nm&&!isNxt;
+    const d=document.createElement('div');
+    d.className='pc'+(isNxt?' active':'')+(isPassed?' passed':'');
+    d.innerHTML=`<span class="pc-icon">${p.icon}</span><span class="pc-name">${p.name[curLang]||p.name.ar}</span><span class="pc-time">${p.time}</span>${isNxt?`<div class="pc-badge"><span class="blink"></span>${i18n[curLang].upcoming||'قادمة'}</div>`:''}${isPassed?`<div style="font-size:0.6rem;color:var(--green);margin-top:4px">✓ ${i18n[curLang].done||'تمت'}</div>`:''}`;
+    g.appendChild(d);
+  });
+  // progress
+  const pct=Math.min(100,Math.round((nm/1440)*100));
+  document.getElementById('ppFill').style.width=pct+'%';
+  document.getElementById('ppDot').style.left='calc('+pct+'% - 7px)';
+  const prayed=prayers.filter(p=>p.min<nm&&p.name.ar!=='الشروق').length;
+  document.getElementById('ppCount').textContent=prayed+' / 5';
+  document.getElementById('prayedNum').textContent=prayed;
+  document.getElementById('ppNames').innerHTML=prayers.filter(p=>p.name.ar!=='الشروق').map(p=>`<span class="${p.min<nm?'done':''}">${p.name[curLang]||p.name.ar}</span>`).join('');
+}
+
+// ════════════════════════════════════════
+// COUNTDOWN + RING
+// ════════════════════════════════════════
+function updateCountdown(){
+  const nm=nowMin();
+  let nxt=prayers.findIndex(p=>p.min>nm);
+  if(nxt===-1) nxt=0;
+  const next=prayers[nxt];
+  document.getElementById('nextName').textContent=next.name[curLang]||next.name.ar;
+  let diff=next.min-nm;
+  if(diff<0) diff+=1440;
+  const ds=Math.floor(diff*60);
+  document.getElementById('cdTime').textContent=`${pad(Math.floor(ds/3600))}:${pad(Math.floor((ds%3600)/60))}:${pad(ds%60)}`;
+  const prev=prayers[(nxt-1+prayers.length)%prayers.length];
+  let elapsed=nm-prev.min; if(elapsed<0) elapsed+=1440;
+  const total=diff+elapsed;
+  const frac=Math.min(1,elapsed/total);
+  const circ=2*Math.PI*48;
+  document.getElementById('ringFill').style.strokeDashoffset=circ*(1-frac);
+}
+
+// ════════════════════════════════════════
+// RAMADAN TIMER
+// ════════════════════════════════════════
+function updateRamadan(){
+  const n=new Date(),nm=n.getHours()*60+n.getMinutes();
+  const iftar=1127;
+  let diff=(iftar-nm)*60-n.getSeconds();
+  const past=diff<0;
+  if(diff<0) diff+=86400;
+  const lbl=i18n[curLang];
+  document.getElementById('iftarLbl').textContent=past?(lbl.toSuhoor||'حتى السحور'):(lbl.toIftar||'حتى الإفطار');
+  document.getElementById('rh').textContent=pad(Math.floor(diff/3600));
+  document.getElementById('rm').textContent=pad(Math.floor((diff%3600)/60));
+  document.getElementById('rs').textContent=pad(diff%60);
+}
+
+// ════════════════════════════════════════
+// RAMADAN CALENDAR
+// ════════════════════════════════════════
+function buildCalendar(){
+  const grid=document.getElementById('rcalGrid');
+  grid.innerHTML='';
+  const hdDays=curLang==='ar'?['أح','إث','ثل','أر','خم','جم','سب']:
+                curLang==='fr'?['Di','Lu','Ma','Me','Je','Ve','Sa']:
+                ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  hdDays.forEach(d=>{const el=document.createElement('div');el.className='rcal-day-hd';el.textContent=d;grid.appendChild(el);});
+  // Ramadan 2026: starts March 2 (Sunday = 0), 30 days
+  const startDay=1; // Monday index in week (0=Sun)
+  for(let i=0;i<startDay;i++){const el=document.createElement('div');grid.appendChild(el);}
+  for(let day=1;day<=30;day++){
+    const el=document.createElement('div');
+    el.className='rcal-day';
+    const dow=(startDay+day-1)%7;
+    if(dow===5) el.classList.add('friday'); // Friday
+    if(day===12) el.classList.add('today'); // today (12 Ramadan)
+    if(day===27||day===25||day===29) el.classList.add('special'); // odd nights
+    // Gregorian date: March 2 + (day-1)
+    const gDate=new Date(2026,2,2+day-1);
+    const gDay=gDate.getDate(), gMonth=gDate.getMonth();
+    const gStr=gDay+(gMonth===2?'/3':'/4');
+    el.innerHTML=`<span class="rcal-day-num">${day}</span><span class="rcal-day-hij">${gStr}</span>`;
+    el.title=`${day} رمضان`;
+    grid.appendChild(el);
   }
 }
 
-async function doGoogle() {
-  toast('⏳ جاري التوجيه إلى Google...');
-  _account.createOAuth2Session('google',
-    'https://houssislam-collab.github.io/HMD_Calcu',
-    'https://houssislam-collab.github.io/HMD_Calcu'
+// ════════════════════════════════════════
+// LOCATION
+// ════════════════════════════════════════
+function getLocation(){
+  const el=document.getElementById('locTxt');
+  if(!navigator.geolocation){el.textContent='غير مدعوم';return;}
+  el.textContent='⏳...';
+  navigator.geolocation.getCurrentPosition(
+    p=>{el.textContent=`${p.coords.latitude.toFixed(2)}°، ${p.coords.longitude.toFixed(2)}°`;},
+    ()=>{el.textContent='البليدة، الجزائر 🇩🇿';}
   );
 }
 
-function doGuest() {
-  isGuest = true;
-  curUser = { $id:'guest', name:'ضيف', email:'guest@local' };
-  hideLogin();
-  document.getElementById('uName').innerHTML = '<span class="guest-chip">ضيف</span> ضيف';
-  document.getElementById('uAvatar').textContent = '👤';
-  ['saveBtn','loadBtn','camBtn'].forEach(id => document.getElementById(id).classList.add('disabled'));
-  document.getElementById('guestNotice').classList.add('show');
-  toast('👋 مرحباً! أنت في وضع الضيف');
-}
-
-async function doRegister() {
-  const name  = document.getElementById('regName').value;
-  const email = document.getElementById('regEmail').value;
-  const pass  = document.getElementById('regPass').value;
-  const btn   = document.getElementById('regBtn');
-  const err   = document.getElementById('registerErr');
-  err.classList.remove('show');
-  btn.disabled = true; btn.textContent = 'جاري إنشاء الحساب...';
-  try {
-    await _account.create(ID.unique(), email, pass, name);
-    await _account.createEmailPasswordSession(email, pass);
-    curUser = await _account.get();
-    isAdmin = curUser.email === ADMIN_EMAIL; isGuest = false;
-    await _db.createDocument(DB_ID, COL_STU, ID.unique(), {
-      userId: curUser.$id, fullName: name, email, password: pass,
-      avatar: name.charAt(0).toUpperCase()
+// ════════════════════════════════════════
+// QIBLA COMPASS
+// ════════════════════════════════════════
+function activateCompass(){
+  if(compassOn) return;
+  const go=()=>{
+    compassOn=true;
+    document.getElementById('cRing').classList.add('stopped');
+    document.getElementById('qHint').textContent='✓ '+(i18n[curLang].compassActivated||'البوصلة مفعّلة');
+    window.addEventListener('deviceorientationabsolute',e=>{
+      const a=e.alpha||0, qibla=100;
+      const n=document.getElementById('cNeedle');
+      n.style.cssText=`position:absolute;left:50%;bottom:50%;transform:translate(-50%,0) rotate(${-a+qibla}deg);transform-origin:center bottom;width:5px;height:58px;display:flex;flex-direction:column;`;
     });
-    hideLogin(); await fetchUserData();
-    toast('🎉 تم إنشاء الحساب بنجاح!');
-  } catch(e) {
-    err.textContent = e.code === 409 ? '⚠️ البريد مُستخدم بالفعل' : '⚠️ خطأ في إنشاء الحساب';
-    err.classList.add('show');
-  } finally {
-    btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> إنشاء حساب';
-  }
-}
-
-async function doLogout() {
-  try { if(!isGuest) await _account.deleteSession('current'); } catch(e){}
-  curUser = null; isAdmin = false; isGuest = false;
-  document.getElementById('adminPanel').classList.remove('show');
-  document.getElementById('adminBtn').style.display = 'none';
-  showLogin(); toast('تم تسجيل الخروج');
-}
-
-function showLogin() {
-  document.getElementById('loginOverlay').classList.remove('hidden');
-  document.getElementById('userBar').classList.remove('show');
-}
-function hideLogin() {
-  document.getElementById('loginOverlay').classList.add('hidden');
-  document.getElementById('userBar').classList.add('show');
-}
-
-async function fetchUserData() {
-  try {
-    const res = await _db.listDocuments(DB_ID, COL_STU, [Query.equal('userId', curUser.$id)]);
-    const stu = res.documents[0];
-    document.getElementById('uName').textContent = stu ? stu.fullName : curUser.name || 'مستخدم';
-    document.getElementById('uAvatar').textContent = stu ? stu.avatar : (curUser.name||'U').charAt(0).toUpperCase();
-    ['saveBtn','loadBtn','camBtn'].forEach(id => document.getElementById(id).classList.remove('disabled'));
-    document.getElementById('guestNotice').classList.remove('show');
-    if(isAdmin) document.getElementById('adminBtn').style.display = '';
-  } catch(e){ console.error(e); }
-}
-
-async function handleOAuth() {
-  try {
-    curUser = await _account.get();
-    if(!curUser) return;
-    isAdmin = curUser.email === ADMIN_EMAIL; isGuest = false;
-    const res = await _db.listDocuments(DB_ID, COL_STU, [Query.equal('userId', curUser.$id)]);
-    if(!res.documents.length) {
-      await _db.createDocument(DB_ID, COL_STU, ID.unique(), {
-        userId: curUser.$id, fullName: curUser.name||'مستخدم Google',
-        email: curUser.email, password:'Google-OAuth',
-        avatar: (curUser.name||'G').charAt(0).toUpperCase()
-      });
-    }
-    hideLogin(); await fetchUserData();
-    if(window.location.search) history.replaceState({}, '', location.pathname);
-  } catch(e){}
-}
-
-// ══════════════════════════════════════════════
-// ADMIN
-// ══════════════════════════════════════════════
-function toggleAdmin() {
-  if(!isAdmin) return;
-  const p = document.getElementById('adminPanel');
-  if(p.classList.contains('show')) p.classList.remove('show');
-  else { p.classList.add('show'); loadStudents(); p.scrollIntoView({behavior:'smooth'}); }
-}
-
-async function loadStudents() {
-  if(!isAdmin) return;
-  const body = document.getElementById('adminBody');
-  body.innerHTML = '<tr><td colspan="5" style="padding:20px;color:var(--muted);">جاري التحميل...</td></tr>';
-  try {
-    const res = await _db.listDocuments(DB_ID, COL_STU, [Query.limit(100)]);
-    body.innerHTML = res.documents.length ? res.documents.map((s,i)=>
-      `<tr><td>${i+1}</td><td>${s.fullName}</td><td>${s.email}</td>
-      <td><code style="background:var(--ink3);padding:3px 8px;border-radius:6px;font-size:.72rem;">${s.password||'N/A'}</code></td>
-      <td style="font-size:.72rem;">${new Date(s.$createdAt).toLocaleDateString('ar-DZ')}</td></tr>`
-    ).join('') : '<tr><td colspan="5">لا يوجد طلاب</td></tr>';
-    toast(`✓ ${res.documents.length} طالب`);
-  } catch(e) { toast('⚠️ فشل التحميل','err'); }
-}
-
-function exportCSV() {
-  const tbl = document.querySelector('#adminPanel table');
-  const rows = [[...tbl.querySelectorAll('th')].map(t=>t.textContent)];
-  tbl.querySelectorAll('tbody tr').forEach(r => rows.push([...r.querySelectorAll('td')].map(t=>t.textContent.trim())));
-  const blob = new Blob(['\ufeff'+rows.map(r=>r.join(',')).join('\n')], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='students.csv'; a.click();
-  toast('✓ تم التصدير');
-}
-
-// ══════════════════════════════════════════════
-// GPA TABLE
-// ══════════════════════════════════════════════
-function loadStreams() {
-  const yr = document.getElementById('yearSel').value;
-  const sel = document.getElementById('streamSel');
-  sel.innerHTML = Object.keys(SUBJECTS[yr]).map(k=>`<option value="${k}">${k}</option>`).join('');
-  loadGPATable();
-}
-
-function loadGPATable() {
-  const yr = document.getElementById('yearSel').value;
-  const st = document.getElementById('streamSel').value;
-  let subs = [...SUBJECTS[yr][st]];
-  if(document.getElementById('tamChk').checked) subs.push(['أمازيغية',2]);
-  if(document.getElementById('artChk').checked) subs.push(['تربية فنية',1]);
-  document.getElementById('gpaBody').innerHTML = subs.map(([name,coef])=>
-    `<tr data-c="${coef}">
-      <td><strong>${name}</strong></td>
-      ${[0,1,2,3,4].map(()=>`<td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td>`).join('')}
-      <td><strong>${coef}</strong></td>
-      <td class="avg"><strong>0.00</strong></td>
-      <td class="sum"><strong>0.00</strong></td>
-    </tr>`
-  ).join('');
-}
-
-function calcGPA() {
-  let pts = 0, coefs = 0;
-  document.querySelectorAll('#gpaBody tr').forEach(r => {
-    const ins = r.querySelectorAll('input');
-    const e = +ins[0].value||0, ap = +ins[1].value||0;
-    const t1= +ins[2].value||0, t2 = +ins[3].value||0;
-    const ex= +ins[4].value||0;
-    const c = +r.dataset.c;
-    const name = r.cells[0].innerText;
-    const avg = t2>0 ? (e+ap+t1+t2+ex*2)/6 : (e+ap+t1+ex*2)/5;
-    if(name==='أمازيغية'||name==='تربية فنية') {
-      const bonus = avg>10?(avg-10)*c:0;
-      r.querySelector('.avg').innerHTML=`<strong>${avg.toFixed(2)}</strong>`;
-      r.querySelector('.sum').innerHTML=`<strong>+${bonus.toFixed(2)}</strong>`;
-      pts += bonus;
-    } else {
-      r.querySelector('.avg').innerHTML=`<strong>${avg.toFixed(2)}</strong>`;
-      r.querySelector('.sum').innerHTML=`<strong>${(avg*c).toFixed(2)}</strong>`;
-      pts += avg*c; coefs += c;
-    }
-  });
-  const final = pts/coefs;
-  showResult('gpaResult', `المعدل النهائي: ${final.toFixed(2)}`, getGrade(final));
-  trackGuest();
-}
-
-function getGrade(v) {
-  if(v>=16) return {cls:'excellent',icon:'🎉',msg:'ممتاز جداً!'};
-  if(v>=14) return {cls:'excellent',icon:'⭐',msg:'ممتاز!'};
-  if(v>=12) return {cls:'good',icon:'👍',msg:'جيد جداً'};
-  if(v>=10) return {cls:'good',icon:'✓',msg:'جيد — ناجح'};
-  if(v>=8)  return {cls:'average',icon:'📊',msg:'متوسط'};
-  return {cls:'weak',icon:'⚠️',msg:'ضعيف — تحتاج مراجعة'};
-}
-
-function showResult(id, val, {cls,icon,msg}) {
-  const el = document.getElementById(id);
-  el.className = `result show ${cls}`;
-  el.querySelector('.result-icon').textContent = icon;
-  el.querySelector('.result-val').textContent  = val;
-  el.querySelector('.result-msg').textContent  = msg;
-}
-
-// ══════════════════════════════════════════════
-// YEARLY
-// ══════════════════════════════════════════════
-function calcYearly() {
-  const t1=+document.getElementById('t1').value||0;
-  const t2=+document.getElementById('t2').value||0;
-  const t3=+document.getElementById('t3').value||0;
-  if(!t1||!t2||!t3){toast('⚠️ أدخل جميع المعدلات','err');return;}
-  const avg = (t1+t2+t3*3)/5;
-  showResult('yearlyRes', `المعدل السنوي: ${avg.toFixed(2)}`, getGrade(avg));
-  trackGuest();
-}
-
-// ══════════════════════════════════════════════
-// NEEDED
-// ══════════════════════════════════════════════
-function calcNeeded() {
-  const target = +document.getElementById('targetAvg').value;
-  const ev     = +document.getElementById('evalMark').value||0;
-  const t1     = +document.getElementById('test1').value||0;
-  const t2     = +document.getElementById('test2').value||0;
-  if(!target){toast('⚠️ أدخل المعدل المطلوب','err');return;}
-  const div = t2>0?5:4;
-  const needed = (target*div - ev - t1 - t2)/2;
-  const el = document.getElementById('neededRes');
-  if(needed>20) showResult('neededRes',`العلامة المطلوبة: ${needed.toFixed(2)}`,{cls:'weak',icon:'⚠️',msg:'من المستحيل تحقيق هذا المعدل!'});
-  else if(needed<0) showResult('neededRes','متفوق! 🏆',{cls:'excellent',icon:'🎉',msg:'أنت محقق للمعدل بالفعل!'});
-  else {
-    const g = needed<=10?{cls:'excellent',icon:'🎯',msg:'سهل! يمكنك تحقيقه'}:needed<=15?{cls:'good',icon:'🎯',msg:'ممكن! اجتهد'}:{cls:'average',icon:'🎯',msg:'صعب — يتطلب جهداً كبيراً'};
-    showResult('neededRes',`العلامة المطلوبة: ${needed.toFixed(2)}`,g);
-  }
-  trackGuest();
-}
-
-// ══════════════════════════════════════════════
-// BAC
-// ══════════════════════════════════════════════
-function loadBacStreams() {
-  document.getElementById('bacStream').innerHTML =
-    Object.keys(SUBJECTS['3']).map(k=>`<option value="${k}">${k}</option>`).join('');
-  loadBacTable();
-}
-
-function loadBacTable() {
-  const st = document.getElementById('bacStream').value;
-  let subs = [...SUBJECTS['3'][st]];
-  if(document.getElementById('tamBac').checked) subs.push(['أمازيغية',2]);
-  document.getElementById('bacBody').innerHTML = subs.map(([name,coef])=>
-    `<tr data-c="${coef}">
-      <td><strong>${name}</strong></td>
-      <td><input type="number" min="0" max="20" step="0.25" placeholder="0"></td>
-      <td><strong>${coef}</strong></td>
-      <td class="bsum"><strong>0.00</strong></td>
-    </tr>`
-  ).join('');
-}
-
-function calcBac() {
-  let pts=0, coefs=0;
-  document.querySelectorAll('#bacBody tr').forEach(r=>{
-    const v=+r.querySelector('input').value||0, c=+r.dataset.c;
-    const name=r.cells[0].innerText;
-    if(name==='أمازيغية'){
-      const bonus=v>10?v-10:0;
-      r.querySelector('.bsum').innerHTML=`<strong>+${bonus.toFixed(2)}</strong>`;
-      pts+=bonus;
-    } else {
-      r.querySelector('.bsum').innerHTML=`<strong>${(v*c).toFixed(2)}</strong>`;
-      pts+=v*c; coefs+=c;
-    }
-  });
-  document.getElementById('bacPts').textContent=(pts).toFixed(2);
-  document.getElementById('bacCoef').textContent=coefs;
-  document.getElementById('bacAvg').textContent=(pts/coefs).toFixed(2);
-  trackGuest();
-}
-
-// ══════════════════════════════════════════════
-// CLOUD SAVE / LOAD
-// ══════════════════════════════════════════════
-async function saveCloud() {
-  if(isGuest){toast('⚠️ وضع الضيف — سجل الدخول للحفظ','err');return;}
-  try {
-    const vals=[]; document.querySelectorAll('#gpaBody input').forEach(i=>vals.push(i.value));
-    const yr=document.getElementById('yearSel').value, st=document.getElementById('streamSel').value;
-    const ex=await _db.listDocuments(DB_ID,COL_GRD,[Query.equal('userId',curUser.$id),Query.equal('year',yr),Query.equal('stream',st)]);
-    const data={userId:curUser.$id,year:yr,stream:st,grades:JSON.stringify(vals),updatedAt:new Date().toISOString()};
-    if(ex.documents.length) await _db.updateDocument(DB_ID,COL_GRD,ex.documents[0].$id,data);
-    else await _db.createDocument(DB_ID,COL_GRD,ID.unique(),data);
-    toast('✓ تم الحفظ في السحابة!');
-  } catch(e){toast('⚠️ فشل الحفظ','err');}
-}
-
-async function loadCloud() {
-  if(isGuest){toast('⚠️ وضع الضيف — سجل الدخول للاسترجاع','err');return;}
-  try {
-    const yr=document.getElementById('yearSel').value, st=document.getElementById('streamSel').value;
-    const res=await _db.listDocuments(DB_ID,COL_GRD,[Query.equal('userId',curUser.$id),Query.equal('year',yr),Query.equal('stream',st)]);
-    if(!res.documents.length){toast('⚠️ لا توجد بيانات محفوظة','err');return;}
-    const vals=JSON.parse(res.documents[0].grades);
-    document.querySelectorAll('#gpaBody input').forEach((i,idx)=>{if(vals[idx]!==undefined)i.value=vals[idx];});
-    toast('✓ تم الاسترجاع!');
-  } catch(e){toast('⚠️ فشل الاسترجاع','err');}
-}
-
-function captureImg() {
-  if(isGuest){toast('⚠️ وضع الضيف — سجل الدخول','err');return;}
-  const el=document.getElementById('gpaResult');
-  if(!el.classList.contains('show')){toast('⚠️ احسب المعدل أولاً','err');return;}
-  html2canvas(el,{backgroundColor:null,scale:2}).then(c=>{
-    const a=document.createElement('a'); a.download='معدلي-HMD.png'; a.href=c.toDataURL(); a.click();
-    toast('✓ تم حفظ الصورة 📸');
-  });
-}
-
-// ══════════════════════════════════════════════
-// AI IMAGE SCANNING
-// ══════════════════════════════════════════════
-function openAI() {
-  document.getElementById('aiModal').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeAI() {
-  document.getElementById('aiModal').classList.remove('open');
-  document.body.style.overflow='';
-}
-
-function onImgSelect(e) {
-  const file=e.target.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    imgB64=ev.target.result.split(',')[1];
-    document.getElementById('previewImg').src=ev.target.result;
-    document.getElementById('imgPreview').classList.add('show');
-    document.getElementById('analyzeBtn').style.display='block';
-    document.getElementById('dropZone').style.display='none';
   };
-  reader.readAsDataURL(file);
+  if(typeof DeviceOrientationEvent==='undefined'){document.getElementById('qHint').textContent='غير مدعوم';return;}
+  if(typeof DeviceOrientationEvent.requestPermission==='function'){
+    DeviceOrientationEvent.requestPermission().then(r=>{if(r==='granted') go();});
+  } else go();
 }
 
-function resetImg() {
-  imgB64=null;
-  document.getElementById('imgFile').value='';
-  document.getElementById('imgPreview').classList.remove('show');
-  document.getElementById('analyzeBtn').style.display='none';
-  document.getElementById('dropZone').style.display='block';
+// ════════════════════════════════════════
+// QURAN PLAYER
+// ════════════════════════════════════════
+function loadSurah(){
+  curSurah=parseInt(document.getElementById('surahSel').value);
+  qAyahs=surahData[curSurah]||[{ar:'﴿ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴾'}];
+  curQAyah=0;
+  renderQAyah();
+  stopAudio();
 }
-
-function resetAI() {
-  resetImg();
-  document.getElementById('aiLoading').classList.remove('show');
-  document.getElementById('aiRes').classList.remove('show');
-  document.getElementById('aiUpload').style.display='block';
-  aiData=null;
+function renderQAyah(){
+  document.getElementById('quranDisplay').textContent=qAyahs[curQAyah]?.ar||'';
+  document.getElementById('ayahCounter').textContent=`${curQAyah+1} / ${qAyahs.length}`;
 }
-
-async function runAI() {
-  if(!imgB64){toast('⚠️ اختر صورة أولاً','err');return;}
-  if(!ANTHROPIC_KEY || ANTHROPIC_KEY.length < 20){
-    toast('⚠️ يرجى إضافة Anthropic API Key في الكود','err');
-    return;
-  }
-
-  const yr=document.getElementById('yearSel').value, st=document.getElementById('streamSel').value;
-  let subs=[...SUBJECTS[yr][st]];
-  if(document.getElementById('tamChk').checked) subs.push(['أمازيغية',2]);
-  if(document.getElementById('artChk').checked) subs.push(['تربية فنية',1]);
-  const subNames=subs.map(s=>s[0]).join('، ');
-
-  document.getElementById('aiUpload').style.display='none';
-  document.getElementById('aiLoading').classList.add('show');
-
-  const steps=['s1','s2','s3','s4'];
-  for(let i=0;i<steps.length;i++){
-    await new Promise(r=>setTimeout(r,650));
-    if(i>0) document.getElementById(steps[i-1]).className='ai-step done';
-    document.getElementById(steps[i]).className='ai-step active';
-  }
-
-  try {
-    const prompt=`أنت نظام متخصص في قراءة كشوف النقاط الجزائرية.
-
-حلل هذه الصورة واستخرج العلامات.
-
-المواد: ${subNames}
-
-أجب فقط بـ JSON بهذا الشكل بدون أي نص إضافي:
-{
-  "subjects": [
-    {
-      "name": "اسم المادة",
-      "taqdim": رقم أو null,
-      "amal": رقم أو null,
-      "farod1": رقم أو null,
-      "farod2": رقم أو null,
-      "ikhtibار": رقم أو null
-    }
-  ],
-  "confidence": "high|medium|low"
-}
-
-قواعد: الأرقام 0-20، إذا لم تجد العلامة ضع null`;
-
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:2000,
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},
-          {type:'text',text:prompt}
-        ]}]
-      })
-    });
-
-    const data=await resp.json();
-    document.getElementById(steps[3]).className='ai-step done';
-    await new Promise(r=>setTimeout(r,400));
-
-    let txt=data.content?.map(c=>c.text||'').join('')||'';
-    txt=txt.replace(/```json|```/g,'').trim();
-    aiData=JSON.parse(txt);
-    renderAIResults(aiData);
-
-  } catch(e) {
-    console.error(e);
-    document.getElementById('aiLoading').classList.remove('show');
-    document.getElementById('aiUpload').style.display='block';
-    resetImg();
-    toast('⚠️ فشل التحليل — تأكد من وضوح الصورة','err');
+function nextQAyah(){curQAyah=(curQAyah+1)%qAyahs.length;renderQAyah();}
+function prevQAyah(){curQAyah=(curQAyah-1+qAyahs.length)%qAyahs.length;renderQAyah();}
+function togglePlay(){
+  const audio=document.getElementById('audioEl');
+  if(isPlaying){stopAudio();}
+  else{
+    const url=`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${getSurahOffset(curSurah)+curQAyah+1}.mp3`;
+    audio.src=url;
+    audio.play().then(()=>{isPlaying=true;document.getElementById('playBtn').innerHTML=`⏸ <span>${i18n[curLang].pause||'إيقاف'}</span>`;}).catch(()=>{document.getElementById('quranDisplay').textContent='⚠️ تعذّر التشغيل. تحقق من الاتصال بالإنترنت.';});
   }
 }
+function getSurahOffset(s){const offsets={1:0,36:506,55:811,67:939,78:1022,112:1132,113:1136,114:1141};return offsets[s]||0;}
+function stopAudio(){
+  const audio=document.getElementById('audioEl');
+  audio.pause();audio.currentTime=0;isPlaying=false;
+  document.getElementById('playBtn').innerHTML=`▶ <span>${i18n[curLang].listen||'استماع'}</span>`;
+  document.getElementById('audioFill').style.width='0%';
+  document.getElementById('audioTime').textContent='0:00';
+}
+function audioEnded(){isPlaying=false;document.getElementById('playBtn').innerHTML=`▶ <span>${i18n[curLang].listen||'استماع'}</span>`;}
+function updateAudioProgress(){
+  const audio=document.getElementById('audioEl');
+  if(!audio.duration) return;
+  const pct=(audio.currentTime/audio.duration)*100;
+  document.getElementById('audioFill').style.width=pct+'%';
+  const fmt=s=>pad(Math.floor(s/60))+':'+pad(Math.floor(s%60));
+  document.getElementById('audioTime').textContent=fmt(audio.currentTime);
+  document.getElementById('audioDur').textContent=fmt(audio.duration);
+}
+function seekAudio(e){
+  const audio=document.getElementById('audioEl');
+  if(!audio.duration) return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const pct=(e.clientX-rect.left)/rect.width;
+  audio.currentTime=pct*audio.duration;
+}
 
-function renderAIResults(parsed) {
-  document.getElementById('aiLoading').classList.remove('show');
-  const list=document.getElementById('aiResList');
+// ════════════════════════════════════════
+// AYAH
+// ════════════════════════════════════════
+function renderAyah(){
+  const a=ayahs[ayahIdx];
+  document.getElementById('ayahAr').textContent=a.ar;
+  document.getElementById('ayahTr').textContent=a.tr;
+  document.getElementById('ayahRef').textContent='سورة '+a.ref;
+}
+function nextAyah(){ayahIdx=(ayahIdx+1)%ayahs.length;renderAyah();}
+function prevAyah(){ayahIdx=(ayahIdx-1+ayahs.length)%ayahs.length;renderAyah();}
+
+// ════════════════════════════════════════
+// DHIKR
+// ════════════════════════════════════════
+function changeDhikr(){
+  curDhikr=parseInt(document.getElementById('dhikrSel').value);
+  document.getElementById('dhikrTxt').textContent=dhikrs[curDhikr];
+  resetCtr();
+}
+function customDhikr(){
+  const t=prompt(i18n[curLang].customPrompt||'أدخل ذكرك المخصص:');
+  if(t&&t.trim()){
+    dhikrs.push(t.trim());
+    const o=document.createElement('option');o.value=dhikrs.length-1;o.textContent=t.trim();
+    document.getElementById('dhikrSel').appendChild(o);
+    document.getElementById('dhikrSel').value=dhikrs.length-1;
+    changeDhikr();
+  }
+}
+function tap(){
+  count++;totalToday++;
+  document.getElementById('ctrNum').textContent=count;
+  document.getElementById('todayTotal').textContent=totalToday;
+  document.getElementById('tasbeehNum').textContent=totalToday;
+  const pct=Math.min(100,Math.round((count/target)*100));
+  document.getElementById('ctrProg').style.background=`conic-gradient(var(--g1) ${pct*3.6}deg,transparent 0)`;
+  if(count>=target) document.getElementById('ctr').classList.add('done');
+  if(navigator.vibrate) navigator.vibrate(15);
+}
+function resetCtr(){count=0;document.getElementById('ctrNum').textContent=0;document.getElementById('ctr').classList.remove('done');document.getElementById('ctrProg').style.background='conic-gradient(var(--g1) 0deg,transparent 0)';}
+function setTarget(){const t=prompt(i18n[curLang].targetPrompt||'أدخل الهدف:',target);if(t&&!isNaN(t)&&parseInt(t)>0){target=parseInt(t);document.getElementById('targetNum').textContent=target;resetCtr();}}
+
+// ════════════════════════════════════════
+// NOTIFICATIONS
+// ════════════════════════════════════════
+function buildNotifications(){
+  const list=document.getElementById('notifList');
   list.innerHTML='';
-  if(!parsed.subjects?.length){
-    list.innerHTML='<p style="text-align:center;color:#f87171;padding:12px;">⚠️ لم يتم العثور على علامات</p>';
-  } else {
-    parsed.subjects.forEach(s=>{
-      if(!s.name) return;
-      const grades=[];
-      if(s.taqdim!=null) grades.push(`ت.م: ${s.taqdim}`);
-      if(s.amal!=null)   grades.push(`أ.ت: ${s.amal}`);
-      if(s.farod1!=null) grades.push(`ف1: ${s.farod1}`);
-      if(s.farod2!=null&&s.farod2>0) grades.push(`ف2: ${s.farod2}`);
-      if(s['ikhtibار']!=null) grades.push(`اختبار: ${s['ikhtibار']}`);
-      if(!grades.length) return;
-      list.innerHTML+=`<div class="ai-result-item">
-        <span class="ai-subj">${s.name}</span>
-        <div class="ai-grades">${grades.map(g=>`<span class="ai-chip">${g}</span>`).join('')}</div>
-      </div>`;
-    });
-  }
-  document.getElementById('aiRes').classList.add('show');
+  prayers.forEach((p,i)=>{
+    const row=document.createElement('div');
+    row.className='notif-row';
+    const on=notifToggles[i]!==false;
+    row.innerHTML=`<div class="notif-info"><div class="ni-name">${p.icon} ${p.name.ar}</div><div class="ni-time">${p.time}</div></div><div class="toggle ${on?'on':''}" onclick="toggleNotif(${i},this)"></div>`;
+    list.appendChild(row);
+  });
 }
-
-function applyAI() {
-  if(!aiData?.subjects){toast('⚠️ لا توجد بيانات','err');return;}
-  let filled=0;
-  document.querySelectorAll('#gpaBody tr').forEach(row=>{
-    const subj=row.cells[0].innerText.trim();
-    const ins=row.querySelectorAll('input');
-    const match=aiData.subjects.find(s=>{
-      if(!s.name) return false;
-      const n=s.name.trim();
-      return n===subj||subj.includes(n)||n.includes(subj)||
-             subj.replace(/\s/g,'').includes(n.replace(/\s/g,''));
-    });
-    if(match){
-      if(match.taqdim!=null&&ins[0]){ins[0].value=match.taqdim;filled++;}
-      if(match.amal!=null&&ins[1]) ins[1].value=match.amal;
-      if(match.farod1!=null&&ins[2]) ins[2].value=match.farod1;
-      if(match.farod2!=null&&match.farod2>0&&ins[3]) ins[3].value=match.farod2;
-      if(match['ikhtibار']!=null&&ins[4]) ins[4].value=match['ikhtibار'];
+function toggleNotif(i,el){
+  notifToggles[i]=!el.classList.contains('on');
+  el.classList.toggle('on');
+  if(notifToggles[i] && Notification && Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+}
+function checkPrayerNotifications(){
+  if(Notification.permission!=='granted') return;
+  const nm=nowMin();
+  prayers.forEach((p,i)=>{
+    if(notifToggles[i]===false) return;
+    const diff=p.min-nm;
+    if(diff>0&&diff<1){
+      new Notification(`🕌 ${p.name.ar}`,{body:`حان وقت صلاة ${p.name.ar} — ${p.time}`,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>',silent:false});
     }
   });
-  closeAI(); resetAI();
-  filled>0
-    ? toast(`✨ تم ملء ${filled} مادة — تحقق وانقر احسب`)
-    : toast('⚠️ لم يتطابق أي مادة — تحقق من الشعبة','err');
-  if(filled>0) document.getElementById('gpaBody').scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-// Drag & Drop
-const dz=document.getElementById('dropZone');
-dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
-dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
-dz.addEventListener('drop',e=>{
-  e.preventDefault(); dz.classList.remove('drag');
-  const f=e.dataTransfer.files[0];
-  if(f&&f.type.startsWith('image/')){
-    const dt=new DataTransfer(); dt.items.add(f);
-    document.getElementById('imgFile').files=dt.files;
-    onImgSelect({target:{files:[f]}});
-  }
-});
-document.getElementById('aiModal').addEventListener('click',e=>{
-  if(e.target===e.currentTarget) closeAI();
-});
-
-// ══════════════════════════════════════════════
-// TABS
-// ══════════════════════════════════════════════
-function showTab(i) {
-  document.querySelectorAll('.nav-tab').forEach((t,j)=>t.classList.toggle('active',i===j));
-  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));
-  if(i!==99) document.getElementById('adminPanel').classList.remove('show');
+// ════════════════════════════════════════
+// DUAS MODAL
+// ════════════════════════════════════════
+function openDua(i){
+  const d=duas[i];
+  document.getElementById('mTitle').textContent=d.t;
+  document.getElementById('mAr').textContent=d.ar;
+  document.getElementById('mTr').textContent=d.tr;
+  document.getElementById('modal').classList.add('open');
 }
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function closeDuaEv(e){if(e.target.id==='modal') closeModal();}
 
-// ══════════════════════════════════════════════
-// THEME
-// ══════════════════════════════════════════════
-function toggleTheme() {
-  document.body.classList.toggle('light');
-  const ico=document.getElementById('themeIco');
-  const light=document.body.classList.contains('light');
-  ico.className=light?'fas fa-moon':'fas fa-sun';
-  localStorage.setItem('hmd_theme', light?'light':'dark');
-}
-
-// ══════════════════════════════════════════════
-// GUEST POPUP
-// ══════════════════════════════════════════════
-function trackGuest() {
-  if(!isGuest) return;
-  guestActions++;
-  if((guestActions===3&&popCount===0)||(guestActions===7&&popCount===1))
-    setTimeout(showPop, 1500);
-}
-function showPop() {
-  if(!isGuest||popCount>=2) return;
-  document.getElementById('signupPop').classList.add('show');
-  popCount++;
-  setTimeout(()=>document.getElementById('signupPop').classList.remove('show'), 12000);
-}
-function closePop() { document.getElementById('signupPop').classList.remove('show'); }
-function showRegPop() { closePop(); showLogin(); authTab('register'); }
-
-// ══════════════════════════════════════════════
+// ════════════════════════════════════════
 // INIT
-// ══════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', async () => {
-  loadStreams();
-  loadBacStreams();
+// ════════════════════════════════════════
+updateDate();
+renderPrayers();
+renderAyah();
+updateCountdown();
+updateRamadan();
+buildCalendar();
+buildNotifications();
 
-  const theme=localStorage.getItem('hmd_theme')||'dark';
-  if(theme==='light'){
-    document.body.classList.add('light');
-    document.getElementById('themeIco').className='fas fa-moon';
-  }
-
-  // Login with Enter key
-  document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-  document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-
-  try {
-    curUser = await _account.get();
-    isAdmin = curUser.email===ADMIN_EMAIL; isGuest=false;
-    await handleOAuth();
-  } catch(e) { showLogin(); }
-});
+setInterval(()=>{updateCountdown();updateRamadan();checkPrayerNotifications();},1000);
+setInterval(()=>{renderPrayers();updateDate();},30000);
 </script>
 </body>
 </html>
