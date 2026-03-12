@@ -300,7 +300,6 @@ select:focus, input:focus {
 }
 select option { background:var(--ink2); }
 
-/* Input validation style */
 input[type=number]:focus {
   border-color: var(--gold);
 }
@@ -1005,8 +1004,11 @@ const COL_STU   = 'students';
 const COL_GRD   = 'grades';
 const ADMIN_EMAIL = atob('YWRtaW5AaG1kLmNvbQ==');
 
-const ANTHROPIC_KEY  = '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';
-const PROXY_URL      = 'https://hmd-ai.houssislam.workers.dev';
+// ══════════════════════════════════════════════
+// ✅ الإصلاح: استخدام Anthropic API مباشرة بدون Proxy
+// ══════════════════════════════════════════════
+const ANTHROPIC_KEY = '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';
+const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 
 // ══════════════════════════════════════════════
 // STATE
@@ -1096,7 +1098,7 @@ function toast(msg, type='ok') {
 }
 
 // ══════════════════════════════════════════════
-// INPUT VALIDATION — تصحيح فوري: فوق 20 → 20، تحت 0 → 0
+// INPUT VALIDATION
 // ══════════════════════════════════════════════
 function clampInput(inp) {
   let v = parseFloat(inp.value);
@@ -1105,7 +1107,6 @@ function clampInput(inp) {
   if (v < 0)  inp.value = 0;
 }
 
-// تصحيح فوري أثناء الكتابة
 document.addEventListener('input', function(e) {
   if (!e.target.matches('input[type=number]')) return;
   const v = parseFloat(e.target.value);
@@ -1114,7 +1115,6 @@ document.addEventListener('input', function(e) {
   if (v < 0)  e.target.value = 0;
 }, true);
 
-// تأكيد عند الخروج من الحقل
 document.addEventListener('blur', function(e) {
   if (e.target.matches('input[type=number]')) clampInput(e.target);
 }, true);
@@ -1289,9 +1289,7 @@ function loadStreams() {
   loadGPATable();
 }
 
-// ── FIX: حفظ البيانات قبل إعادة البناء ──
 function loadGPATable() {
-  // 1) حفظ القيم الحالية مرتبطة باسم المادة
   const savedData = {};
   document.querySelectorAll('#gpaBody tr').forEach(row => {
     const subj = row.cells[0]?.innerText?.trim();
@@ -1300,7 +1298,6 @@ function loadGPATable() {
     savedData[subj] = [...ins].map(i => i.value);
   });
 
-  // 2) بناء الجدول من جديد
   const yr = document.getElementById('yearSel').value;
   const st = document.getElementById('streamSel').value;
   let subs = [...SUBJECTS[yr][st]];
@@ -1317,7 +1314,6 @@ function loadGPATable() {
     </tr>`
   ).join('');
 
-  // 3) استعادة القيم المحفوظة
   document.querySelectorAll('#gpaBody tr').forEach(row => {
     const subj = row.cells[0]?.innerText?.trim();
     if (savedData[subj]) {
@@ -1489,7 +1485,7 @@ function captureImg() {
 }
 
 // ══════════════════════════════════════════════
-// AI IMAGE SCANNING
+// ✅ AI IMAGE SCANNING — مباشر لـ Anthropic API
 // ══════════════════════════════════════════════
 function openAI() {
   document.getElementById('aiModal').classList.add('open');
@@ -1502,7 +1498,6 @@ function closeAI() {
 
 function onImgSelect(e) {
   const file=e.target.files[0]; if(!file) return;
-  // support jpeg, png, gif, webp
   const allowed = ['image/jpeg','image/png','image/gif','image/webp'];
   imgMimeType = allowed.includes(file.type) ? file.type : 'image/jpeg';
   const reader=new FileReader();
@@ -1534,14 +1529,6 @@ function resetAI() {
 
 async function runAI() {
   if(!imgB64){toast('⚠️ اختر صورة أولاً','err');return;}
-  if(!ANTHROPIC_KEY || ANTHROPIC_KEY.length < 20){
-    toast('⚠️ يرجى إضافة Anthropic API Key في الكود','err');
-    return;
-  }
-  if(!PROXY_URL || PROXY_URL.includes('YOUR-WORKER')){
-    toast('⚠️ يرجى إضافة رابط Cloudflare Worker في PROXY_URL','err');
-    return;
-  }
 
   const yr=document.getElementById('yearSel').value, st=document.getElementById('streamSel').value;
   let subs=[...SUBJECTS[yr][st]];
@@ -1560,7 +1547,6 @@ async function runAI() {
   }
 
   try {
-    // detect image type from base64 header
     const mimeType = imgMimeType || 'image/jpeg';
 
     const prompt=`أنت نظام خبير في قراءة كشوف النقاط المدرسية الجزائرية.
@@ -1596,26 +1582,41 @@ async function runAI() {
   "note": "أي ملاحظة اختيارية"
 }`;
 
-    const resp=await fetch(PROXY_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-5-20251001',
-        max_tokens:2000,
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type: mimeType, data:imgB64}},
-          {type:'text',text:prompt}
-        ]}]
+    // ✅ الإصلاح: استدعاء API مباشرة مع الهيدر الخاص بالمتصفح
+    const resp = await fetch(ANTHROPIC_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mimeType, data: imgB64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
       })
     });
 
-    const data=await resp.json();
+    if (!resp.ok) {
+      const errText = await resp.text();
+      console.error('API Error:', resp.status, errText);
+      throw new Error(`HTTP ${resp.status}`);
+    }
+
+    const data = await resp.json();
     document.getElementById(steps[3]).className='ai-step done';
     await new Promise(r=>setTimeout(r,400));
 
-    let txt=data.content?.map(c=>c.text||'').join('')||'';
-    txt=txt.replace(/```json|```/g,'').trim();
-    aiData=JSON.parse(txt);
+    let txt = data.content?.map(c => c.text || '').join('') || '';
+    txt = txt.replace(/```json|```/g, '').trim();
+    aiData = JSON.parse(txt);
     renderAIResults(aiData);
 
   } catch(e) {
