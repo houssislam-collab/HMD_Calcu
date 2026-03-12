@@ -300,6 +300,13 @@ select:focus, input:focus {
 }
 select option { background:var(--ink2); }
 
+/* Input out-of-range highlight */
+input[type=number]:invalid,
+input[type=number].out-of-range {
+  border-color: rgba(192,57,43,.6) !important;
+  box-shadow: 0 0 0 3px rgba(192,57,43,.15) !important;
+}
+
 .chk-group { display:flex; align-items:center; gap:10px; margin:10px 0; }
 .chk-group input[type=checkbox] { width:18px; height:18px; accent-color:var(--gold); cursor:pointer; }
 .chk-group label { font-size:.88rem; font-weight:600; color:var(--surface); cursor:pointer; }
@@ -1000,7 +1007,6 @@ const COL_STU   = 'students';
 const COL_GRD   = 'grades';
 const ADMIN_EMAIL = atob('YWRtaW5AaG1kLmNvbQ==');
 
-// Anthropic — replace with your key or leave as placeholder
 const ANTHROPIC_KEY = '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';
 
 // ══════════════════════════════════════════════
@@ -1089,6 +1095,29 @@ function toast(msg, type='ok') {
   clearTimeout(el._t);
   el._t = setTimeout(() => el.className = '', 3000);
 }
+
+// ══════════════════════════════════════════════
+// INPUT VALIDATION — clamp 0..20 on blur
+// ══════════════════════════════════════════════
+function clampInput(inp) {
+  let v = parseFloat(inp.value);
+  if (isNaN(v)) return;
+  if (v < 0)  { inp.value = 0;  inp.classList.add('out-of-range'); setTimeout(()=>inp.classList.remove('out-of-range'),800); }
+  else if (v > 20) { inp.value = 20; inp.classList.add('out-of-range'); setTimeout(()=>inp.classList.remove('out-of-range'),800); }
+}
+
+// Delegate blur on all number inputs in tables
+document.addEventListener('blur', function(e) {
+  if (e.target.matches('input[type=number]')) clampInput(e.target);
+}, true);
+
+// Also block typing values out of range on keyup
+document.addEventListener('input', function(e) {
+  if (!e.target.matches('input[type=number]')) return;
+  const v = parseFloat(e.target.value);
+  if (!isNaN(v) && v > 20) e.target.value = 20;
+  if (!isNaN(v) && v < 0)  e.target.value = 0;
+}, true);
 
 // ══════════════════════════════════════════════
 // AUTH TAB
@@ -1260,12 +1289,24 @@ function loadStreams() {
   loadGPATable();
 }
 
+// ── FIX: حفظ البيانات قبل إعادة البناء ──
 function loadGPATable() {
+  // 1) حفظ القيم الحالية مرتبطة باسم المادة
+  const savedData = {};
+  document.querySelectorAll('#gpaBody tr').forEach(row => {
+    const subj = row.cells[0]?.innerText?.trim();
+    if (!subj) return;
+    const ins = row.querySelectorAll('input');
+    savedData[subj] = [...ins].map(i => i.value);
+  });
+
+  // 2) بناء الجدول من جديد
   const yr = document.getElementById('yearSel').value;
   const st = document.getElementById('streamSel').value;
   let subs = [...SUBJECTS[yr][st]];
   if(document.getElementById('tamChk').checked) subs.push(['أمازيغية',2]);
   if(document.getElementById('artChk').checked) subs.push(['تربية فنية',1]);
+
   document.getElementById('gpaBody').innerHTML = subs.map(([name,coef])=>
     `<tr data-c="${coef}">
       <td><strong>${name}</strong></td>
@@ -1275,15 +1316,28 @@ function loadGPATable() {
       <td class="sum"><strong>0.00</strong></td>
     </tr>`
   ).join('');
+
+  // 3) استعادة القيم المحفوظة
+  document.querySelectorAll('#gpaBody tr').forEach(row => {
+    const subj = row.cells[0]?.innerText?.trim();
+    if (savedData[subj]) {
+      const ins = row.querySelectorAll('input');
+      savedData[subj].forEach((val, idx) => {
+        if (ins[idx] && val !== '') ins[idx].value = val;
+      });
+    }
+  });
 }
 
 function calcGPA() {
   let pts = 0, coefs = 0;
   document.querySelectorAll('#gpaBody tr').forEach(r => {
     const ins = r.querySelectorAll('input');
-    const e = +ins[0].value||0, ap = +ins[1].value||0;
-    const t1= +ins[2].value||0, t2 = +ins[3].value||0;
-    const ex= +ins[4].value||0;
+    const e = Math.min(20, Math.max(0, +ins[0].value||0));
+    const ap= Math.min(20, Math.max(0, +ins[1].value||0));
+    const t1= Math.min(20, Math.max(0, +ins[2].value||0));
+    const t2= Math.min(20, Math.max(0, +ins[3].value||0));
+    const ex= Math.min(20, Math.max(0, +ins[4].value||0));
     const c = +r.dataset.c;
     const name = r.cells[0].innerText;
     const avg = t2>0 ? (e+ap+t1+t2+ex*2)/6 : (e+ap+t1+ex*2)/5;
@@ -1324,9 +1378,9 @@ function showResult(id, val, {cls,icon,msg}) {
 // YEARLY
 // ══════════════════════════════════════════════
 function calcYearly() {
-  const t1=+document.getElementById('t1').value||0;
-  const t2=+document.getElementById('t2').value||0;
-  const t3=+document.getElementById('t3').value||0;
+  const t1=Math.min(20,Math.max(0,+document.getElementById('t1').value||0));
+  const t2=Math.min(20,Math.max(0,+document.getElementById('t2').value||0));
+  const t3=Math.min(20,Math.max(0,+document.getElementById('t3').value||0));
   if(!t1||!t2||!t3){toast('⚠️ أدخل جميع المعدلات','err');return;}
   const avg = (t1+t2+t3*3)/5;
   showResult('yearlyRes', `المعدل السنوي: ${avg.toFixed(2)}`, getGrade(avg));
@@ -1337,14 +1391,13 @@ function calcYearly() {
 // NEEDED
 // ══════════════════════════════════════════════
 function calcNeeded() {
-  const target = +document.getElementById('targetAvg').value;
-  const ev     = +document.getElementById('evalMark').value||0;
-  const t1     = +document.getElementById('test1').value||0;
-  const t2     = +document.getElementById('test2').value||0;
+  const target = Math.min(20,Math.max(0,+document.getElementById('targetAvg').value));
+  const ev     = Math.min(20,Math.max(0,+document.getElementById('evalMark').value||0));
+  const t1     = Math.min(20,Math.max(0,+document.getElementById('test1').value||0));
+  const t2     = Math.min(20,Math.max(0,+document.getElementById('test2').value||0));
   if(!target){toast('⚠️ أدخل المعدل المطلوب','err');return;}
   const div = t2>0?5:4;
   const needed = (target*div - ev - t1 - t2)/2;
-  const el = document.getElementById('neededRes');
   if(needed>20) showResult('neededRes',`العلامة المطلوبة: ${needed.toFixed(2)}`,{cls:'weak',icon:'⚠️',msg:'من المستحيل تحقيق هذا المعدل!'});
   else if(needed<0) showResult('neededRes','متفوق! 🏆',{cls:'excellent',icon:'🎉',msg:'أنت محقق للمعدل بالفعل!'});
   else {
@@ -1380,7 +1433,7 @@ function loadBacTable() {
 function calcBac() {
   let pts=0, coefs=0;
   document.querySelectorAll('#bacBody tr').forEach(r=>{
-    const v=+r.querySelector('input').value||0, c=+r.dataset.c;
+    const v=Math.min(20,Math.max(0,+r.querySelector('input').value||0)), c=+r.dataset.c;
     const name=r.cells[0].innerText;
     if(name==='أمازيغية'){
       const bonus=v>10?v-10:0;
@@ -1592,11 +1645,11 @@ function applyAI() {
              subj.replace(/\s/g,'').includes(n.replace(/\s/g,''));
     });
     if(match){
-      if(match.taqdim!=null&&ins[0]){ins[0].value=match.taqdim;filled++;}
-      if(match.amal!=null&&ins[1]) ins[1].value=match.amal;
-      if(match.farod1!=null&&ins[2]) ins[2].value=match.farod1;
-      if(match.farod2!=null&&match.farod2>0&&ins[3]) ins[3].value=match.farod2;
-      if(match['ikhtibار']!=null&&ins[4]) ins[4].value=match['ikhtibار'];
+      if(match.taqdim!=null&&ins[0]){ins[0].value=Math.min(20,Math.max(0,match.taqdim));filled++;}
+      if(match.amal!=null&&ins[1]) ins[1].value=Math.min(20,Math.max(0,match.amal));
+      if(match.farod1!=null&&ins[2]) ins[2].value=Math.min(20,Math.max(0,match.farod1));
+      if(match.farod2!=null&&match.farod2>0&&ins[3]) ins[3].value=Math.min(20,Math.max(0,match.farod2));
+      if(match['ikhtibار']!=null&&ins[4]) ins[4].value=Math.min(20,Math.max(0,match['ikhtibار']));
     }
   });
   closeAI(); resetAI();
@@ -1674,7 +1727,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('themeIco').className='fas fa-moon';
   }
 
-  // Login with Enter key
   document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
   document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
