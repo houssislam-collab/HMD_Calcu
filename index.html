@@ -300,11 +300,9 @@ select:focus, input:focus {
 }
 select option { background:var(--ink2); }
 
-/* Input out-of-range highlight */
-input[type=number]:invalid,
-input[type=number].out-of-range {
-  border-color: rgba(192,57,43,.6) !important;
-  box-shadow: 0 0 0 3px rgba(192,57,43,.15) !important;
+/* Input validation style */
+input[type=number]:focus {
+  border-color: var(--gold);
 }
 
 .chk-group { display:flex; align-items:center; gap:10px; margin:10px 0; }
@@ -1007,14 +1005,15 @@ const COL_STU   = 'students';
 const COL_GRD   = 'grades';
 const ADMIN_EMAIL = atob('YWRtaW5AaG1kLmNvbQ==');
 
-const ANTHROPIC_KEY = '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';
+const ANTHROPIC_KEY  = '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';
+const PROXY_URL      = 'https://hmd-ai.houssislam.workers.dev';
 
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
 let curUser = null, isAdmin = false, isGuest = false;
 let guestActions = 0, popCount = 0;
-let aiData = null, imgB64 = null;
+let aiData = null, imgB64 = null, imgMimeType = 'image/jpeg';
 
 // ══════════════════════════════════════════════
 // DATABASE
@@ -1097,26 +1096,27 @@ function toast(msg, type='ok') {
 }
 
 // ══════════════════════════════════════════════
-// INPUT VALIDATION — clamp 0..20 on blur
+// INPUT VALIDATION — تصحيح فوري: فوق 20 → 20، تحت 0 → 0
 // ══════════════════════════════════════════════
 function clampInput(inp) {
   let v = parseFloat(inp.value);
-  if (isNaN(v)) return;
-  if (v < 0)  { inp.value = 0;  inp.classList.add('out-of-range'); setTimeout(()=>inp.classList.remove('out-of-range'),800); }
-  else if (v > 20) { inp.value = 20; inp.classList.add('out-of-range'); setTimeout(()=>inp.classList.remove('out-of-range'),800); }
+  if (isNaN(v) || inp.value === '' || inp.value === '-') return;
+  if (v > 20) inp.value = 20;
+  if (v < 0)  inp.value = 0;
 }
 
-// Delegate blur on all number inputs in tables
-document.addEventListener('blur', function(e) {
-  if (e.target.matches('input[type=number]')) clampInput(e.target);
-}, true);
-
-// Also block typing values out of range on keyup
+// تصحيح فوري أثناء الكتابة
 document.addEventListener('input', function(e) {
   if (!e.target.matches('input[type=number]')) return;
   const v = parseFloat(e.target.value);
-  if (!isNaN(v) && v > 20) e.target.value = 20;
-  if (!isNaN(v) && v < 0)  e.target.value = 0;
+  if (isNaN(v) || e.target.value === '') return;
+  if (v > 20) e.target.value = 20;
+  if (v < 0)  e.target.value = 0;
+}, true);
+
+// تأكيد عند الخروج من الحقل
+document.addEventListener('blur', function(e) {
+  if (e.target.matches('input[type=number]')) clampInput(e.target);
 }, true);
 
 // ══════════════════════════════════════════════
@@ -1502,6 +1502,9 @@ function closeAI() {
 
 function onImgSelect(e) {
   const file=e.target.files[0]; if(!file) return;
+  // support jpeg, png, gif, webp
+  const allowed = ['image/jpeg','image/png','image/gif','image/webp'];
+  imgMimeType = allowed.includes(file.type) ? file.type : 'image/jpeg';
   const reader=new FileReader();
   reader.onload=ev=>{
     imgB64=ev.target.result.split(',')[1];
@@ -1514,7 +1517,7 @@ function onImgSelect(e) {
 }
 
 function resetImg() {
-  imgB64=null;
+  imgB64=null; imgMimeType='image/jpeg';
   document.getElementById('imgFile').value='';
   document.getElementById('imgPreview').classList.remove('show');
   document.getElementById('analyzeBtn').style.display='none';
@@ -1535,6 +1538,10 @@ async function runAI() {
     toast('⚠️ يرجى إضافة Anthropic API Key في الكود','err');
     return;
   }
+  if(!PROXY_URL || PROXY_URL.includes('YOUR-WORKER')){
+    toast('⚠️ يرجى إضافة رابط Cloudflare Worker في PROXY_URL','err');
+    return;
+  }
 
   const yr=document.getElementById('yearSel').value, st=document.getElementById('streamSel').value;
   let subs=[...SUBJECTS[yr][st]];
@@ -1553,37 +1560,50 @@ async function runAI() {
   }
 
   try {
-    const prompt=`أنت نظام متخصص في قراءة كشوف النقاط الجزائرية.
+    // detect image type from base64 header
+    const mimeType = imgMimeType || 'image/jpeg';
 
-حلل هذه الصورة واستخرج العلامات.
+    const prompt=`أنت نظام خبير في قراءة كشوف النقاط المدرسية الجزائرية.
 
-المواد: ${subNames}
+انظر بعناية إلى هذه الصورة. قد تكون:
+- كشف نقاط رسمي مطبوع
+- ورقة مكتوبة يدوياً
+- لقطة شاشة من نظام إلكتروني
+- صورة بأي زاوية أو إضاءة
 
-أجب فقط بـ JSON بهذا الشكل بدون أي نص إضافي:
+مهمتك: استخرج علامات هذه المواد بدقة: ${subNames}
+
+تعليمات مهمة:
+- ابحث عن الأعمدة التالية: التقييم المستمر (أو تقويم مستمر)، أعمال تطبيقية (أو أ.ت)، فرض 1، فرض 2، اختبار (أو امتحان)
+- الأعمدة قد تكون بأسماء مختلفة أو بالعربية أو الفرنسية
+- بعض الخانات قد تكون فارغة أو تحتوي على "-" أو "معفى"
+- الأرقام قد تكون مكسورة مثل 12.5 أو 16.25
+- إذا كانت الخانة "معفى" أو فارغة ضع null
+
+أجب فقط بـ JSON هكذا بدون أي كلام إضافي:
 {
   "subjects": [
     {
-      "name": "اسم المادة",
-      "taqdim": رقم أو null,
-      "amal": رقم أو null,
-      "farod1": رقم أو null,
-      "farod2": رقم أو null,
-      "ikhtibار": رقم أو null
+      "name": "اسم المادة كما في قائمتي",
+      "taqdim": رقم_أو_null,
+      "amal": رقم_أو_null,
+      "farod1": رقم_أو_null,
+      "farod2": رقم_أو_null,
+      "ikhtibار": رقم_أو_null
     }
   ],
-  "confidence": "high|medium|low"
-}
+  "confidence": "high|medium|low",
+  "note": "أي ملاحظة اختيارية"
+}`;
 
-قواعد: الأرقام 0-20، إذا لم تجد العلامة ضع null`;
-
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    const resp=await fetch(PROXY_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-opus-4-5',
         max_tokens:2000,
         messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},
+          {type:'image',source:{type:'base64',media_type: mimeType, data:imgB64}},
           {type:'text',text:prompt}
         ]}]
       })
